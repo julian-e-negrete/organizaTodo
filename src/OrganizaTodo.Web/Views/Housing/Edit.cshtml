@@ -1,0 +1,16 @@
+@model OrganizaTodo.Web.Models.ViewModels.HousingServiceViewModel
+@{ ViewData["Title"] = "Editar Servicio"; }
+
+<h4 class="mb-3">Editar Servicio</h4>
+<div class="col-md-5">
+    <form asp-action="Edit" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="Id" type="hidden" />
+        <partial name="_HousingForm" model="Model" />
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

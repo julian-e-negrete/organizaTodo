@@ -1,0 +1,119 @@
+@model OrganizaTodo.Web.Models.ViewModels.DashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; }
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">📊 Balance – @Model.MonthName</h4>
+    <div class="d-flex gap-2">
+        <a asp-action="Index" asp-route-month="@(Model.Month == 1 ? 12 : Model.Month - 1)"
+           asp-route-year="@(Model.Month == 1 ? Model.Year - 1 : Model.Year)"
+           class="btn btn-sm btn-outline-secondary">‹ Anterior</a>
+        <a asp-action="Index" asp-route-month="@(Model.Month == 12 ? 1 : Model.Month + 1)"
+           asp-route-year="@(Model.Month == 12 ? Model.Year + 1 : Model.Year)"
+           class="btn btn-sm btn-outline-secondary">Siguiente ›</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-success h-100">
+            <div class="card-body">
+                <div class="text-muted small">Ingresos</div>
+                <div class="fs-4 fw-bold text-success">$ @Model.Balance.TotalIncome.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-danger h-100">
+            <div class="card-body">
+                <div class="text-muted small">Total Pasivos</div>
+                <div class="fs-4 fw-bold text-danger">$ @Model.Balance.TotalLiabilities.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-warning h-100">
+            <div class="card-body">
+                <div class="text-muted small">Otros Egresos</div>
+                <div class="fs-4 fw-bold text-warning">$ @Model.Balance.TotalOtherExpenses.ToString("N2")</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card @(Model.Balance.RemainingBalance >= 0 ? "border-success" : "border-danger") h-100">
+            <div class="card-body">
+                <div class="text-muted small">Saldo Restante</div>
+                <div class="fs-4 fw-bold @(Model.Balance.RemainingBalance >= 0 ? "text-success" : "text-danger")">
+                    $ @Model.Balance.RemainingBalance.ToString("N2")
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">Resumen del mes</div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <tbody>
+                        <tr>
+                            <td>INGRESO DE CAPITAL</td>
+                            <td class="text-end text-success fw-bold">$ @Model.Balance.TotalIncome.ToString("N2")</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3 text-muted small">Servicios vivienda</td>
+                            <td class="text-end text-muted small">-$ @Model.Balance.TotalServices.ToString("N2")</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3 text-muted small">Tarjeta de crédito</td>
+                            <td class="text-end text-muted small">-$ @Model.Balance.TotalCreditCard.ToString("N2")</td>
+                        </tr>
+                        <tr>
+                            <td class="ps-3 text-muted small">Pasivos fijos</td>
+                            <td class="text-end text-muted small">-$ @Model.Balance.TotalFixedLiabilities.ToString("N2")</td>
+                        </tr>
+                        <tr class="table-danger">
+                            <td><strong>PASIVOS TOTALES</strong></td>
+                            <td class="text-end text-danger fw-bold">-$ @Model.Balance.TotalLiabilities.ToString("N2")</td>
+                        </tr>
+                        <tr>
+                            <td>OTROS EGRESOS</td>
+                            <td class="text-end text-warning fw-bold">-$ @Model.Balance.TotalOtherExpenses.ToString("N2")</td>
+                        </tr>
+                        <tr class="@(Model.Balance.RemainingBalance >= 0 ? "table-success" : "table-danger")">
+                            <td><strong>SALDO RESTANTE</strong></td>
+                            <td class="text-end fw-bold">$ @Model.Balance.RemainingBalance.ToString("N2")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between">
+                Servicios pendientes de pago
+                <a asp-controller="Housing" asp-action="Index" class="btn btn-sm btn-outline-primary">Ver todos</a>
+            </div>
+            <div class="card-body p-0">
+                @if (!Model.UnpaidServices.Any())
+                {
+                    <p class="p-3 text-muted mb-0">✅ Todos los servicios están pagos.</p>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var svc in Model.UnpaidServices)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>@svc.Name <span class="badge bg-secondary">vence día @svc.DueDay</span></span>
+                                <strong>$ @svc.Amount.ToString("N2")</strong>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+@model OrganizaTodo.Web.Models.ViewModels.OtherExpenseViewModel
+<div class="mb-3">
+    <label asp-for="Description" class="form-label"></label>
+    <input asp-for="Description" class="form-control" placeholder="Ej: Compra dólares, Ahorro" />
+    <span asp-validation-for="Description" class="text-danger small"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="Amount" class="form-label"></label>
+    <input asp-for="Amount" class="form-control" type="number" step="0.01" min="0" />
+    <span asp-validation-for="Amount" class="text-danger small"></span>
+</div>
+<div class="row">
+    <div class="col mb-3">
+        <label class="form-label">Mes</label>
+        <select asp-for="Month" class="form-select">
+            @for (var i = 1; i <= 12; i++)
+            {
+                <option value="@i" selected="@(Model.Month == i)">@(new DateTime(2000, i, 1).ToString("MMMM", new System.Globalization.CultureInfo("es-AR")))</option>
+            }
+        </select>
+    </div>
+    <div class="col mb-3">
+        <label asp-for="Year" class="form-label">Año</label>
+        <input asp-for="Year" class="form-control" type="number" min="2000" max="2100" />
+    </div>
+</div>

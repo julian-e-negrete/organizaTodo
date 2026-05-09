@@ -1,0 +1,19 @@
+{
+  "enabledPlugins": {
+    "dotnet-skills@dotnet-skills": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "slopwatch analyze -d . --hook",
+            "timeout": 60000
+          }
+        ]
+      }
+    ]
+  }
+}

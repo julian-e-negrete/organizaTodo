@@ -1,0 +1,16 @@
+@model OrganizaTodo.Web.Models.ViewModels.FixedLiabilityViewModel
+<div class="mb-3">
+    <label asp-for="Name" class="form-label"></label>
+    <input asp-for="Name" class="form-control" placeholder="Ej: Gimnasio, Seguro del auto" />
+    <span asp-validation-for="Name" class="text-danger small"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="MonthlyAmount" class="form-label"></label>
+    <input asp-for="MonthlyAmount" class="form-control" type="number" step="0.01" min="0" />
+    <span asp-validation-for="MonthlyAmount" class="text-danger small"></span>
+</div>
+<div class="mb-3">
+    <label asp-for="DueDay" class="form-label"></label>
+    <input asp-for="DueDay" class="form-control" type="number" min="1" max="31" />
+    <span asp-validation-for="DueDay" class="text-danger small"></span>
+</div>

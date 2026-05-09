@@ -1,0 +1,48 @@
+@model OrganizaTodo.Web.Models.ViewModels.RegisterViewModel
+@{ ViewData["Title"] = "Crear cuenta"; }
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h4 class="card-title text-center mb-4">Crear cuenta</h4>
+                <form asp-action="Register" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    <div class="mb-3">
+                        <label asp-for="FullName" class="form-label"></label>
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Currency" class="form-label">Moneda</label>
+                        <select asp-for="Currency" class="form-select">
+                            <option value="ARS">ARS – Peso Argentino</option>
+                            <option value="USD">USD – Dólar</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Crear cuenta</button>
+                </form>
+                <hr />
+                <p class="text-center mb-0 small">¿Ya tenés cuenta? <a asp-action="Login">Iniciar sesión</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

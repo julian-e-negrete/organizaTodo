@@ -1,0 +1,64 @@
+@model IEnumerable<OrganizaTodo.Web.Models.Domain.FixedLiability>
+@{ ViewData["Title"] = "Pasivos Fijos"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>📋 Pasivos Fijos</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ Agregar</a>
+</div>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">No hay pasivos fijos registrados.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr><th>Nombre</th><th>Monto mensual</th><th>Vence día</th><th>Estado</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>$ @item.MonthlyAmount.ToString("N2")</td>
+                    <td>@(item.DueDay.HasValue ? item.DueDay.ToString() : "—")</td>
+                    <td>
+                        @if (item.IsPaid)
+                        {
+                            <span class="badge bg-success">Pagado @item.PaidDate?.ToString("dd/MM")</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">Pendiente</span>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <form asp-action="TogglePaid" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="isPaid" value="@(item.IsPaid ? "false" : "true")" />
+                            <button class="btn btn-sm @(item.IsPaid ? "btn-outline-secondary" : "btn-success")">
+                                @(item.IsPaid ? "Marcar pendiente" : "Marcar pagado")
+                            </button>
+                        </form>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form asp-action="Delete" method="post" class="d-inline"
+                              onsubmit="return confirm('¿Eliminar @item.Name?')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-secondary fw-bold">
+                <td>Total mensual</td>
+                <td>$ @Model.Sum(x => x.MonthlyAmount).ToString("N2")</td>
+                <td colspan="3"></td>
+            </tr>
+        </tfoot>
+    </table>
+}

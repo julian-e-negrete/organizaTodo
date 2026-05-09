@@ -1,0 +1,60 @@
+@model OrganizaTodo.Web.Models.ViewModels.ReportViewModel
+@{ ViewData["Title"] = "Reportes"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>📈 Reporte Anual @Model.SelectedYear</h4>
+    <div class="d-flex gap-2 align-items-center">
+        <a asp-action="Index" asp-route-year="@(Model.SelectedYear - 1)" class="btn btn-sm btn-outline-secondary">‹ @(Model.SelectedYear-1)</a>
+        <a asp-action="Index" asp-route-year="@(Model.SelectedYear + 1)" class="btn btn-sm btn-outline-secondary">@(Model.SelectedYear+1) ›</a>
+        <a asp-action="ExportCsv" asp-route-year="@Model.SelectedYear" class="btn btn-sm btn-success">⬇ CSV</a>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Mes</th>
+                <th class="text-end">Ingresos</th>
+                <th class="text-end">Servicios</th>
+                <th class="text-end">Tarjeta</th>
+                <th class="text-end">Pasivos Fijos</th>
+                <th class="text-end">Total Pasivos</th>
+                <th class="text-end">Otros Egresos</th>
+                <th class="text-end">Saldo Restante</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var row in Model.History)
+            {
+                var b = row.Balance;
+                <tr>
+                    <td>@row.MonthName</td>
+                    <td class="text-end text-success">$ @b.TotalIncome.ToString("N2")</td>
+                    <td class="text-end text-muted">$ @b.TotalServices.ToString("N2")</td>
+                    <td class="text-end text-muted">$ @b.TotalCreditCard.ToString("N2")</td>
+                    <td class="text-end text-muted">$ @b.TotalFixedLiabilities.ToString("N2")</td>
+                    <td class="text-end text-danger">$ @b.TotalLiabilities.ToString("N2")</td>
+                    <td class="text-end text-warning">$ @b.TotalOtherExpenses.ToString("N2")</td>
+                    <td class="text-end fw-bold @(b.RemainingBalance >= 0 ? "text-success" : "text-danger")">
+                        $ @b.RemainingBalance.ToString("N2")
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-secondary fw-bold">
+                <td>Totales</td>
+                <td class="text-end text-success">$ @Model.History.Sum(x => x.Balance.TotalIncome).ToString("N2")</td>
+                <td class="text-end">$ @Model.History.Sum(x => x.Balance.TotalServices).ToString("N2")</td>
+                <td class="text-end">$ @Model.History.Sum(x => x.Balance.TotalCreditCard).ToString("N2")</td>
+                <td class="text-end">$ @Model.History.Sum(x => x.Balance.TotalFixedLiabilities).ToString("N2")</td>
+                <td class="text-end text-danger">$ @Model.History.Sum(x => x.Balance.TotalLiabilities).ToString("N2")</td>
+                <td class="text-end text-warning">$ @Model.History.Sum(x => x.Balance.TotalOtherExpenses).ToString("N2")</td>
+                <td class="text-end @(Model.History.Sum(x => x.Balance.RemainingBalance) >= 0 ? "text-success" : "text-danger")">
+                    $ @Model.History.Sum(x => x.Balance.RemainingBalance).ToString("N2")
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

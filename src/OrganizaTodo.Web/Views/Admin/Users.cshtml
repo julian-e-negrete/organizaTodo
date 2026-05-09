@@ -1,0 +1,53 @@
+@model IEnumerable<OrganizaTodo.Web.Models.Domain.User>
+@{ ViewData["Title"] = "Gestión de Usuarios"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>👥 Gestión de Usuarios</h4>
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">← Stats</a>
+</div>
+
+<table class="table table-hover align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th>
+            <th>Último acceso</th><th>Registrado</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr class="@(!user.IsActive ? "table-secondary text-muted" : "")">
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>
+                    <span class="badge @(user.Role == "ADMIN" ? "bg-danger" : "bg-secondary")">@user.Role</span>
+                </td>
+                <td>
+                    <span class="badge @(user.IsActive ? "bg-success" : "bg-secondary")">
+                        @(user.IsActive ? "Activo" : "Deshabilitado")
+                    </span>
+                </td>
+                <td class="small">@user.LastAccessAt?.ToString("dd/MM/yy HH:mm")</td>
+                <td class="small">@user.CreatedAt.ToString("dd/MM/yy")</td>
+                <td class="text-end">
+                    <form asp-action="SetActive" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@user.Id" />
+                        <input type="hidden" name="isActive" value="@(!user.IsActive)" />
+                        <button class="btn btn-sm @(user.IsActive ? "btn-outline-warning" : "btn-outline-success")">
+                            @(user.IsActive ? "Deshabilitar" : "Habilitar")
+                        </button>
+                    </form>
+                    <form asp-action="SetRole" method="post" class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@user.Id" />
+                        <input type="hidden" name="role" value="@(user.Role == "ADMIN" ? "USER" : "ADMIN")" />
+                        <button class="btn btn-sm btn-outline-info">
+                            → @(user.Role == "ADMIN" ? "USER" : "ADMIN")
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

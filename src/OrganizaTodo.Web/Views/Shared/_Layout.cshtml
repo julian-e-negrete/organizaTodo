@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] – OrganizaTodo</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        .sidebar { min-height: calc(100vh - 56px); background:#212529; }
+        .sidebar .nav-link { color: #adb5bd; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { color:#fff; background:rgba(255,255,255,.1); border-radius:4px; }
+        .sidebar .nav-section { font-size:.7rem; text-transform:uppercase; letter-spacing:.1em; color:#6c757d; padding:.5rem 1rem; margin-top:.5rem; }
+        .main-content { padding: 1.5rem; }
+        .balance-positive { color: #198754; }
+        .balance-negative { color: #dc3545; }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-dark bg-dark px-3">
+    <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">💰 OrganizaTodo</a>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-light small">@User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value</span>
+            <a class="btn btn-sm btn-outline-light" asp-controller="Account" asp-action="Profile">Perfil</a>
+            <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-danger">Salir</button>
+            </form>
+        </div>
+    }
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <nav class="col-md-2 sidebar py-3 d-none d-md-block">
+                <div class="nav-section">Principal</div>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")"
+                   asp-controller="Dashboard" asp-action="Index">📊 Dashboard</a>
+
+                <div class="nav-section">Finanzas</div>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Income" ? "active" : "")"
+                   asp-controller="Income" asp-action="Index">💵 Ingresos</a>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Housing" ? "active" : "")"
+                   asp-controller="Housing" asp-action="Index">🏠 Servicios</a>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "CreditCard" ? "active" : "")"
+                   asp-controller="CreditCard" asp-action="Index">💳 Tarjeta</a>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Liabilities" ? "active" : "")"
+                   asp-controller="Liabilities" asp-action="Index">📋 Pasivos Fijos</a>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Expenses" ? "active" : "")"
+                   asp-controller="Expenses" asp-action="Index">💸 Otros Egresos</a>
+
+                <div class="nav-section">Compras</div>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Shopping" ? "active" : "")"
+                   asp-controller="Shopping" asp-action="Index">🛒 Lista de Compras</a>
+
+                <div class="nav-section">Reportes</div>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Reports" ? "active" : "")"
+                   asp-controller="Reports" asp-action="Index">📈 Reportes</a>
+
+                @if (User.IsInRole("ADMIN"))
+                {
+                    <div class="nav-section">Admin</div>
+                    <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Admin" ? "active" : "")"
+                       asp-controller="Admin" asp-action="Index">⚙️ Panel Admin</a>
+                    <a class="nav-link px-3 py-2" asp-controller="Admin" asp-action="Users">👥 Usuarios</a>
+                }
+            </nav>
+            <main class="col-md-10 main-content">
+                @if (TempData["Success"] is string success)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        @success <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @if (TempData["Error"] is string error)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @error <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                }
+                @RenderBody()
+            </main>
+        }
+        else
+        {
+            <main class="col-12">@RenderBody()</main>
+        }
+    </div>
+</div>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

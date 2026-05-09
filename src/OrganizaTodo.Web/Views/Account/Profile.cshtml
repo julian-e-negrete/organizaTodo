@@ -1,0 +1,52 @@
+@model OrganizaTodo.Web.Models.Domain.User
+@{ ViewData["Title"] = "Mi perfil"; }
+
+<h4 class="mb-4">Mi perfil</h4>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <form asp-action="UpdateProfile" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label">Nombre completo</label>
+                        <input name="fullName" value="@Model.FullName" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input value="@Model.Email" class="form-control" disabled />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Moneda principal</label>
+                        <select name="currency" class="form-select">
+                            <option value="ARS" selected="@(Model.Currency == "ARS")">ARS – Peso Argentino</option>
+                            <option value="USD" selected="@(Model.Currency == "USD")">USD – Dólar</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Miembro desde</label>
+                        <input value="@Model.CreatedAt.ToString("dd/MM/yyyy")" class="form-control" disabled />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Último acceso</label>
+                        <input value="@Model.LastAccessAt?.ToString("dd/MM/yyyy HH:mm")" class="form-control" disabled />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-danger">
+            <div class="card-header text-danger">Zona de peligro</div>
+            <div class="card-body">
+                <p class="small text-muted">Eliminar tu cuenta borra permanentemente todos tus datos financieros.</p>
+                <form asp-action="DeleteAccount" method="post"
+                      onsubmit="return confirm('¿Estás seguro? Esta acción no se puede deshacer.')">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger btn-sm">Eliminar mi cuenta</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
