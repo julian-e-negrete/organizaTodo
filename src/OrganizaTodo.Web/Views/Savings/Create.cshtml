@@ -1,0 +1,14 @@
+@model OrganizaTodo.Web.Models.ViewModels.SavingViewModel
+@{ ViewData["Title"] = "Registrar Ahorro"; }
+<h4 class="mb-3">Registrar Ahorro</h4>
+<div class="col-md-5">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <partial name="_SavingForm" model="Model" />
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-success">Guardar</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

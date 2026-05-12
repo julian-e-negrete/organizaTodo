@@ -94,10 +94,13 @@
         <div class="card h-100">
             <div class="card-header d-flex justify-content-between">
                 Servicios pendientes de pago
-                <a asp-controller="Housing" asp-action="Index" class="btn btn-sm btn-outline-primary">Ver todos</a>
+                <div class="d-flex gap-1">
+                    <a asp-controller="Housing" asp-action="Index" class="btn btn-sm btn-outline-primary">Vivienda</a>
+                    <a asp-controller="Liabilities" asp-action="Index" class="btn btn-sm btn-outline-secondary">Pasivos</a>
+                </div>
             </div>
             <div class="card-body p-0">
-                @if (!Model.UnpaidServices.Any())
+                @if (!Model.UnpaidServices.Any() && !Model.UnpaidLiabilities.Any())
                 {
                     <p class="p-3 text-muted mb-0">✅ Todos los servicios están pagos.</p>
                 }
@@ -109,6 +112,13 @@
                             <li class="list-group-item d-flex justify-content-between">
                                 <span>@svc.Name <span class="badge bg-secondary">vence día @svc.DueDay</span></span>
                                 <strong>$ @svc.Amount.ToString("N2")</strong>
+                            </li>
+                        }
+                        @foreach (var lib in Model.UnpaidLiabilities)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>@lib.Name <span class="badge bg-warning text-dark">pasivo fijo</span>@(lib.DueDay.HasValue ? $" vence día {lib.DueDay}" : "")</span>
+                                <strong>$ @lib.MonthlyAmount.ToString("N2")</strong>
                             </li>
                         }
                     </ul>
