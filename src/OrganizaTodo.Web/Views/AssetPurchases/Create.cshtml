@@ -1,0 +1,109 @@
+@model OrganizaTodo.Web.Models.ViewModels.AssetPurchaseViewModel
+@{ ViewData["Title"] = "Nueva Compra de Activo"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>📈 Nueva Compra de Activo</h4>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">‹ Volver</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <partial name="_AssetPurchaseForm" />
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Registrar compra</button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+    (function () {
+        const assetTypeEl       = document.getElementById('assetType');
+        const exchangeGroup     = document.getElementById('exchangeTypeGroup');
+        const quantityGroup     = document.getElementById('quantityGroup');
+        const unitPriceGroup    = document.getElementById('unitPriceGroup');
+        const quantityLabel     = document.getElementById('quantityLabel');
+        const quantityInput     = document.getElementById('quantityInput');
+        const unitPriceInput    = document.getElementById('unitPriceInput');
+        const totalArsInput     = document.getElementById('totalArsInput');
+        const fetchRatesBtn     = document.getElementById('fetchRatesBtn');
+        const ratesPanel        = document.getElementById('ratesPanel');
+        const ratesBody         = document.getElementById('ratesBody');
+        const exchangeTypeSelect = document.getElementById('exchangeTypeSelect');
+        const createExpenseCheck = document.getElementById('createExpenseCheck');
+        const createSavingCheck  = document.getElementById('createSavingCheck');
+        const expenseFields      = document.getElementById('expenseFields');
+        const savingFields       = document.getElementById('savingFields');
+
+        function updateTypeVisibility() {
+            const t = assetTypeEl.value;
+            exchangeGroup.style.display  = t === 'USD'   ? '' : 'none';
+            quantityGroup.style.display  = t !== 'OTRO'  ? '' : 'none';
+            unitPriceGroup.style.display = t !== 'OTRO'  ? '' : 'none';
+            const labels = { USD: 'Cantidad (USD)', ACCION: 'Cantidad (acciones)', CRYPTO: 'Cantidad' };
+            quantityLabel.textContent = labels[t] || 'Cantidad';
+        }
+
+        function calculateTotal() {
+            const q = parseFloat(quantityInput.value);
+            const p = parseFloat(unitPriceInput.value);
+            if (!isNaN(q) && !isNaN(p) && q > 0 && p > 0)
+                totalArsInput.value = (q * p).toFixed(2);
+        }
+
+        function toggleFields(checkbox, fields) {
+            if (!checkbox || !fields) return;
+            fields.style.display = checkbox.checked ? '' : 'none';
+            checkbox.addEventListener('change', () => { fields.style.display = checkbox.checked ? '' : 'none'; });
+        }
+
+        assetTypeEl.addEventListener('change', updateTypeVisibility);
+        quantityInput.addEventListener('input', calculateTotal);
+        unitPriceInput.addEventListener('input', calculateTotal);
+
+        fetchRatesBtn.addEventListener('click', async () => {
+            fetchRatesBtn.disabled = true;
+            fetchRatesBtn.textContent = 'Cargando…';
+            try {
+                const resp = await fetch('/AssetPurchases/GetDolarRates');
+                if (!resp.ok) throw new Error();
+                const rates = await resp.json();
+                if (rates.length === 0) throw new Error();
+                ratesBody.innerHTML = rates.map(r => `
+                    <tr>
+                        <td class="fw-semibold">${r.nombre}</td>
+                        <td>$ ${r.compra.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                        <td>$ ${r.venta.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-success py-0"
+                                onclick="selectRate('${r.casa}', ${r.venta})">Usar</button>
+                        </td>
+                    </tr>`).join('');
+                ratesPanel.style.display = '';
+            } catch {
+                ratesBody.innerHTML = '<tr><td colspan="4" class="text-danger small">No se pudo obtener la cotización.</td></tr>';
+                ratesPanel.style.display = '';
+            } finally {
+                fetchRatesBtn.disabled = false;
+                fetchRatesBtn.textContent = 'Cotización actual';
+            }
+        });
+
+        window.selectRate = function (casa, venta) {
+            exchangeTypeSelect.value = casa;
+            unitPriceInput.value = venta.toFixed(2);
+            calculateTotal();
+            ratesPanel.style.display = 'none';
+        };
+
+        toggleFields(createExpenseCheck, expenseFields);
+        toggleFields(createSavingCheck, savingFields);
+        updateTypeVisibility();
+    })();
+    </script>
+}

@@ -9,4 +9,6 @@ public sealed class SavingsIndexViewModel
     public decimal MonthlyAverage { get; init; }
     public decimal Projection6Months => CumulativeTotal + MonthlyAverage * 6;
     public decimal Projection12Months => CumulativeTotal + MonthlyAverage * 12;
+    public IReadOnlyDictionary<int, AssetPurchase> AssetPurchaseBySavingId { get; init; }
+        = new Dictionary<int, AssetPurchase>();
 }

@@ -65,7 +65,16 @@ else
                         }
                     </td>
                     <td class="text-success fw-bold">$ @item.Amount.ToString("N2")</td>
-                    <td class="text-muted">@item.Notes</td>
+                    <td class="text-muted">
+                        @item.Notes
+                        @if (Model.AssetPurchaseBySavingId.TryGetValue(item.Id, out var ap))
+                        {
+                            var icon = ap.AssetType switch { "USD" => "💵", "ACCION" => "📈", "CRYPTO" => "₿", _ => "📦" };
+                            <a asp-controller="AssetPurchases" asp-action="Edit" asp-route-id="@ap.Id"
+                               class="badge bg-info text-dark text-decoration-none ms-1"
+                               title="Compra vinculada">@icon compra</a>
+                        }
+                    </td>
                     <td class="text-end">
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
                         <form asp-action="Delete" method="post" class="d-inline"

@@ -7,20 +7,27 @@ using OrganizaTodo.Web.Repositories;
 namespace OrganizaTodo.Web.Controllers;
 
 [Authorize]
-public sealed class SavingsController(ISavingRepository repo) : Controller
+public sealed class SavingsController(ISavingRepository repo, IAssetPurchaseRepository assetRepo) : Controller
 {
     public async Task<IActionResult> Index()
     {
         var userId = User.GetUserId();
-        var items       = await repo.GetByUserIdAsync(userId);
-        var cumulative  = await repo.GetCumulativeTotalAsync(userId);
-        var average     = await repo.GetMonthlyAverageAsync(userId);
+        var items          = await repo.GetByUserIdAsync(userId);
+        var cumulative     = await repo.GetCumulativeTotalAsync(userId);
+        var average        = await repo.GetMonthlyAverageAsync(userId);
+        var assetPurchases = await assetRepo.GetByUserIdAsync(userId);
+
+        var assetBySavingId = assetPurchases
+            .Where(ap => ap.SavingId.HasValue)
+            .GroupBy(ap => ap.SavingId!.Value)
+            .ToDictionary(g => g.Key, g => g.First());
 
         return View(new SavingsIndexViewModel
         {
-            Items           = items,
-            CumulativeTotal = cumulative,
-            MonthlyAverage  = average
+            Items               = items,
+            CumulativeTotal     = cumulative,
+            MonthlyAverage      = average,
+            AssetPurchaseBySavingId = assetBySavingId
         });
     }
 

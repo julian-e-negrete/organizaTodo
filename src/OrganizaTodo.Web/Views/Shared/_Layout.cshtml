@@ -54,6 +54,8 @@
                    asp-controller="Expenses" asp-action="Index">💸 Otros Egresos</a>
                 <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Savings" ? "active" : "")"
                    asp-controller="Savings" asp-action="Index">🏦 Ahorros</a>
+                <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "AssetPurchases" ? "active" : "")"
+                   asp-controller="AssetPurchases" asp-action="Index">📈 Compras de Activos</a>
 
                 <div class="nav-section">Compras</div>
                 <a class="nav-link px-3 py-2 @(ViewContext.RouteData.Values["controller"]?.ToString() == "Shopping" ? "active" : "")"

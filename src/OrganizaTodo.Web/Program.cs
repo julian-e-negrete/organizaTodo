@@ -58,10 +58,13 @@ builder.Services.AddScoped<IOtherExpenseRepository,    OtherExpenseRepository>()
 builder.Services.AddScoped<IShoppingRepository,        ShoppingRepository>();
 builder.Services.AddScoped<IMockProductRepository,     MockProductRepository>();
 builder.Services.AddScoped<ISavingRepository,          SavingRepository>();
+builder.Services.AddScoped<IAssetPurchaseRepository,   AssetPurchaseRepository>();
 
 builder.Services.AddScoped<IAuthService,    AuthService>();
 builder.Services.AddScoped<IBalanceService, BalanceService>();
 builder.Services.AddScoped<IAdminService,   AdminService>();
+
+builder.Services.AddHttpClient<IDolarService, DolarService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

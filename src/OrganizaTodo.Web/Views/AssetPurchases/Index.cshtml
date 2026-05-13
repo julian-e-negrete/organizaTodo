@@ -1,0 +1,105 @@
+@model OrganizaTodo.Web.Models.ViewModels.AssetPurchaseIndexViewModel
+@{ ViewData["Title"] = "Compras de Activos"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>📈 Compras de Activos</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ Nueva compra</a>
+</div>
+<p class="text-muted small">Compras de dólares, acciones, crypto u otros activos. Se vinculan a Egresos y Ahorros automáticamente.</p>
+
+@if (!Model.Items.Any())
+{
+    <p class="text-muted">No hay compras de activos registradas.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Fecha</th>
+                <th>Activo</th>
+                <th>Cantidad</th>
+                <th>Cotización</th>
+                <th>Total ARS</th>
+                <th>Vínculos</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                var (badgeClass, assetLabel) = item.AssetType switch
+                {
+                    "USD"    => ("bg-success",           "💵 USD"),
+                    "ACCION" => ("bg-primary",           "📈 Acción"),
+                    "CRYPTO" => ("bg-warning text-dark", "₿ Crypto"),
+                    _        => ("bg-secondary",         "📦 Otro")
+                };
+                <tr>
+                    <td class="text-muted small">@item.PurchaseDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <span class="badge @badgeClass">@assetLabel</span>
+                        @if (!string.IsNullOrEmpty(item.ExchangeType))
+                        {
+                            <span class="badge bg-light text-dark ms-1" style="font-size:.7rem">@item.ExchangeType</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.Quantity.HasValue)
+                        {
+                            <text>@item.Quantity.Value.ToString("0.####")</text>
+                            if (item.AssetType == "USD") { <span class="text-muted ms-1">USD</span> }
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+                    <td>
+                        @if (item.UnitPriceArs.HasValue)
+                        {
+                            <text>$ @item.UnitPriceArs.Value.ToString("N2")</text>
+                        }
+                        else
+                        {
+                            <span class="text-muted">—</span>
+                        }
+                    </td>
+                    <td class="fw-bold text-warning">$ @item.TotalArs.ToString("N2")</td>
+                    <td>
+                        @if (item.ExpenseId.HasValue)
+                        {
+                            <a asp-controller="Expenses" asp-action="Edit" asp-route-id="@item.ExpenseId"
+                               class="badge bg-danger text-decoration-none" title="@item.ExpenseDescription">
+                                💸 Egreso
+                            </a>
+                        }
+                        @if (item.SavingId.HasValue)
+                        {
+                            <a asp-controller="Savings" asp-action="Edit" asp-route-id="@item.SavingId"
+                               class="badge bg-success text-decoration-none ms-1" title="@item.SavingNotes">
+                                🏦 Ahorro
+                            </a>
+                        }
+                    </td>
+                    <td class="text-end">
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <form asp-action="Delete" method="post" class="d-inline"
+                              onsubmit="return confirm('¿Eliminar esta compra? El egreso y ahorro vinculados no se eliminan.')">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button class="btn btn-sm btn-outline-danger">✕</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr class="table-warning fw-bold">
+                <td colspan="4">Total invertido</td>
+                <td>$ @Model.Items.Sum(x => x.TotalArs).ToString("N2")</td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+    </table>
+}

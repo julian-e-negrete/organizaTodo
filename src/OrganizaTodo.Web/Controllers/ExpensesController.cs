@@ -7,17 +7,28 @@ using OrganizaTodo.Web.Repositories;
 namespace OrganizaTodo.Web.Controllers;
 
 [Authorize]
-public sealed class ExpensesController(IOtherExpenseRepository repo) : Controller
+public sealed class ExpensesController(IOtherExpenseRepository repo, IAssetPurchaseRepository assetRepo) : Controller
 {
     public async Task<IActionResult> Index(int? month, int? year)
     {
-        var m = month ?? DateTime.Today.Month;
-        var y = year ?? DateTime.Today.Year;
+        var m      = month ?? DateTime.Today.Month;
+        var y      = year  ?? DateTime.Today.Year;
+        var userId = User.GetUserId();
+
+        var items          = await repo.GetByUserIdAndPeriodAsync(userId, m, y);
+        var assetPurchases = await assetRepo.GetByUserIdAsync(userId);
+
+        var assetByExpenseId = assetPurchases
+            .Where(ap => ap.ExpenseId.HasValue)
+            .GroupBy(ap => ap.ExpenseId!.Value)
+            .ToDictionary(g => g.Key, g => g.First());
+
         var vm = new OtherExpenseIndexViewModel
         {
-            Items = await repo.GetByUserIdAndPeriodAsync(User.GetUserId(), m, y),
-            Month = m,
-            Year  = y
+            Items                   = items,
+            Month                   = m,
+            Year                    = y,
+            AssetPurchaseByExpenseId = assetByExpenseId
         };
         return View(vm);
     }
