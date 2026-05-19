@@ -18,4 +18,5 @@ public sealed class OtherExpenseViewModel
 
     public int Month { get; set; } = DateTime.Today.Month;
     public int Year { get; set; } = DateTime.Today.Year;
+    public int? VehicleId { get; set; }
 }

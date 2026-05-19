@@ -1,7 +1,7 @@
 @model OrganizaTodo.Web.Models.ViewModels.OtherExpenseViewModel
 <div class="mb-3">
     <label asp-for="Description" class="form-label"></label>
-    <input asp-for="Description" class="form-control" placeholder="Ej: Compra dólares, Ahorro" />
+    <input asp-for="Description" class="form-control" placeholder="Ej: Compra dólares, Ahorro, Neumáticos" />
     <span asp-validation-for="Description" class="text-danger small"></span>
 </div>
 <div class="mb-3">
@@ -24,3 +24,14 @@
         <input asp-for="Year" class="form-control" type="number" min="2000" max="2100" />
     </div>
 </div>
+
+@if (ViewBag.Vehicles != null)
+{
+    <div class="mb-3">
+        <label asp-for="VehicleId" class="form-label">🚗 Vehículo (opcional)</label>
+        <select asp-for="VehicleId" asp-items="ViewBag.Vehicles" class="form-select">
+            <option value="">— Sin vehículo —</option>
+        </select>
+        <div class="form-text">Vinculá este egreso a un vehículo para verlo en el historial del vehículo.</div>
+    </div>
+}

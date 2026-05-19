@@ -9,4 +9,6 @@ public sealed class OtherExpense
     public DateTime ExpenseDate { get; set; }
     public int Month { get; set; }
     public int Year { get; set; }
+    public int? VehicleId { get; set; }
+    public string? VehicleName { get; set; }
 }

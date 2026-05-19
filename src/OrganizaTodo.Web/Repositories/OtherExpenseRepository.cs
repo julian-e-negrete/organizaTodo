@@ -22,20 +22,20 @@ public sealed class OtherExpenseRepository(IDbConnectionFactory connectionFactor
             new { id, userId });
     }
 
-    public async Task CreateAsync(int userId, string description, decimal amount, int month, int year)
+    public async Task CreateAsync(int userId, string description, decimal amount, int month, int year, int? vehicleId = null)
     {
         using var conn = connectionFactory.CreateConnection();
         await conn.QueryFirstOrDefaultAsync<object>(
-            "SELECT sp_other_expenses_create(@userId, @description, @amount, @month, @year)",
-            new { userId, description, amount, month, year });
+            "SELECT sp_other_expenses_create(@userId, @description, @amount, @month, @year, @vehicleId)",
+            new { userId, description, amount, month, year, vehicleId });
     }
 
-    public async Task UpdateAsync(int id, int userId, string description, decimal amount)
+    public async Task UpdateAsync(int id, int userId, string description, decimal amount, int? vehicleId = null)
     {
         using var conn = connectionFactory.CreateConnection();
         await conn.QueryFirstOrDefaultAsync<object>(
-            "SELECT sp_other_expenses_update(@id, @userId, @description, @amount)",
-            new { id, userId, description, amount });
+            "SELECT sp_other_expenses_update(@id, @userId, @description, @amount, @vehicleId)",
+            new { id, userId, description, amount, vehicleId });
     }
 
     public async Task DeleteAsync(int id, int userId)

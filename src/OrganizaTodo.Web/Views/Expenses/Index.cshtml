@@ -34,6 +34,12 @@ else
                                class="badge bg-primary text-decoration-none ms-1"
                                title="Compra de activo vinculada">@icon activo</a>
                         }
+                        @if (item.VehicleId.HasValue && item.VehicleName is not null)
+                        {
+                            <a asp-controller="Vehicles" asp-action="Index"
+                               class="badge bg-dark text-decoration-none ms-1"
+                               title="Egreso vinculado a vehículo">🚗 @item.VehicleName</a>
+                        }
                     </td>
                     <td class="text-warning fw-bold">$ @item.Amount.ToString("N2")</td>
                     <td class="text-end">
