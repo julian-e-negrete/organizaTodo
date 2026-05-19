@@ -17,6 +17,16 @@ public sealed class CreditCardViewModel
     public decimal TotalAmount { get; set; }
 
     [Required]
+    [Range(1, 12, ErrorMessage = "Mes inválido")]
+    [Display(Name = "Mes a pagar")]
+    public int DueMonth { get; set; } = DateTime.Today.Month == 12 ? 1 : DateTime.Today.Month + 1;
+
+    [Required]
+    [Range(2020, 2100, ErrorMessage = "Año inválido")]
+    [Display(Name = "Año")]
+    public int DueYear { get; set; } = DateTime.Today.Month == 12 ? DateTime.Today.Year + 1 : DateTime.Today.Year;
+
+    [Required]
     [Range(1, 72, ErrorMessage = "Entre 1 y 72 cuotas")]
     [Display(Name = "Cuotas")]
     public int Installments { get; set; } = 1;

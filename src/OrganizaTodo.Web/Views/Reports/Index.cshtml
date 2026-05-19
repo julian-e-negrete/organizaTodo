@@ -19,6 +19,7 @@
                 <th class="text-end">Servicios</th>
                 <th class="text-end">Tarjeta</th>
                 <th class="text-end">Pasivos Fijos</th>
+                <th class="text-end">Vehículos</th>
                 <th class="text-end">Total Pasivos</th>
                 <th class="text-end">Otros Egresos</th>
                 <th class="text-end">Saldo Restante</th>
@@ -34,6 +35,7 @@
                     <td class="text-end text-muted">$ @b.TotalServices.ToString("N2")</td>
                     <td class="text-end text-muted">$ @b.TotalCreditCard.ToString("N2")</td>
                     <td class="text-end text-muted">$ @b.TotalFixedLiabilities.ToString("N2")</td>
+                    <td class="text-end text-muted">$ @b.TotalVehicles.ToString("N2")</td>
                     <td class="text-end text-danger">$ @b.TotalLiabilities.ToString("N2")</td>
                     <td class="text-end text-warning">$ @b.TotalOtherExpenses.ToString("N2")</td>
                     <td class="text-end fw-bold @(b.RemainingBalance >= 0 ? "text-success" : "text-danger")">
@@ -49,6 +51,7 @@
                 <td class="text-end">$ @Model.History.Sum(x => x.Balance.TotalServices).ToString("N2")</td>
                 <td class="text-end">$ @Model.History.Sum(x => x.Balance.TotalCreditCard).ToString("N2")</td>
                 <td class="text-end">$ @Model.History.Sum(x => x.Balance.TotalFixedLiabilities).ToString("N2")</td>
+                <td class="text-end">$ @Model.History.Sum(x => x.Balance.TotalVehicles).ToString("N2")</td>
                 <td class="text-end text-danger">$ @Model.History.Sum(x => x.Balance.TotalLiabilities).ToString("N2")</td>
                 <td class="text-end text-warning">$ @Model.History.Sum(x => x.Balance.TotalOtherExpenses).ToString("N2")</td>
                 <td class="text-end @(Model.History.Sum(x => x.Balance.RemainingBalance) >= 0 ? "text-success" : "text-danger")">

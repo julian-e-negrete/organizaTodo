@@ -1,52 +1,145 @@
 @model OrganizaTodo.Web.Models.ViewModels.IncomeIndexViewModel
 @{ ViewData["Title"] = "Ingresos"; int m = Model.Month; int y = Model.Year; }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>💵 Ingresos – @(new DateTime(y,m,1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-AR")))</h4>
-    <div class="d-flex gap-2">
-        <a asp-action="Index" asp-route-month="@(m==1?12:m-1)" asp-route-year="@(m==1?y-1:y)" class="btn btn-sm btn-outline-secondary">‹</a>
-        <a asp-action="Index" asp-route-month="@(m==12?1:m+1)" asp-route-year="@(m==12?y+1:y)" class="btn btn-sm btn-outline-secondary">›</a>
-        <a asp-action="Create" class="btn btn-primary btn-sm">+ Agregar</a>
+<h4 class="mb-4">💵 Ingresos</h4>
+
+@* ── Sueldo / Ingresos Fijos ─────────────────────────────────────────── *@
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">💼 Sueldo / Ingresos fijos</span>
+        <a asp-action="CreateRecurring" class="btn btn-primary btn-sm">+ Agregar</a>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.RecurringItems.Any())
+        {
+            <p class="text-muted p-3 mb-0">No hay ingresos fijos registrados.</p>
+        }
+        else
+        {
+            <table class="table table-sm mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Descripción</th>
+                        <th class="text-end">Monto mensual</th>
+                        <th class="text-center" style="width:90px;">Estado</th>
+                        <th style="width:100px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.RecurringItems)
+                    {
+                        <tr class="@(!r.IsActive ? "text-muted" : "")">
+                            <td>
+                                @r.Description
+                                @if (!r.IsActive)
+                                {
+                                    <span class="badge bg-secondary ms-1">Inactivo</span>
+                                }
+                            </td>
+                            <td class="text-end fw-semibold @(!r.IsActive ? "text-decoration-line-through" : "text-success")">
+                                $ @r.Amount.ToString("N2")
+                            </td>
+                            <td class="text-center">
+                                <form asp-action="ToggleRecurring" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button class="btn btn-sm @(r.IsActive ? "btn-success" : "btn-outline-secondary") w-100">
+                                        @(r.IsActive ? "✓ Activo" : "○ Inactivo")
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="EditRecurring" asp-route-id="@r.Id"
+                                   class="btn btn-sm btn-outline-primary">Editar</a>
+                                <form asp-action="DeleteRecurring" method="post" class="d-inline"
+                                      onsubmit="return confirm('¿Eliminar este ingreso fijo?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <button class="btn btn-sm btn-outline-danger">✕</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-success fw-bold">
+                        <td>Total ingresos fijos</td>
+                        <td class="text-end">
+                            $ @Model.RecurringItems.Where(r => r.IsActive).Sum(r => r.Amount).ToString("N2")
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        }
     </div>
 </div>
 
-@if (!Model.Items.Any())
-{
-    <p class="text-muted">No hay ingresos registrados para este mes.</p>
+@* ── Ingresos variables del mes ──────────────────────────────────────── *@
+<div class="card mb-3">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-2">
+            <span class="fw-semibold">📅 Ingresos variables</span>
+            <a asp-action="Index" asp-route-month="@(m==1?12:m-1)" asp-route-year="@(m==1?y-1:y)"
+               class="btn btn-sm btn-outline-secondary">‹</a>
+            <span class="fw-semibold">@(new DateTime(y,m,1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-AR")))</span>
+            <a asp-action="Index" asp-route-month="@(m==12?1:m+1)" asp-route-year="@(m==12?y+1:y)"
+               class="btn btn-sm btn-outline-secondary">›</a>
+        </div>
+        <a asp-action="Create" class="btn btn-primary btn-sm">+ Agregar</a>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Items.Any())
+        {
+            <p class="text-muted p-3 mb-0">No hay ingresos variables para este mes.</p>
+        }
+        else
+        {
+            <table class="table table-sm mb-0 align-middle">
+                <thead class="table-light">
+                    <tr><th>Descripción</th><th>Categoría</th><th class="text-end">Monto</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>@item.Description</td>
+                            <td><span class="badge bg-secondary">@(item.Category ?? "—")</span></td>
+                            <td class="text-end text-success fw-semibold">$ @item.Amount.ToString("N2")</td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                                <form asp-action="Delete" method="post" class="d-inline"
+                                      onsubmit="return confirm('¿Eliminar?')">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <input type="hidden" name="month" value="@m" />
+                                    <input type="hidden" name="year" value="@y" />
+                                    <button class="btn btn-sm btn-outline-danger">✕</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr class="table-success fw-bold">
+                        <td colspan="2">Total variables</td>
+                        <td class="text-end">$ @Model.Items.Sum(x => x.Amount).ToString("N2")</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        }
+    </div>
+</div>
+
+@* ── Total combinado ─────────────────────────────────────────────────── *@
+@{
+    var totalRecurring = Model.RecurringItems.Where(r => r.IsActive).Sum(r => r.Amount);
+    var totalVariable  = Model.Items.Sum(x => x.Amount);
 }
-else
-{
-    <table class="table table-hover align-middle">
-        <thead class="table-dark">
-            <tr><th>Descripción</th><th>Categoría</th><th>Monto</th><th></th></tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Items)
-            {
-                <tr>
-                    <td>@item.Description</td>
-                    <td><span class="badge bg-secondary">@(item.Category ?? "—")</span></td>
-                    <td class="text-success fw-bold">$ @item.Amount.ToString("N2")</td>
-                    <td class="text-end">
-                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <form asp-action="Delete" method="post" class="d-inline"
-                              onsubmit="return confirm('¿Eliminar?')">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.Id" />
-                            <input type="hidden" name="month" value="@m" />
-                            <input type="hidden" name="year" value="@y" />
-                            <button class="btn btn-sm btn-outline-danger">✕</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-        <tfoot>
-            <tr class="table-success fw-bold">
-                <td colspan="2">Total ingresos</td>
-                <td>$ @Model.Items.Sum(x => x.Amount).ToString("N2")</td>
-                <td></td>
-            </tr>
-        </tfoot>
-    </table>
-}
+<div class="card border-success">
+    <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
+        <span class="fw-bold">Total ingresos (@(new DateTime(y,m,1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-AR"))))</span>
+        <span class="fs-5 fw-bold text-success">$ @((totalRecurring + totalVariable).ToString("N2"))</span>
+    </div>
+</div>

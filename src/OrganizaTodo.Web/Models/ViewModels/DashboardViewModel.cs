@@ -11,4 +11,5 @@ public sealed class DashboardViewModel
         new System.Globalization.CultureInfo("es-AR"));
     public IEnumerable<HousingService> UnpaidServices { get; set; } = [];
     public IEnumerable<FixedLiability> UnpaidLiabilities { get; set; } = [];
+    public IEnumerable<Vehicle> VehiclesWithCosts { get; set; } = [];
 }

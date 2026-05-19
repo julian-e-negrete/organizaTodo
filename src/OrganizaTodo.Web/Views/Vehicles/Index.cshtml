@@ -1,0 +1,256 @@
+@model OrganizaTodo.Web.Models.ViewModels.VehicleIndexViewModel
+@{ ViewData["Title"] = "Mis Vehículos"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>🚗 Mis Vehículos</h4>
+    <a asp-action="Create" class="btn btn-primary btn-sm">+ Agregar vehículo</a>
+</div>
+
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" asp-route-month="@Model.Prev.month" asp-route-year="@Model.Prev.year"
+       class="btn btn-outline-secondary btn-sm">‹</a>
+    <span class="fw-semibold fs-6">@Model.MonthName @Model.Year</span>
+    <a asp-action="Index" asp-route-month="@Model.Next.month" asp-route-year="@Model.Next.year"
+       class="btn btn-outline-secondary btn-sm">›</a>
+</div>
+
+@if (!Model.Items.Any())
+{
+    <p class="text-muted">No hay vehículos registrados.</p>
+}
+else
+{
+    @foreach (var v in Model.Items)
+    {
+        <div class="card mb-3">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@v.Make @v.Model</strong>
+                    @if (v.Year.HasValue) { <span class="text-muted ms-1">@v.Year</span> }
+                    <span class="badge bg-secondary ms-2">@v.Plate</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@v.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                    <form asp-action="Delete" method="post" class="d-inline"
+                          onsubmit="return confirm('¿Eliminar este vehículo?')">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@v.Id" />
+                        <button class="btn btn-sm btn-outline-danger">✕</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Concepto</th>
+                            <th class="text-end">Monto mensual</th>
+                            <th class="text-center" style="width:130px;">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (v.FuelPricePerLiter.HasValue && v.MonthlyFuelCost > 0)
+                        {
+                            <tr class="@(v.FuelPaid ? "table-success" : "")">
+                                <td>
+                                    ⛽ Nafta
+                                    <span class="text-muted small ms-1">@v.WeeklyKm km/sem · @v.FuelEfficiencyKmL km/L · $@v.FuelPricePerLiter/L</span>
+                                </td>
+                                <td class="text-end @(v.FuelPaid ? "text-decoration-line-through text-muted" : "fw-semibold")">
+                                    $ @v.MonthlyFuelCost.ToString("N2")
+                                </td>
+                                <td class="text-center">
+                                    <form asp-action="TogglePayment" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="vehicleId" value="@v.Id" />
+                                        <input type="hidden" name="month" value="@Model.Month" />
+                                        <input type="hidden" name="year" value="@Model.Year" />
+                                        <input type="hidden" name="paymentType" value="FUEL" />
+                                        <button class="btn btn-sm @(v.FuelPaid ? "btn-success" : "btn-outline-secondary") w-100">
+                                            @(v.FuelPaid ? "✓ Pagado" : "○ Pagar")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (v.InsuranceMonthly.HasValue)
+                        {
+                            <tr class="@(v.InsurancePaid ? "table-success" : "")">
+                                <td>🛡️ Seguro</td>
+                                <td class="text-end @(v.InsurancePaid ? "text-decoration-line-through text-muted" : "fw-semibold")">
+                                    $ @v.InsuranceMonthly.Value.ToString("N2")
+                                </td>
+                                <td class="text-center">
+                                    <form asp-action="TogglePayment" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="vehicleId" value="@v.Id" />
+                                        <input type="hidden" name="month" value="@Model.Month" />
+                                        <input type="hidden" name="year" value="@Model.Year" />
+                                        <input type="hidden" name="paymentType" value="INSURANCE" />
+                                        <button class="btn btn-sm @(v.InsurancePaid ? "btn-success" : "btn-outline-secondary") w-100">
+                                            @(v.InsurancePaid ? "✓ Pagado" : "○ Pagar")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (v.PatenteAnnual.HasValue)
+                        {
+                            <tr class="@(v.PatentePaid ? "table-success" : "")">
+                                <td>
+                                    🪪 Patente
+                                    <span class="text-muted small ms-1">Anual: $ @v.PatenteAnnual.Value.ToString("N2")</span>
+                                </td>
+                                <td class="text-end @(v.PatentePaid ? "text-decoration-line-through text-muted" : "fw-semibold")">
+                                    $ @v.MonthlyPatente.ToString("N2")
+                                </td>
+                                <td class="text-center">
+                                    <form asp-action="TogglePayment" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="vehicleId" value="@v.Id" />
+                                        <input type="hidden" name="month" value="@Model.Month" />
+                                        <input type="hidden" name="year" value="@Model.Year" />
+                                        <input type="hidden" name="paymentType" value="PATENTE" />
+                                        <button class="btn btn-sm @(v.PatentePaid ? "btn-success" : "btn-outline-secondary") w-100">
+                                            @(v.PatentePaid ? "✓ Pagado" : "○ Pagar")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                        @if (v.MonthlyOilChangeCost > 0)
+                        {
+                            <tr class="@(v.MaintenancePaid ? "table-success" : "")">
+                                <td>
+                                    🔧 Mantenimiento
+                                    <span class="text-muted small ms-1">cada @v.OilChangeIntervalKm?.ToString("N0") km</span>
+                                </td>
+                                <td class="text-end @(v.MaintenancePaid ? "text-decoration-line-through text-muted" : "fw-semibold")">
+                                    $ @v.MonthlyOilChangeCost.ToString("N2")
+                                </td>
+                                <td class="text-center">
+                                    <form asp-action="TogglePayment" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="vehicleId" value="@v.Id" />
+                                        <input type="hidden" name="month" value="@Model.Month" />
+                                        <input type="hidden" name="year" value="@Model.Year" />
+                                        <input type="hidden" name="paymentType" value="MAINTENANCE" />
+                                        <button class="btn btn-sm @(v.MaintenancePaid ? "btn-success" : "btn-outline-secondary") w-100">
+                                            @(v.MaintenancePaid ? "✓ Pagado" : "○ Pagar")
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-secondary fw-bold">
+                            <td>Total mensual</td>
+                            <td class="text-end">$ @v.TotalMonthlyCost.ToString("N2")</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            @if (v.OilChangeIntervalKm.HasValue)
+            {
+                var kmSince   = v.KmSinceLastChange ?? 0;
+                var interval  = v.OilChangeIntervalKm.Value;
+                var pct       = (double)Math.Min(kmSince / interval * 100, 100);
+                var barColor  = pct >= 100 ? "bg-danger" : pct >= 75 ? "bg-warning" : "bg-success";
+                var kmLeft    = v.KmToNextChange;
+                var overdue   = kmLeft.HasValue && kmLeft.Value < 0;
+
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small class="fw-semibold text-secondary">🔧 Próximo cambio de aceite</small>
+                        @if (v.LastOilChangeDate.HasValue)
+                        {
+                            <small class="text-muted">Último: @v.LastOilChangeDate.Value.ToString("dd/MM/yyyy")
+                                @if (v.LastOilChangeKm.HasValue) { <span>· @v.LastOilChangeKm.Value.ToString("N0") km</span> }
+                            </small>
+                        }
+                    </div>
+
+                    @if (v.LastOilChangeDate.HasValue)
+                    {
+                        <div class="progress mb-1" style="height:8px;">
+                            <div class="progress-bar @barColor" role="progressbar"
+                                 style="width:@pct.ToString("F0")%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small>
+                                @if (overdue)
+                                {
+                                    <span class="text-danger fw-semibold">⚠️ Vencido hace @(Math.Abs((double)kmLeft!.Value).ToString("N0")) km</span>
+                                }
+                                else if (kmLeft.HasValue)
+                                {
+                                    <span class="text-@(pct >= 75 ? "warning" : "muted")">
+                                        Faltan ~@kmLeft.Value.ToString("N0") km
+                                    </span>
+                                }
+                            </small>
+                            @if (v.NextOilChangeDueDate.HasValue)
+                            {
+                                <small class="text-muted">
+                                    Est. @v.NextOilChangeDueDate.Value.ToString("dd/MM/yyyy")
+                                </small>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="small text-muted mb-1">Ingresá la fecha del último cambio en Editar para ver el progreso.</p>
+                    }
+
+                    <div class="mt-2">
+                        <button class="btn btn-outline-secondary btn-sm" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#logMaintenance-@v.Id">
+                            + Registrar cambio de aceite
+                        </button>
+                        <div class="collapse mt-2" id="logMaintenance-@v.Id">
+                            <form asp-action="LogMaintenance" method="post" class="row g-2 align-items-end">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="vehicleId" value="@v.Id" />
+                                <input type="hidden" name="month" value="@Model.Month" />
+                                <input type="hidden" name="year" value="@Model.Year" />
+                                <div class="col-auto">
+                                    <label class="form-label small mb-1">Fecha</label>
+                                    <input name="serviceDate" type="date" class="form-control form-control-sm"
+                                           value="@DateTime.Today.ToString("yyyy-MM-dd")" required />
+                                </div>
+                                <div class="col-auto">
+                                    <label class="form-label small mb-1">Km actuales</label>
+                                    <input name="kmAtService" type="number" step="1" min="0"
+                                           class="form-control form-control-sm" style="width:120px;"
+                                           value="@v.LastOilChangeKm" required />
+                                </div>
+                                <div class="col-auto">
+                                    <label class="form-label small mb-1">Costo ($)</label>
+                                    <input name="cost" type="number" step="0.01" min="0"
+                                           class="form-control form-control-sm" style="width:120px;"
+                                           placeholder="Opcional" />
+                                </div>
+                                <div class="col">
+                                    <label class="form-label small mb-1">Notas</label>
+                                    <input name="notes" type="text" class="form-control form-control-sm"
+                                           placeholder="Opcional" />
+                                </div>
+                                <div class="col-auto">
+                                    <button class="btn btn-primary btn-sm">Guardar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="text-end text-muted small mt-2">
+        Total todos los vehículos: <strong>$ @Model.Items.Sum(v => v.TotalMonthlyCost).ToString("N2")</strong>
+    </div>
+}

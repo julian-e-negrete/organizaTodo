@@ -31,14 +31,14 @@ public sealed class ReportsController(IBalanceService balanceService) : Controll
         var userId = User.GetUserId();
 
         var sb = new StringBuilder();
-        sb.AppendLine("Mes,Año,Ingresos,Servicios,Tarjeta,Pasivos Fijos,Total Pasivos,Otros Egresos,Saldo Restante");
+        sb.AppendLine("Mes,Año,Ingresos,Servicios,Tarjeta,Pasivos Fijos,Vehículos,Total Pasivos,Otros Egresos,Saldo Restante");
 
         for (var m = 1; m <= 12; m++)
         {
             var b = await balanceService.GetMonthlyBalanceAsync(userId, m, y);
             var monthName = new DateTime(y, m, 1).ToString("MMMM",
                 new System.Globalization.CultureInfo("es-AR"));
-            sb.AppendLine($"{monthName},{y},{b.TotalIncome},{b.TotalServices},{b.TotalCreditCard},{b.TotalFixedLiabilities},{b.TotalLiabilities},{b.TotalOtherExpenses},{b.RemainingBalance}");
+            sb.AppendLine($"{monthName},{y},{b.TotalIncome},{b.TotalServices},{b.TotalCreditCard},{b.TotalFixedLiabilities},{b.TotalVehicles},{b.TotalLiabilities},{b.TotalOtherExpenses},{b.RemainingBalance}");
         }
 
         var bytes = Encoding.UTF8.GetBytes(sb.ToString());

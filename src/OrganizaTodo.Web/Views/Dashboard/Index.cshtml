@@ -73,6 +73,10 @@
                             <td class="ps-3 text-muted small">Pasivos fijos</td>
                             <td class="text-end text-muted small">-$ @Model.Balance.TotalFixedLiabilities.ToString("N2")</td>
                         </tr>
+                        <tr>
+                            <td class="ps-3 text-muted small">Vehículos</td>
+                            <td class="text-end text-muted small">-$ @Model.Balance.TotalVehicles.ToString("N2")</td>
+                        </tr>
                         <tr class="table-danger">
                             <td><strong>PASIVOS TOTALES</strong></td>
                             <td class="text-end text-danger fw-bold">-$ @Model.Balance.TotalLiabilities.ToString("N2")</td>
@@ -91,16 +95,36 @@
         </div>
     </div>
     <div class="col-md-6">
+        @{
+            var unpaidVehicleCosts = Model.VehiclesWithCosts.SelectMany(v =>
+            {
+                var costs = new List<(string label, decimal amount)>();
+                if (!v.FuelPaid && v.MonthlyFuelCost > 0)
+                    costs.Add(($"⛽ {v.Make} {v.Model} – Nafta", v.MonthlyFuelCost));
+                if (!v.InsurancePaid && v.InsuranceMonthly.HasValue)
+                    costs.Add(($"🛡️ {v.Make} {v.Model} – Seguro", v.InsuranceMonthly!.Value));
+                if (!v.PatentePaid && v.MonthlyPatente > 0)
+                    costs.Add(($"🪪 {v.Make} {v.Model} – Patente", v.MonthlyPatente));
+                if (!v.MaintenancePaid && v.MonthlyOilChangeCost > 0)
+                    costs.Add(($"🔧 {v.Make} {v.Model} – Mantenimiento", v.MonthlyOilChangeCost));
+                return costs;
+            }).ToList();
+
+            var allPaid = !Model.UnpaidServices.Any() && !Model.UnpaidLiabilities.Any() && !unpaidVehicleCosts.Any();
+        }
         <div class="card h-100">
-            <div class="card-header d-flex justify-content-between">
-                Servicios pendientes de pago
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Servicios pendientes de pago</span>
                 <div class="d-flex gap-1">
                     <a asp-controller="Housing" asp-action="Index" class="btn btn-sm btn-outline-primary">Vivienda</a>
                     <a asp-controller="Liabilities" asp-action="Index" class="btn btn-sm btn-outline-secondary">Pasivos</a>
+                    <a asp-controller="Vehicles" asp-action="Index"
+                       asp-route-month="@Model.Month" asp-route-year="@Model.Year"
+                       class="btn btn-sm btn-outline-dark">Vehículos</a>
                 </div>
             </div>
             <div class="card-body p-0">
-                @if (!Model.UnpaidServices.Any() && !Model.UnpaidLiabilities.Any())
+                @if (allPaid)
                 {
                     <p class="p-3 text-muted mb-0">✅ Todos los servicios están pagos.</p>
                 }
@@ -109,16 +133,34 @@
                     <ul class="list-group list-group-flush">
                         @foreach (var svc in Model.UnpaidServices)
                         {
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>@svc.Name <span class="badge bg-secondary">vence día @svc.DueDay</span></span>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    @svc.Name
+                                    <span class="badge bg-primary ms-1">vivienda</span>
+                                    @if (svc.DueDay > 0) { <span class="badge bg-secondary ms-1">vence día @svc.DueDay</span> }
+                                </span>
                                 <strong>$ @svc.Amount.ToString("N2")</strong>
                             </li>
                         }
                         @foreach (var lib in Model.UnpaidLiabilities)
                         {
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span>@lib.Name <span class="badge bg-warning text-dark">pasivo fijo</span>@(lib.DueDay.HasValue ? $" vence día {lib.DueDay}" : "")</span>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    @lib.Name
+                                    <span class="badge bg-warning text-dark ms-1">pasivo fijo</span>
+                                    @if (lib.DueDay.HasValue) { <span class="badge bg-secondary ms-1">vence día @lib.DueDay</span> }
+                                </span>
                                 <strong>$ @lib.MonthlyAmount.ToString("N2")</strong>
+                            </li>
+                        }
+                        @foreach (var (label, amount) in unpaidVehicleCosts)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    @label
+                                    <span class="badge bg-dark ms-1">vehículo</span>
+                                </span>
+                                <strong>$ @amount.ToString("N2")</strong>
                             </li>
                         }
                     </ul>

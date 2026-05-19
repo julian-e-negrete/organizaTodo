@@ -1,49 +1,70 @@
-@model IEnumerable<OrganizaTodo.Web.Models.Domain.CreditCardPurchase>
+@model OrganizaTodo.Web.Models.ViewModels.CreditCardIndexViewModel
 @{ ViewData["Title"] = "Tarjeta de Crédito"; }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h4>💳 Tarjeta de Crédito</h4>
-    <a asp-action="Create" class="btn btn-primary btn-sm">+ Registrar compra</a>
+    <a asp-action="Create" asp-route-month="@Model.Month" asp-route-year="@Model.Year" class="btn btn-primary btn-sm">+ Registrar compra</a>
 </div>
 
-@if (!Model.Any())
+<div class="d-flex align-items-center gap-2 mb-4">
+    <a asp-action="Index" asp-route-month="@Model.Prev.month" asp-route-year="@Model.Prev.year"
+       class="btn btn-outline-secondary btn-sm">‹</a>
+    <span class="fw-semibold fs-6">@Model.MonthName @Model.Year</span>
+    <a asp-action="Index" asp-route-month="@Model.Next.month" asp-route-year="@Model.Next.year"
+       class="btn btn-outline-secondary btn-sm">›</a>
+</div>
+
+@if (!Model.Items.Any())
 {
-    <p class="text-muted">No hay compras registradas.</p>
+    <p class="text-muted">No hay compras para pagar en @Model.MonthName @Model.Year.</p>
 }
 else
 {
     <table class="table table-hover align-middle">
         <thead class="table-dark">
             <tr>
-                <th>Descripción</th><th>Total</th><th>Cuotas</th><th>Progreso</th><th>Cuota mensual</th><th></th>
+                <th>Descripción</th><th>Total compra</th><th>Cuotas</th><th>Cuota a pagar</th><th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Items)
             {
                 <tr>
-                    <td>@item.Description</td>
-                    <td>$ @item.TotalAmount.ToString("N2")</td>
-                    <td>@item.Installments</td>
                     <td>
-                        <div class="progress" style="height:6px; width:80px;">
-                            <div class="progress-bar bg-info"
-                                 style="width:@(item.Installments > 0 ? (item.CurrentInstallment - 1) * 100 / item.Installments : 0)%"></div>
-                        </div>
-                        <small class="text-muted">@(item.CurrentInstallment)/@item.Installments</small>
+                        @item.Description
+                        <div class="form-text">Comprado @item.PurchaseDate.ToString("dd/MM/yyyy")</div>
+                    </td>
+                    <td>$ @item.TotalAmount.ToString("N2")</td>
+                    <td>
+                        @if (item.Installments > 1)
+                        {
+                            <div class="progress mb-1" style="height:6px; width:80px;">
+                                <div class="progress-bar bg-info"
+                                     style="width:@(item.Installments > 0 ? (item.CurrentInstallment - 1) * 100 / item.Installments : 0)%"></div>
+                            </div>
+                            <small class="text-muted">@item.CurrentInstallment/@item.Installments</small>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">1 pago</span>
+                        }
                     </td>
                     <td class="fw-bold">$ @item.MonthlyInstallmentAmount.ToString("N2")</td>
                     <td class="text-end">
                         <form asp-action="AdvanceInstallment" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@item.Id" />
-                            <button class="btn btn-sm btn-outline-success" title="Avanzar cuota">✓</button>
+                            <input type="hidden" name="month" value="@Model.Month" />
+                            <input type="hidden" name="year" value="@Model.Year" />
+                            <button class="btn btn-sm btn-outline-success" title="Marcar cuota como pagada">✓ Pagado</button>
                         </form>
                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Editar</a>
                         <form asp-action="Delete" method="post" class="d-inline"
-                              onsubmit="return confirm('¿Eliminar?')">
+                              onsubmit="return confirm('¿Eliminar esta compra?')">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@item.Id" />
+                            <input type="hidden" name="month" value="@Model.Month" />
+                            <input type="hidden" name="year" value="@Model.Year" />
                             <button class="btn btn-sm btn-outline-danger">✕</button>
                         </form>
                     </td>
@@ -52,8 +73,8 @@ else
         </tbody>
         <tfoot>
             <tr class="table-secondary fw-bold">
-                <td>Total mes</td><td></td><td></td><td></td>
-                <td>$ @Model.Sum(x => x.MonthlyInstallmentAmount).ToString("N2")</td>
+                <td colspan="3">Total a pagar @Model.MonthName @Model.Year</td>
+                <td>$ @Model.Items.Sum(x => x.MonthlyInstallmentAmount).ToString("N2")</td>
                 <td></td>
             </tr>
         </tfoot>

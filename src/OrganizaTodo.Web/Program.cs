@@ -1,7 +1,10 @@
+using Dapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using OrganizaTodo.Web.Data;
 using OrganizaTodo.Web.Repositories;
 using OrganizaTodo.Web.Services;
+
+SqlMapper.AddTypeHandler(DateOnlyTypeHandler.Instance);
 
 // Load .env into environment variables (local dev; Docker sets them directly)
 // Walk up from CWD to find .env — works regardless of where dotnet run is invoked from
@@ -59,12 +62,15 @@ builder.Services.AddScoped<IShoppingRepository,        ShoppingRepository>();
 builder.Services.AddScoped<IMockProductRepository,     MockProductRepository>();
 builder.Services.AddScoped<ISavingRepository,          SavingRepository>();
 builder.Services.AddScoped<IAssetPurchaseRepository,   AssetPurchaseRepository>();
+builder.Services.AddScoped<IVehicleRepository,          VehicleRepository>();
+builder.Services.AddScoped<IRecurringIncomeRepository,  RecurringIncomeRepository>();
 
 builder.Services.AddScoped<IAuthService,    AuthService>();
 builder.Services.AddScoped<IBalanceService, BalanceService>();
 builder.Services.AddScoped<IAdminService,   AdminService>();
 
-builder.Services.AddHttpClient<IDolarService, DolarService>();
+builder.Services.AddHttpClient<IDolarService,    DolarService>();
+builder.Services.AddHttpClient<IFuelPriceService, FuelPriceService>();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>

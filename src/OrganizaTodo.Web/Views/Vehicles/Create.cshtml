@@ -1,0 +1,92 @@
+@model OrganizaTodo.Web.Models.ViewModels.VehicleViewModel
+@{ ViewData["Title"] = "Registrar Vehículo"; }
+
+<h4 class="mb-3">🚗 Registrar Vehículo</h4>
+<div class="col-md-9">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+        <partial name="_VehicleForm" model="Model" />
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-primary">Guardar</button>
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var fuelPrices = {};
+
+            function fmt(n) {
+                if (n == null || isNaN(n) || n === '') return '—';
+                return '$ ' + parseFloat(n).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function recalc() {
+                var wkm = parseFloat(document.getElementById('weeklyKm').value) || 0;
+                var eff = parseFloat(document.getElementById('fuelEff').value) || 0;
+                var price = parseFloat(document.getElementById('fuelPrice').value) || 0;
+                var ins = parseFloat(document.getElementById('insurance').value) || 0;
+                var pat = parseFloat(document.getElementById('patente').value) || 0;
+
+                var monthlyKm = wkm * 52 / 12;
+                document.getElementById('monthlyKmDisplay').textContent = monthlyKm > 0 ? Math.round(monthlyKm) + ' km' : '—';
+
+                var monthlyFuel = (eff > 0 && price > 0) ? (monthlyKm / eff) * price : 0;
+                document.getElementById('monthlyFuelCostDisplay').textContent = monthlyFuel > 0 ? fmt(monthlyFuel) : '—';
+
+                var monthlyPat = pat / 12;
+                document.getElementById('monthlyPatenteDisplay').textContent = monthlyPat > 0 ? fmt(monthlyPat) : '—';
+
+                var total = monthlyFuel + ins + monthlyPat;
+                document.getElementById('totalMonthlyCostDisplay').textContent = total > 0 ? fmt(total) : '—';
+            }
+
+            ['weeklyKm', 'fuelEff', 'fuelPrice', 'insurance', 'patente'].forEach(function (id) {
+                document.getElementById(id).addEventListener('input', recalc);
+            });
+
+            document.getElementById('btnFuelPrices').addEventListener('click', function () {
+                var status = document.getElementById('fuelPricesStatus');
+                status.textContent = 'Cargando...';
+                this.disabled = true;
+                var btn = this;
+
+                fetch('/Vehicles/GetFuelPrices')
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        btn.disabled = false;
+                        if (data.error) {
+                            status.textContent = data.error;
+                            return;
+                        }
+                        fuelPrices = data;
+                        document.getElementById('priceSuper').textContent = data.super;
+                        document.getElementById('pricePremium').textContent = data.premium;
+                        document.getElementById('priceGasoil').textContent = data.gasoil;
+                        document.getElementById('fuelPricesPanel').classList.remove('d-none');
+                        status.textContent = 'Actualizado ' + data.fetchedAt;
+                    })
+                    .catch(function () {
+                        btn.disabled = false;
+                        status.textContent = 'Error al conectar con surtidores.com.ar';
+                    });
+            });
+
+            document.querySelectorAll('.selectFuel').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var fuel = this.dataset.fuel;
+                    var price = fuelPrices[fuel];
+                    if (price) {
+                        document.getElementById('fuelPrice').value = price;
+                        recalc();
+                    }
+                });
+            });
+
+            recalc();
+        })();
+    </script>
+}

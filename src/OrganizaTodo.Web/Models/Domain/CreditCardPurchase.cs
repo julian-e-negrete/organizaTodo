@@ -11,6 +11,8 @@ public sealed class CreditCardPurchase
     public decimal InterestRate { get; set; }
     public DateTime PurchaseDate { get; set; }
     public bool IsActive { get; set; } = true;
+    public int DueMonth { get; set; }
+    public int DueYear { get; set; }
     public decimal MonthlyInstallmentAmount { get; set; }
 
     public int RemainingInstallments => Math.Max(0, Installments - CurrentInstallment + 1);
