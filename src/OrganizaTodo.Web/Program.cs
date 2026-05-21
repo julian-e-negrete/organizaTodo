@@ -46,11 +46,26 @@ if (Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") i
             $"Host={host};Port={port};Database={db};Username={user};Password={pass};Ssl Mode=Disable");
 }
 
+// Build ShoppingConnection from POSTGRES_DB_Shopping (same host/user/pass, different DB)
+if (Environment.GetEnvironmentVariable("ConnectionStrings__ShoppingConnection") is null)
+{
+    var host    = Environment.GetEnvironmentVariable("POSTGRES_HOST");
+    var port    = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
+    var db      = Environment.GetEnvironmentVariable("POSTGRES_DB_Shopping");
+    var user    = Environment.GetEnvironmentVariable("POSTGRES_USER");
+    var pass    = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+    if (host is not null && db is not null)
+        Environment.SetEnvironmentVariable(
+            "ConnectionStrings__ShoppingConnection",
+            $"Host={host};Port={port};Database={db};Username={user};Password={pass};Ssl Mode=Disable");
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddSingleton<IShoppingDbConnectionFactory, ShoppingDbConnectionFactory>();
 
 builder.Services.AddScoped<IUserRepository,            UserRepository>();
 builder.Services.AddScoped<IHousingServiceRepository,  HousingServiceRepository>();
@@ -60,6 +75,7 @@ builder.Services.AddScoped<IIncomeRepository,          IncomeRepository>();
 builder.Services.AddScoped<IOtherExpenseRepository,    OtherExpenseRepository>();
 builder.Services.AddScoped<IShoppingRepository,        ShoppingRepository>();
 builder.Services.AddScoped<IMockProductRepository,     MockProductRepository>();
+builder.Services.AddScoped<IProductCatalogRepository,  ProductCatalogRepository>();
 builder.Services.AddScoped<ISavingRepository,          SavingRepository>();
 builder.Services.AddScoped<IAssetPurchaseRepository,   AssetPurchaseRepository>();
 builder.Services.AddScoped<IVehicleRepository,          VehicleRepository>();

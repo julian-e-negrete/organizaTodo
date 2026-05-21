@@ -8,5 +8,6 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Ssl Mode=Disable
+      - ConnectionStrings__ShoppingConnection=Host=${POSTGRES_HOST};Port=${POSTGRES_PORT};Database=${POSTGRES_DB_Shopping};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Ssl Mode=Disable
     env_file:
       - .env
