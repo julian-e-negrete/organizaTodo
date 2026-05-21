@@ -1,213 +1,273 @@
 @model OrganizaTodo.Web.Models.ViewModels.ShoppingViewModel
 @{ ViewData["Title"] = "Lista de Compras"; var list = Model.List; }
 
+<style>
+    .product-card { transition: box-shadow .15s; cursor: default; }
+    .product-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
+    .source-coto      { border-top: 3px solid #198754; }
+    .source-carrefour { border-top: 3px solid #0d6efd; }
+    .price-tag { font-size: 1.15rem; font-weight: 700; color: #0a3d62; }
+    .cart-sticky { position: sticky; top: 76px; }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h4>🛒 Lista de Compras – @(new DateTime(list.Year, list.Month, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-AR")))</h4>
+    <h4 class="mb-0">🛒 Lista de Compras — @(new DateTime(list.Year, list.Month, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-AR")))</h4>
     <div class="d-flex gap-2">
-        <a asp-action="Index" asp-route-month="@(list.Month==1?12:list.Month-1)"
-           asp-route-year="@(list.Month==1?list.Year-1:list.Year)" class="btn btn-sm btn-outline-secondary">‹</a>
-        <a asp-action="Index" asp-route-month="@(list.Month==12?1:list.Month+1)"
-           asp-route-year="@(list.Month==12?list.Year+1:list.Year)" class="btn btn-sm btn-outline-secondary">›</a>
+        <a asp-action="Index" asp-route-month="@(list.Month==1?12:list.Month-1)" asp-route-year="@(list.Month==1?list.Year-1:list.Year)" class="btn btn-sm btn-outline-secondary">‹</a>
+        <a asp-action="Index" asp-route-month="@(list.Month==12?1:list.Month+1)" asp-route-year="@(list.Month==12?list.Year+1:list.Year)" class="btn btn-sm btn-outline-secondary">›</a>
     </div>
 </div>
 
-@if (Model.IsOverBudget)
-{
-    <div class="alert alert-danger">
-        ⚠️ El total estimado <strong>$ @Model.TotalEstimated.ToString("N2")</strong> supera tu saldo restante <strong>$ @Model.RemainingBalance.ToString("N2")</strong>.
-    </div>
-}
-else if (Model.RemainingBalance > 0)
-{
-    <div class="alert alert-success">
-        ✅ Saldo disponible: <strong>$ @Model.RemainingBalance.ToString("N2")</strong> | Estimado lista: <strong>$ @Model.TotalEstimated.ToString("N2")</strong>
-        | Sobrante: <strong>$ @((Model.RemainingBalance - Model.TotalEstimated).ToString("N2"))</strong>
-    </div>
-}
-
 <div class="row g-3">
-    <div class="col-md-7">
-        <div class="card">
-            <div class="card-header">Ítems de la lista</div>
-            <div class="card-body p-0">
-                @if (!Model.Items.Any())
-                {
-                    <p class="p-3 text-muted mb-0">Todavía no agregaste productos.</p>
-                }
-                else
-                {
-                    <table class="table table-sm mb-0 align-middle">
-                        <thead class="table-light">
-                            <tr><th>Producto</th><th>Cant.</th><th>Precio est.</th><th>Super.</th><th>Prio.</th><th></th></tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Items)
-                            {
-                                <tr>
-                                    <td>@item.ProductName</td>
-                                    <td>@item.Quantity</td>
-                                    <td>@(item.EstimatedPrice.HasValue ? "$ " + item.EstimatedPrice.Value.ToString("N2") : "—")</td>
-                                    <td><span class="badge bg-secondary">@(item.Supermarket ?? "—")</span></td>
-                                    <td>
-                                        <span class="badge @(item.Priority == 1 ? "bg-danger" : item.Priority == 3 ? "bg-secondary" : "bg-warning text-dark")">
-                                            @item.PriorityLabel
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <form asp-action="DeleteItem" method="post" class="d-inline">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@item.Id" />
-                                            <input type="hidden" name="month" value="@list.Month" />
-                                            <input type="hidden" name="year" value="@list.Year" />
-                                            <button class="btn btn-sm btn-outline-danger">✕</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                        <tfoot>
-                            <tr class="table-secondary fw-bold">
-                                <td colspan="2">Total estimado</td>
-                                <td>$ @Model.TotalEstimated.ToString("N2")</td>
-                                <td colspan="3"></td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                }
-            </div>
-        </div>
-    </div>
 
-    <div class="col-md-5">
-        <div class="card mb-3">
-            <div class="card-header">🔍 Buscar productos (Coto &amp; Carrefour)</div>
-            <div class="card-body">
-                <form asp-action="Index" method="get" class="d-flex gap-2 mb-2">
+
+    <div class="col-lg-8 col-md-7">
+
+    
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body py-2 px-3">
+                <form asp-action="Index" method="get" class="d-flex gap-2 align-items-center">
                     <input type="hidden" name="month" value="@list.Month" />
                     <input type="hidden" name="year" value="@list.Year" />
-                    <input name="q" value="@Model.SearchQuery" class="form-control form-control-sm" placeholder="Buscar por nombre, marca…" />
-                    <button type="submit" class="btn btn-outline-primary btn-sm">Buscar</button>
-                </form>
-
-                @if (Model.Categories.Any())
-                {
-                    <div class="d-flex flex-wrap gap-1">
+                    <input name="q" value="@Model.SearchQuery"
+                           class="form-control"
+                           placeholder="Buscar en Coto y Carrefour…" />
+                    @if (Model.Categories.Any())
+                    {
+                        <select name="category" class="form-select" style="max-width:200px">
+                            <option value="">Categoría…</option>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat" selected="@(Model.SelectedCategory == cat ? "selected" : null)">@cat</option>
+                            }
+                        </select>
+                    }
+                    <button type="submit" class="btn btn-primary px-3">🔍</button>
+                    @if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.SelectedCategory))
+                    {
                         <a asp-action="Index" asp-route-month="@list.Month" asp-route-year="@list.Year"
-                           class="badge text-decoration-none @(string.IsNullOrEmpty(Model.SelectedCategory) && string.IsNullOrEmpty(Model.SearchQuery) ? "bg-dark" : "bg-secondary")">
-                            Todos
-                        </a>
-                        @foreach (var cat in Model.Categories)
-                        {
-                            <a asp-action="Index" asp-route-month="@list.Month" asp-route-year="@list.Year"
-                               asp-route-category="@cat"
-                               class="badge text-decoration-none @(Model.SelectedCategory == cat ? "bg-primary" : "bg-secondary")">
-                                @cat
-                            </a>
-                        }
-                    </div>
-                }
+                           class="btn btn-outline-secondary" title="Limpiar filtros">✕</a>
+                    }
+                </form>
             </div>
         </div>
 
-        @if (Model.SearchResults.Any())
+    
+        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.SelectedCategory))
         {
-            <div class="card mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span>Resultados (@Model.SearchResults.Count())</span>
-                    @if (!string.IsNullOrEmpty(Model.SelectedCategory))
-                    {
-                        <span class="badge bg-primary">@Model.SelectedCategory</span>
-                    }
+            @if (Model.SearchResults.Any())
+            {
+                <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                    <span class="text-muted small">
+                        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                        { <strong>"@Model.SearchQuery"</strong> }
+                        @if (!string.IsNullOrWhiteSpace(Model.SelectedCategory))
+                        { <span class="badge bg-primary ms-1">@Model.SelectedCategory</span> }
+                        — @Model.SearchResults.Count() resultado@(Model.SearchResults.Count() == 1 ? "" : "s")
+                    </span>
+                    <div class="d-flex gap-1 small align-items-center">
+                        <span class="badge bg-success">Coto</span>
+                        <span class="badge bg-primary">Carrefour</span>
+                    </div>
                 </div>
-                <div class="card-body p-2" style="max-height:480px;overflow-y:auto;">
+
+                <div class="row row-cols-2 row-cols-md-3 g-3">
                     @foreach (var p in Model.SearchResults)
                     {
-                        var daysOld = (int)(DateTime.UtcNow - p.ScrapedAt).TotalDays;
-                        <div class="border rounded p-2 mb-2 small @(p.Available ? "" : "opacity-50")">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <span class="fw-semibold">@p.Name</span>
+                        var daysOld   = (int)(DateTime.UtcNow - p.ScrapedAt).TotalDays;
+                        var srcClass  = p.IsCoto ? "source-coto" : "source-carrefour";
+                        var srcBadge  = p.IsCoto ? "bg-success"  : "bg-primary";
+                        <div class="col">
+                            <div class="card h-100 product-card @srcClass @(!p.Available ? "opacity-50" : "")">
+                                <div class="card-body d-flex flex-column p-2">
+                                    <div class="d-flex justify-content-between align-items-start mb-1 gap-1 flex-wrap">
+                                        <span class="badge @srcBadge" style="font-size:.6rem">@p.Source</span>
+                                        @if (p.IsOnPromo)
+                                        {
+                                            <span class="badge bg-warning text-dark" style="font-size:.6rem" title="@p.Promo">PROMO</span>
+                                        }
+                                        @if (!p.Available)
+                                        {
+                                            <span class="badge bg-secondary" style="font-size:.6rem">Sin stock</span>
+                                        }
+                                    </div>
+                                    <p class="fw-semibold mb-0 small lh-sm flex-grow-1" style="font-size:.82rem">@p.Name</p>
                                     @if (!string.IsNullOrWhiteSpace(p.Brand))
                                     {
-                                        <span class="text-muted ms-1">@p.Brand</span>
+                                        <p class="text-muted mb-1" style="font-size:.7rem">@p.Brand</p>
                                     }
-                                </div>
-                                <div class="d-flex gap-1 flex-shrink-0 ms-1">
-                                    <span class="badge @(p.IsCoto ? "bg-success" : "bg-primary")">@p.Source</span>
-                                    @if (p.IsOnPromo)
-                                    {
-                                        <span class="badge bg-warning text-dark" title="@p.Promo">PROMO</span>
-                                    }
-                                    @if (!p.Available)
-                                    {
-                                        <span class="badge bg-secondary">Sin stock</span>
-                                    }
+                                    <div class="mt-2">
+                                        @if (p.ListPrice.HasValue && p.ListPrice > p.Price)
+                                        {
+                                            <div class="text-decoration-line-through text-muted lh-1" style="font-size:.75rem">
+                                                $ @p.ListPrice.Value.ToString("N0")
+                                            </div>
+                                        }
+                                        <div class="price-tag lh-1">$ @p.Price.ToString("N0")</div>
+                                        <div class="text-muted mt-1 mb-2" style="font-size:.65rem">
+                                            act. hace @(daysOld == 0 ? "hoy" : daysOld + " d.")
+                                        </div>
+                                        <form asp-action="AddItem" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="ShoppingListId"  value="@list.Id" />
+                                            <input type="hidden" name="ProductName"      value="@p.Name" />
+                                            <input type="hidden" name="EstimatedPrice"   value="@p.Price" />
+                                            <input type="hidden" name="Supermarket"      value="@p.Source" />
+                                            <input type="hidden" name="Priority"         value="2" />
+                                            <input type="hidden" name="Quantity"         value="1" />
+                                            <button class="btn btn-sm btn-outline-primary w-100 py-0" style="font-size:.75rem">
+                                                + Agregar a la lista
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="mt-1">
-                                @if (p.ListPrice.HasValue && p.ListPrice > p.Price)
-                                {
-                                    <span class="text-decoration-line-through text-muted me-1">$ @p.ListPrice.Value.ToString("N2")</span>
-                                }
-                                <strong class="text-success">$ @p.Price.ToString("N2")</strong>
-                                <span class="text-muted ms-2" style="font-size:.7rem;">act. hace @daysOld d.</span>
-                            </div>
-                            <form asp-action="AddItem" method="post" class="mt-1">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="ShoppingListId" value="@list.Id" />
-                                <input type="hidden" name="ProductName" value="@p.Name" />
-                                <input type="hidden" name="EstimatedPrice" value="@p.Price" />
-                                <input type="hidden" name="Supermarket" value="@p.Source" />
-                                <input type="hidden" name="Priority" value="2" />
-                                <input type="hidden" name="Quantity" value="1" />
-                                <button class="btn btn-sm btn-outline-success w-100">+ Agregar</button>
-                            </form>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">
+                    <div style="font-size:3.5rem">🔍</div>
+                    <p class="mt-2">Sin resultados. Probá con otro término o categoría.</p>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center py-5 text-muted">
+                <div style="font-size:4rem">🛒</div>
+                <p class="mt-2 lead">Buscá un producto o elegí una categoría.</p>
+                <p class="small">Comparás precios de <strong class="text-success">Coto</strong> y <strong class="text-primary">Carrefour</strong> en tiempo real.</p>
+            </div>
+        }
+    </div>
+
+
+    <div class="col-lg-4 col-md-5">
+        <div class="cart-sticky">
+
+        
+            <div class="card mb-3 border-0 bg-light">
+                <div class="card-body py-2 px-3">
+                    <div class="d-flex justify-content-between small">
+                        <span class="text-muted">Saldo disponible</span>
+                        <strong class="text-success">$ @Model.RemainingBalance.ToString("N0")</strong>
+                    </div>
+                    @if (Model.Items.Any())
+                    {
+                        var pct = Model.RemainingBalance > 0
+                            ? Math.Min(100d, (double)Model.TotalEstimated / (double)Model.RemainingBalance * 100)
+                            : 0;
+                        <div class="d-flex justify-content-between small mt-1">
+                            <span class="text-muted">Total lista</span>
+                            <strong class="@(Model.IsOverBudget ? "text-danger" : "")">$ @Model.TotalEstimated.ToString("N0")</strong>
+                        </div>
+                        <div class="progress mt-2" style="height:4px">
+                            <div class="progress-bar @(Model.IsOverBudget ? "bg-danger" : "bg-success")"
+                                 style="width:@pct.ToString("N0")%"></div>
                         </div>
                     }
                 </div>
             </div>
-        }
-        else if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.SelectedCategory))
-        {
-            <div class="alert alert-secondary small">Sin resultados para la búsqueda actual.</div>
-        }
 
-        <div class="card">
-            <div class="card-header">Agregar ítem manualmente</div>
-            <div class="card-body">
-                <form asp-action="AddItem" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="ShoppingListId" value="@list.Id" />
-                    <div class="mb-2">
-                        <input name="ProductName" class="form-control form-control-sm" placeholder="Producto *" required />
-                    </div>
-                    <div class="row g-1 mb-2">
-                        <div class="col">
-                            <input name="Quantity" type="number" min="1" value="1" class="form-control form-control-sm" placeholder="Cant." />
+        
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center py-2">
+                    <span class="fw-semibold">Mi lista</span>
+                    <span class="badge bg-secondary rounded-pill">@Model.Items.Count()</span>
+                </div>
+                <div class="card-body p-0" style="max-height:380px;overflow-y:auto">
+                    @if (!Model.Items.Any())
+                    {
+                        <p class="p-3 text-muted small mb-0">Todavía no agregaste productos.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in Model.Items)
+                            {
+                                <li class="list-group-item px-2 py-1 d-flex align-items-start gap-2">
+                                    <div class="flex-grow-1 min-width-0">
+                                        <div class="small fw-semibold lh-sm text-truncate">@item.ProductName</div>
+                                        <div class="d-flex gap-2 align-items-center mt-1 flex-wrap" style="font-size:.7rem">
+                                            <span class="text-muted">x@item.Quantity</span>
+                                            @if (item.EstimatedPrice.HasValue)
+                                            {
+                                                <span class="fw-bold text-success">$ @item.EstimatedPrice.Value.ToString("N0")</span>
+                                            }
+                                            @if (item.Supermarket != null)
+                                            {
+                                                <span class="badge @(item.Supermarket == "Coto" ? "bg-success" : "bg-primary")"
+                                                      style="font-size:.6rem">@item.Supermarket</span>
+                                            }
+                                            <span class="badge @(item.Priority == 1 ? "bg-danger" : item.Priority == 3 ? "bg-secondary" : "bg-warning text-dark")"
+                                                  style="font-size:.6rem">@item.PriorityLabel</span>
+                                        </div>
+                                    </div>
+                                    <form asp-action="DeleteItem" method="post" class="d-inline flex-shrink-0">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id"    value="@item.Id" />
+                                        <input type="hidden" name="month" value="@list.Month" />
+                                        <input type="hidden" name="year"  value="@list.Year" />
+                                        <button class="btn btn-link text-danger p-0 lh-1" style="font-size:.9rem">✕</button>
+                                    </form>
+                                </li>
+                            }
+                        </ul>
+                        <div class="px-3 py-2 bg-light d-flex justify-content-between fw-bold small border-top">
+                            <span>Total estimado</span>
+                            <span class="@(Model.IsOverBudget ? "text-danger" : "text-success")">
+                                $ @Model.TotalEstimated.ToString("N0")
+                            </span>
                         </div>
-                        <div class="col">
-                            <input name="EstimatedPrice" type="number" step="0.01" min="0" class="form-control form-control-sm" placeholder="Precio est." />
-                        </div>
-                    </div>
-                    <div class="row g-1 mb-2">
-                        <div class="col">
-                            <select name="Supermarket" class="form-select form-select-sm">
-                                <option value="">Supermercado</option>
-                                <option value="Coto">Coto</option>
-                                <option value="Carrefour">Carrefour</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <select name="Priority" class="form-select form-select-sm">
-                                <option value="1">Alta prioridad</option>
-                                <option value="2" selected>Media</option>
-                                <option value="3">Baja</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-sm w-100">Agregar</button>
-                </form>
+                    }
+                </div>
             </div>
+
+        
+            <div class="card">
+                <div class="card-header py-2 small fw-semibold">Agregar manualmente</div>
+                <div class="card-body p-2">
+                    <form asp-action="AddItem" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="ShoppingListId" value="@list.Id" />
+                        <div class="mb-1">
+                            <input name="ProductName" class="form-control form-control-sm"
+                                   placeholder="Nombre del producto *" required />
+                        </div>
+                        <div class="row g-1 mb-1">
+                            <div class="col">
+                                <input name="Quantity" type="number" min="1" value="1"
+                                       class="form-control form-control-sm" placeholder="Cant." />
+                            </div>
+                            <div class="col">
+                                <input name="EstimatedPrice" type="number" step="0.01" min="0"
+                                       class="form-control form-control-sm" placeholder="Precio" />
+                            </div>
+                        </div>
+                        <div class="row g-1 mb-2">
+                            <div class="col">
+                                <select name="Supermarket" class="form-select form-select-sm">
+                                    <option value="">Supermercado</option>
+                                    <option value="Coto">Coto</option>
+                                    <option value="Carrefour">Carrefour</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <select name="Priority" class="form-select form-select-sm">
+                                    <option value="1">Alta</option>
+                                    <option value="2" selected>Media</option>
+                                    <option value="3">Baja</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-sm w-100">+ Agregar</button>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
