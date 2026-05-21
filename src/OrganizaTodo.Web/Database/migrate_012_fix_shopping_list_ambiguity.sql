@@ -2,6 +2,9 @@
 -- Root cause: RETURNS TABLE declares "UserId","Month","Year" as output column variables;
 -- unqualified WHERE clauses in plpgsql body clash with those names.
 -- Fix: qualify every column reference with a table alias and rename params to avoid shadow.
+-- DROP required because PostgreSQL does not allow renaming input parameters via CREATE OR REPLACE.
+
+DROP FUNCTION IF EXISTS sp_shopping_get_or_create_list(integer, integer, integer);
 
 CREATE OR REPLACE FUNCTION sp_shopping_get_or_create_list(p_user_id INT, p_month INT, p_year INT)
 RETURNS TABLE(
