@@ -1,16 +1,14 @@
 -- ============================================================
--- SHOPPING DB MIGRATION 001 — Product catalog SP functions
+-- SHOPPING DB MIGRATION 003 — Normalize category casing
 -- Run this against POSTGRES_DB_Shopping, NOT the main organizaTodo DB
 --
--- Column types verified against real schema:
---   name, brand, category, promo → TEXT
---   price, list_price            → NUMERIC
---   available                    → BOOLEAN
---   scraped_at                   → TIMESTAMPTZ (cast to TIMESTAMP for Dapper/DateTime)
+-- Problem: Carrefour uses sentence case ("Aguas saborizadas"),
+--          Coto uses title case ("Aguas Saborizadas").
+--          Both represent the same category, so browsing by category
+--          only returns products from one table.
 --
--- Categories are normalized with INITCAP(LOWER(TRIM(...))) so
--- "Aguas saborizadas" (Carrefour) and "Aguas Saborizadas" (Coto) unify.
--- Comparisons use LOWER(TRIM(...)) so both tables are always searched.
+-- Fix: normalize with INITCAP(LOWER(TRIM(category))) for display
+--      and LOWER(TRIM(category)) for all equality comparisons.
 -- ============================================================
 
 DROP FUNCTION IF EXISTS sp_products_search(text);
@@ -26,7 +24,7 @@ RETURNS SETOF TEXT LANGUAGE sql AS $$
     ORDER BY 1
 $$;
 
--- Search: normalize category in output; ILIKE is already case-insensitive
+-- Search: normalize category column in output; ILIKE already case-insensitive
 CREATE OR REPLACE FUNCTION sp_products_search(p_query TEXT)
 RETURNS TABLE(
     "Name"      TEXT,
@@ -61,7 +59,7 @@ RETURNS TABLE(
     ORDER BY 1
 $$;
 
--- Browse by category: LOWER(TRIM) comparison matches both tables regardless of casing
+-- Browse by category: compare with LOWER(TRIM(...)) so both tables match
 CREATE OR REPLACE FUNCTION sp_products_get_by_category(p_category TEXT)
 RETURNS TABLE(
     "Name"      TEXT,
