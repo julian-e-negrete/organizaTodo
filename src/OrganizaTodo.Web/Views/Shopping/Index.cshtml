@@ -2,12 +2,18 @@
 @{ ViewData["Title"] = "Lista de Compras"; var list = Model.List; }
 
 <style>
-    .product-card { transition: box-shadow .15s; cursor: default; }
+    .dept-btn       { border-radius: 20px; white-space: nowrap; font-size: .82rem; padding: .28rem .75rem; }
+    .dept-btn.active{ background: #0d6efd; color: #fff; border-color: #0d6efd; }
+    .subcat-pill    { border-radius: 14px; white-space: nowrap; font-size: .75rem; padding: .2rem .6rem; cursor: pointer; }
+    .subcat-pill.active { background: #198754; color: #fff; border-color: #198754; }
+    .product-card   { transition: box-shadow .15s; cursor: default; }
     .product-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.12); }
     .source-coto      { border-top: 3px solid #198754; }
     .source-carrefour { border-top: 3px solid #0d6efd; }
-    .price-tag { font-size: 1.15rem; font-weight: 700; color: #0a3d62; }
-    .cart-sticky { position: sticky; top: 76px; }
+    .price-tag      { font-size: 1.15rem; font-weight: 700; color: #0a3d62; }
+    .cart-sticky    { position: sticky; top: 76px; }
+    .dept-scroll    { overflow-x: auto; scrollbar-width: none; }
+    .dept-scroll::-webkit-scrollbar { display: none; }
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -20,30 +26,18 @@
 
 <div class="row g-3">
 
-
     <div class="col-lg-8 col-md-7">
 
-    
-        <div class="card mb-3 shadow-sm">
+        <div class="card mb-2 shadow-sm">
             <div class="card-body py-2 px-3">
                 <form asp-action="Index" method="get" class="d-flex gap-2 align-items-center">
                     <input type="hidden" name="month" value="@list.Month" />
-                    <input type="hidden" name="year" value="@list.Year" />
+                    <input type="hidden" name="year"  value="@list.Year" />
                     <input name="q" value="@Model.SearchQuery"
                            class="form-control"
                            placeholder="Buscar en Coto y Carrefour…" />
-                    @if (Model.Categories.Any())
-                    {
-                        <select name="category" class="form-select" style="max-width:200px">
-                            <option value="">Categoría…</option>
-                            @foreach (var cat in Model.Categories)
-                            {
-                                <option value="@cat" selected="@(Model.SelectedCategory == cat ? "selected" : null)">@cat</option>
-                            }
-                        </select>
-                    }
                     <button type="submit" class="btn btn-primary px-3">🔍</button>
-                    @if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.SelectedCategory))
+                    @if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.SelectedParent) || !string.IsNullOrWhiteSpace(Model.SelectedCategory))
                     {
                         <a asp-action="Index" asp-route-month="@list.Month" asp-route-year="@list.Year"
                            class="btn btn-outline-secondary" title="Limpiar filtros">✕</a>
@@ -52,8 +46,50 @@
             </div>
         </div>
 
-    
-        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.SelectedCategory))
+        @if (Model.ParentCategories.Any())
+        {
+            <div class="dept-scroll mb-2">
+                <div class="d-flex gap-2 flex-nowrap pb-1">
+                    @foreach (var dept in Model.ParentCategories)
+                    {
+                        var isActive = Model.SelectedParent == dept;
+                        <a asp-action="Index"
+                           asp-route-month="@list.Month" asp-route-year="@list.Year"
+                           asp-route-parent="@(isActive ? null : dept)"
+                           class="btn btn-outline-primary dept-btn @(isActive ? "active" : "")">
+                            @dept
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (Model.Subcategories.Any())
+        {
+            <div class="dept-scroll mb-2">
+                <div class="d-flex gap-2 flex-nowrap pb-1">
+                    <a asp-action="Index"
+                       asp-route-month="@list.Month" asp-route-year="@list.Year"
+                       asp-route-parent="@Model.SelectedParent"
+                       class="btn btn-outline-secondary subcat-pill @(string.IsNullOrWhiteSpace(Model.SelectedCategory) ? "active" : "")">
+                        Todos
+                    </a>
+                    @foreach (var sub in Model.Subcategories)
+                    {
+                        var isActive = Model.SelectedCategory == sub;
+                        <a asp-action="Index"
+                           asp-route-month="@list.Month" asp-route-year="@list.Year"
+                           asp-route-parent="@Model.SelectedParent"
+                           asp-route-category="@(isActive ? null : sub)"
+                           class="btn btn-outline-success subcat-pill @(isActive ? "active" : "")">
+                            @sub
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.SearchQuery) || !string.IsNullOrWhiteSpace(Model.SelectedParent))
         {
             @if (Model.SearchResults.Any())
             {
@@ -61,8 +97,10 @@
                     <span class="text-muted small">
                         @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
                         { <strong>"@Model.SearchQuery"</strong> }
+                        @if (!string.IsNullOrWhiteSpace(Model.SelectedParent))
+                        { <span class="badge bg-primary ms-1">@Model.SelectedParent</span> }
                         @if (!string.IsNullOrWhiteSpace(Model.SelectedCategory))
-                        { <span class="badge bg-primary ms-1">@Model.SelectedCategory</span> }
+                        { <span class="badge bg-success ms-1">@Model.SelectedCategory</span> }
                         — @Model.SearchResults.Count() resultado@(Model.SearchResults.Count() == 1 ? "" : "s")
                     </span>
                     <div class="d-flex gap-1 small align-items-center">
@@ -74,9 +112,9 @@
                 <div class="row row-cols-2 row-cols-md-3 g-3">
                     @foreach (var p in Model.SearchResults)
                     {
-                        var daysOld   = (int)(DateTime.UtcNow - p.ScrapedAt).TotalDays;
-                        var srcClass  = p.IsCoto ? "source-coto" : "source-carrefour";
-                        var srcBadge  = p.IsCoto ? "bg-success"  : "bg-primary";
+                        var daysOld  = (int)(DateTime.UtcNow - p.ScrapedAt).TotalDays;
+                        var srcClass = p.IsCoto ? "source-coto" : "source-carrefour";
+                        var srcBadge = p.IsCoto ? "bg-success"  : "bg-primary";
                         <div class="col">
                             <div class="card h-100 product-card @srcClass @(!p.Available ? "opacity-50" : "")">
                                 <div class="card-body d-flex flex-column p-2">
@@ -138,7 +176,7 @@
         {
             <div class="text-center py-5 text-muted">
                 <div style="font-size:4rem">🛒</div>
-                <p class="mt-2 lead">Buscá un producto o elegí una categoría.</p>
+                <p class="mt-2 lead">Elegí un departamento o buscá un producto.</p>
                 <p class="small">Comparás precios de <strong class="text-success">Coto</strong> y <strong class="text-primary">Carrefour</strong> en tiempo real.</p>
             </div>
         }
@@ -148,7 +186,6 @@
     <div class="col-lg-4 col-md-5">
         <div class="cart-sticky">
 
-        
             <div class="card mb-3 border-0 bg-light">
                 <div class="card-body py-2 px-3">
                     <div class="d-flex justify-content-between small">
@@ -172,7 +209,6 @@
                 </div>
             </div>
 
-        
             <div class="card mb-3">
                 <div class="card-header d-flex justify-content-between align-items-center py-2">
                     <span class="fw-semibold">Mi lista</span>
@@ -226,7 +262,6 @@
                 </div>
             </div>
 
-        
             <div class="card">
                 <div class="card-header py-2 small fw-semibold">Agregar manualmente</div>
                 <div class="card-body p-2">

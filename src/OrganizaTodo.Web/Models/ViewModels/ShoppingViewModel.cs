@@ -8,8 +8,11 @@ public sealed class ShoppingViewModel
     public ShoppingList List { get; set; } = new();
     public IEnumerable<ShoppingListItem> Items { get; set; } = [];
     public IEnumerable<ScrapedProduct> SearchResults { get; set; } = [];
+    public IEnumerable<string> ParentCategories { get; set; } = [];
+    public IEnumerable<string> Subcategories { get; set; } = [];
     public IEnumerable<string> Categories { get; set; } = [];
     public string? SearchQuery { get; set; }
+    public string? SelectedParent { get; set; }
     public string? SelectedCategory { get; set; }
     public decimal RemainingBalance { get; set; }
 
