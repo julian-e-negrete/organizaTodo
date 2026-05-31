@@ -1,0 +1,1 @@
+{"nodes": [{"id": "views__viewimports_organizatodo_web_models", "label": "OrganizaTodo.Web.Models (namespace import)", "file_type": "code", "source_file": "src/OrganizaTodo.Web/Views/_ViewImports.cshtml", "source_location": "line 2", "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

@@ -1,0 +1,957 @@
+{
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/OrganizaTodo.sln": {
+    "mtime": 1778339379.037296,
+    "ast_hash": "f6f87995f79d070565394d5cb843d8e3",
+    "semantic_hash": "f6f87995f79d070565394d5cb843d8e3"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/.claude/settings.local.json": {
+    "mtime": 1779179729.2179036,
+    "ast_hash": "3dc8453dabfd20e8c9ee4569e567fed7",
+    "semantic_hash": "3dc8453dabfd20e8c9ee4569e567fed7"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/.claude/settings.json": {
+    "mtime": 1780250054.3154984,
+    "ast_hash": "a2388b60aabb9b942f57e49c23be9a5b",
+    "semantic_hash": "a2388b60aabb9b942f57e49c23be9a5b"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/.slopwatch/baseline.json": {
+    "mtime": 1778344491.291182,
+    "ast_hash": "a39e58be0f0e0db6eeac8707f52d2d8b",
+    "semantic_hash": "a39e58be0f0e0db6eeac8707f52d2d8b"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/OrganizaTodo.Web.csproj": {
+    "mtime": 1778343070.8358994,
+    "ast_hash": "145e9f4edc10f94c7f18a403284d89a7",
+    "semantic_hash": "145e9f4edc10f94c7f18a403284d89a7"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/appsettings.Development.json": {
+    "mtime": 1778545889.0011878,
+    "ast_hash": "f41660a1468da5954949a833f3e63947",
+    "semantic_hash": "f41660a1468da5954949a833f3e63947"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Program.cs": {
+    "mtime": 1779332914.4784915,
+    "ast_hash": "61b2f1a06fd7513adf9e420a8ff9d7be",
+    "semantic_hash": "61b2f1a06fd7513adf9e420a8ff9d7be"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/appsettings.json": {
+    "mtime": 1779574336.058976,
+    "ast_hash": "732f4d75514e890746f0170256ed9654",
+    "semantic_hash": "732f4d75514e890746f0170256ed9654"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/HomeController.cs": {
+    "mtime": 1778341528.668795,
+    "ast_hash": "a57dd1ac9898ccd5cd460fc8e793ea95",
+    "semantic_hash": "a57dd1ac9898ccd5cd460fc8e793ea95"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/HousingController.cs": {
+    "mtime": 1778356898.2663689,
+    "ast_hash": "2ea774125c7d630d7393925f2d47f166",
+    "semantic_hash": "2ea774125c7d630d7393925f2d47f166"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/DashboardController.cs": {
+    "mtime": 1779179336.2623813,
+    "ast_hash": "cb5e6e3f4fb4abbc3fb86905de3a6172",
+    "semantic_hash": "cb5e6e3f4fb4abbc3fb86905de3a6172"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/AdminController.cs": {
+    "mtime": 1778341519.8576918,
+    "ast_hash": "df258e5c39d56a80e552d9f95ef29888",
+    "semantic_hash": "df258e5c39d56a80e552d9f95ef29888"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/CreditCardController.cs": {
+    "mtime": 1779175606.8171775,
+    "ast_hash": "2b8dc22f048448f8baa9d41d7cd949e9",
+    "semantic_hash": "2b8dc22f048448f8baa9d41d7cd949e9"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/ReportsController.cs": {
+    "mtime": 1779179404.3051684,
+    "ast_hash": "c9b187df670f8b9aad9f7c8dafe46dd3",
+    "semantic_hash": "c9b187df670f8b9aad9f7c8dafe46dd3"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/SavingsController.cs": {
+    "mtime": 1778636428.4374592,
+    "ast_hash": "e258d621fac9ebb0345dc37457d9b061",
+    "semantic_hash": "e258d621fac9ebb0345dc37457d9b061"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/ShoppingController.cs": {
+    "mtime": 1779335566.2227466,
+    "ast_hash": "9467b983cf2bddb913a6dcb323bfe6eb",
+    "semantic_hash": "9467b983cf2bddb913a6dcb323bfe6eb"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/AccountController.cs": {
+    "mtime": 1778341477.4061916,
+    "ast_hash": "98221fdd924cdab848d5130c50ec8972",
+    "semantic_hash": "98221fdd924cdab848d5130c50ec8972"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/IncomeController.cs": {
+    "mtime": 1779178950.239863,
+    "ast_hash": "a6697a09c22f52e67d453b2e5b2c3baa",
+    "semantic_hash": "a6697a09c22f52e67d453b2e5b2c3baa"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/VehiclesController.cs": {
+    "mtime": 1779177586.445678,
+    "ast_hash": "0af93ad68fa09a426fb14406fcc82d88",
+    "semantic_hash": "0af93ad68fa09a426fb14406fcc82d88"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/ExpensesController.cs": {
+    "mtime": 1779180354.4310913,
+    "ast_hash": "360a4f628408074e1a1a142e78b6bccf",
+    "semantic_hash": "360a4f628408074e1a1a142e78b6bccf"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/LiabilitiesController.cs": {
+    "mtime": 1778345645.3424416,
+    "ast_hash": "e2fb25e66b3fb001e0701a190b93635c",
+    "semantic_hash": "e2fb25e66b3fb001e0701a190b93635c"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/AssetPurchasesController.cs": {
+    "mtime": 1778636408.3322535,
+    "ast_hash": "88677a90e35bca7b83ab4cab64914302",
+    "semantic_hash": "88677a90e35bca7b83ab4cab64914302"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/BalanceService.cs": {
+    "mtime": 1778346979.2520502,
+    "ast_hash": "7cd4cad1b27ea43fe703f9d2d78b3fac",
+    "semantic_hash": "7cd4cad1b27ea43fe703f9d2d78b3fac"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/IDolarService.cs": {
+    "mtime": 1778636387.7000427,
+    "ast_hash": "d4b14290b8e03f7da440f7749e8fec95",
+    "semantic_hash": "d4b14290b8e03f7da440f7749e8fec95"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/IFuelPriceService.cs": {
+    "mtime": 1779174930.1226783,
+    "ast_hash": "cb87c206d6dd82c3bbbd7a77bfd6df0c",
+    "semantic_hash": "cb87c206d6dd82c3bbbd7a77bfd6df0c"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/FuelPriceService.cs": {
+    "mtime": 1779174948.1878557,
+    "ast_hash": "0fe13c61ec7826bd974147d368c18138",
+    "semantic_hash": "0fe13c61ec7826bd974147d368c18138"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/IAuthService.cs": {
+    "mtime": 1778346979.2527342,
+    "ast_hash": "82ea7d9e542824c49c6e056f680abab8",
+    "semantic_hash": "82ea7d9e542824c49c6e056f680abab8"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/IAdminService.cs": {
+    "mtime": 1778346979.25331,
+    "ast_hash": "6d6c301d39c00c091b091430894e760d",
+    "semantic_hash": "6d6c301d39c00c091b091430894e760d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/DolarService.cs": {
+    "mtime": 1778636393.4651015,
+    "ast_hash": "1787cad841415e521e34a85e63094f50",
+    "semantic_hash": "1787cad841415e521e34a85e63094f50"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/AdminService.cs": {
+    "mtime": 1778346979.253506,
+    "ast_hash": "3f0a205b81b379c97a5169208b530ab9",
+    "semantic_hash": "3f0a205b81b379c97a5169208b530ab9"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/AuthService.cs": {
+    "mtime": 1778346979.2537339,
+    "ast_hash": "edb6d5328b5b5cf68b1a60d0f19d061f",
+    "semantic_hash": "edb6d5328b5b5cf68b1a60d0f19d061f"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/IBalanceService.cs": {
+    "mtime": 1778346979.2540016,
+    "ast_hash": "21c9a6d6de9e184a2ee95760eefe74a6",
+    "semantic_hash": "21c9a6d6de9e184a2ee95760eefe74a6"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Extensions/ClaimsPrincipalExtensions.cs": {
+    "mtime": 1778341464.9120438,
+    "ast_hash": "26dbb1784ecc605f72c07fd2850b0fca",
+    "semantic_hash": "26dbb1784ecc605f72c07fd2850b0fca"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_009_vehicle_maintenance_due_month.sql": {
+    "mtime": 1779178455.9828215,
+    "ast_hash": "e2e09c81d0d92e9a40e77769a75f3999",
+    "semantic_hash": "e2e09c81d0d92e9a40e77769a75f3999"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_004_asset_purchases.sql": {
+    "mtime": 1778687020.716885,
+    "ast_hash": "892fb5275da934265d4317a97aebadc6",
+    "semantic_hash": "892fb5275da934265d4317a97aebadc6"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_007_vehicle_payments.sql": {
+    "mtime": 1779176222.620086,
+    "ast_hash": "7c95bb9f4359135fb0968eb37d326242",
+    "semantic_hash": "7c95bb9f4359135fb0968eb37d326242"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_shopping_002_fix_function_types.sql": {
+    "mtime": 1779333561.4755938,
+    "ast_hash": "863ccfac8059ba054add3c822bb00e00",
+    "semantic_hash": "863ccfac8059ba054add3c822bb00e00"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_002_savings.sql": {
+    "mtime": 1778544755.7521918,
+    "ast_hash": "a182836bf846b24e6a193810a6e09715",
+    "semantic_hash": "a182836bf846b24e6a193810a6e09715"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/init.sql": {
+    "mtime": 1779333213.1496108,
+    "ast_hash": "88ab151f3ed7963ddace79202b6ae395",
+    "semantic_hash": "88ab151f3ed7963ddace79202b6ae395"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_012_fix_shopping_list_ambiguity.sql": {
+    "mtime": 1779333271.5291488,
+    "ast_hash": "a31e506c0fa0c26f6df11e79c173fe1a",
+    "semantic_hash": "a31e506c0fa0c26f6df11e79c173fe1a"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_008_vehicle_maintenance.sql": {
+    "mtime": 1779177512.9468772,
+    "ast_hash": "38e56077a83422600fa55e17df048837",
+    "semantic_hash": "38e56077a83422600fa55e17df048837"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_shopping_003_normalize_categories.sql": {
+    "mtime": 1779334502.2192717,
+    "ast_hash": "ceb6ad1e457bbe14207ff573c1597c28",
+    "semantic_hash": "ceb6ad1e457bbe14207ff573c1597c28"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_shopping_001_product_functions.sql": {
+    "mtime": 1779334549.8255877,
+    "ast_hash": "b7cd1b79298a63b8eb9f2916ad46163b",
+    "semantic_hash": "b7cd1b79298a63b8eb9f2916ad46163b"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_010_recurring_income.sql": {
+    "mtime": 1779178875.132969,
+    "ast_hash": "a5346d993067d3f2dd6efe95e496aa5c",
+    "semantic_hash": "a5346d993067d3f2dd6efe95e496aa5c"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_003_savings_initial_balance.sql": {
+    "mtime": 1778545145.9913564,
+    "ast_hash": "efe7ce044d33849de6c873f8199fc04e",
+    "semantic_hash": "efe7ce044d33849de6c873f8199fc04e"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_005_vehicles.sql": {
+    "mtime": 1779174905.6154368,
+    "ast_hash": "49c3ff4a8612ce90432b7615a758ad35",
+    "semantic_hash": "49c3ff4a8612ce90432b7615a758ad35"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_011_expense_vehicle_link.sql": {
+    "mtime": 1779180315.4798446,
+    "ast_hash": "37ae31470789a2a85d59437dc5caecd1",
+    "semantic_hash": "37ae31470789a2a85d59437dc5caecd1"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_006_credit_card_due_date.sql": {
+    "mtime": 1779175947.1834872,
+    "ast_hash": "a84b4dc9534bbf45cc675b39c83bd625",
+    "semantic_hash": "a84b4dc9534bbf45cc675b39c83bd625"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_shopping_004_category_taxonomy.sql": {
+    "mtime": 1779335224.3229935,
+    "ast_hash": "74743c10e1ae1b95e68dd20a17edf198",
+    "semantic_hash": "74743c10e1ae1b95e68dd20a17edf198"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_001_fixed_liabilities_paid.sql": {
+    "mtime": 1778345783.9419026,
+    "ast_hash": "4b96094c0db42d2ee1d27fcfe5bb7f93",
+    "semantic_hash": "4b96094c0db42d2ee1d27fcfe5bb7f93"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/_ViewStart.cshtml": {
+    "mtime": 1778339364.0601046,
+    "ast_hash": "78bb48cc4f4b0b9cc118c253298c4577",
+    "semantic_hash": "78bb48cc4f4b0b9cc118c253298c4577"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/_ViewImports.cshtml": {
+    "mtime": 1778339364.0621047,
+    "ast_hash": "74096dfaf36f69b6fb0849810555e703",
+    "semantic_hash": "74096dfaf36f69b6fb0849810555e703"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Housing/_HousingForm.cshtml": {
+    "mtime": 1778341602.442655,
+    "ast_hash": "faa9fdf22d4811a164cd784108c7b58e",
+    "semantic_hash": "faa9fdf22d4811a164cd784108c7b58e"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Housing/Create.cshtml": {
+    "mtime": 1778341597.1295934,
+    "ast_hash": "c3743823dfef37d8807bb7ad5580a998",
+    "semantic_hash": "c3743823dfef37d8807bb7ad5580a998"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Housing/Edit.cshtml": {
+    "mtime": 1778341599.0126154,
+    "ast_hash": "d0e40978aafd5c42c6bb9db9c72d0ead",
+    "semantic_hash": "d0e40978aafd5c42c6bb9db9c72d0ead"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Housing/Index.cshtml": {
+    "mtime": 1778359356.206806,
+    "ast_hash": "e0e7a5276550bf29bd694f6501fdc030",
+    "semantic_hash": "e0e7a5276550bf29bd694f6501fdc030"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Dashboard/Index.cshtml": {
+    "mtime": 1779179366.6237328,
+    "ast_hash": "07a8e8688efa545890e9ea343bef1f27",
+    "semantic_hash": "07a8e8688efa545890e9ea343bef1f27"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Account/Login.cshtml": {
+    "mtime": 1778341559.794159,
+    "ast_hash": "230487df69d14a244c09b506467ae4e7",
+    "semantic_hash": "230487df69d14a244c09b506467ae4e7"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Account/AccessDenied.cshtml": {
+    "mtime": 1778341572.8743114,
+    "ast_hash": "2472f8800fb562105df9c07f61e1fd69",
+    "semantic_hash": "2472f8800fb562105df9c07f61e1fd69"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Account/Profile.cshtml": {
+    "mtime": 1778341571.2672927,
+    "ast_hash": "1df052679bf8c4380c51e9e82d8d5472",
+    "semantic_hash": "1df052679bf8c4380c51e9e82d8d5472"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Account/Register.cshtml": {
+    "mtime": 1778341564.8162177,
+    "ast_hash": "1b4901e4678c89f8f5eaac4b172a7732",
+    "semantic_hash": "1b4901e4678c89f8f5eaac4b172a7732"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Home/Index.cshtml": {
+    "mtime": 1778339364.089105,
+    "ast_hash": "75a815bd3636748954339d94a19351a5",
+    "semantic_hash": "75a815bd3636748954339d94a19351a5"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Home/Privacy.cshtml": {
+    "mtime": 1778339364.090105,
+    "ast_hash": "bb439cbd3264713aeb6f23a15d8a4ce3",
+    "semantic_hash": "bb439cbd3264713aeb6f23a15d8a4ce3"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Reports/Index.cshtml": {
+    "mtime": 1779179391.0400152,
+    "ast_hash": "de7c384e14bb010c43113fc4601fe09b",
+    "semantic_hash": "de7c384e14bb010c43113fc4601fe09b"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Expenses/_ExpenseForm.cshtml": {
+    "mtime": 1779180375.5322297,
+    "ast_hash": "7aa2c7e927b0e949ede4b647da399b64",
+    "semantic_hash": "7aa2c7e927b0e949ede4b647da399b64"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Expenses/Create.cshtml": {
+    "mtime": 1778341651.0532172,
+    "ast_hash": "952d59efa469dd5874ccd38900efcc97",
+    "semantic_hash": "952d59efa469dd5874ccd38900efcc97"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Expenses/Edit.cshtml": {
+    "mtime": 1778341652.8952384,
+    "ast_hash": "db9a0bb14d6ab139d7c42a6977d9c416",
+    "semantic_hash": "db9a0bb14d6ab139d7c42a6977d9c416"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Expenses/Index.cshtml": {
+    "mtime": 1779180385.7562978,
+    "ast_hash": "e354cd5fcdcda66db71d3e9cdc4edee9",
+    "semantic_hash": "e354cd5fcdcda66db71d3e9cdc4edee9"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Income/_RecurringIncomeForm.cshtml": {
+    "mtime": 1779178985.0942757,
+    "ast_hash": "c3240d1ca00615eb71793bf393823075",
+    "semantic_hash": "c3240d1ca00615eb71793bf393823075"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Income/Create.cshtml": {
+    "mtime": 1778341636.8550534,
+    "ast_hash": "067a7ad2bdeb2ef5e2c9b12ee5c704e0",
+    "semantic_hash": "067a7ad2bdeb2ef5e2c9b12ee5c704e0"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Income/Edit.cshtml": {
+    "mtime": 1778341638.6540742,
+    "ast_hash": "21133033b7a9274de26418ac08166f95",
+    "semantic_hash": "21133033b7a9274de26418ac08166f95"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Income/_IncomeForm.cshtml": {
+    "mtime": 1778341644.9971473,
+    "ast_hash": "4bfebe6e3e88cd626300330a831f48d5",
+    "semantic_hash": "4bfebe6e3e88cd626300330a831f48d5"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Income/Index.cshtml": {
+    "mtime": 1779179014.790179,
+    "ast_hash": "671fcbcafda8f4ca3c7eaf5fe678b677",
+    "semantic_hash": "671fcbcafda8f4ca3c7eaf5fe678b677"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Income/EditRecurring.cshtml": {
+    "mtime": 1779178977.3771844,
+    "ast_hash": "e49d5567c245e46b441afdbb0fcc00b4",
+    "semantic_hash": "e49d5567c245e46b441afdbb0fcc00b4"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Income/CreateRecurring.cshtml": {
+    "mtime": 1779178969.4510906,
+    "ast_hash": "fec0a2005e0c8f9aaae38ea0978bb72f",
+    "semantic_hash": "fec0a2005e0c8f9aaae38ea0978bb72f"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Shopping/Index.cshtml": {
+    "mtime": 1779335659.0177975,
+    "ast_hash": "3ef3df57d272215309b18600cce1b829",
+    "semantic_hash": "3ef3df57d272215309b18600cce1b829"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/CreditCard/_CreditCardForm.cshtml": {
+    "mtime": 1779175619.892301,
+    "ast_hash": "2437a6e13fc043265532d8d2d48b312b",
+    "semantic_hash": "2437a6e13fc043265532d8d2d48b312b"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/CreditCard/Create.cshtml": {
+    "mtime": 1778341611.7337627,
+    "ast_hash": "4b39131b548b40d6a1292a75d8db188b",
+    "semantic_hash": "4b39131b548b40d6a1292a75d8db188b"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/CreditCard/Edit.cshtml": {
+    "mtime": 1778341613.645785,
+    "ast_hash": "ee7972b98bd66b28a612aa04b354e76e",
+    "semantic_hash": "ee7972b98bd66b28a612aa04b354e76e"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/CreditCard/Index.cshtml": {
+    "mtime": 1779175637.6184685,
+    "ast_hash": "a71c29c2d88b33407025219d2f402c8f",
+    "semantic_hash": "a71c29c2d88b33407025219d2f402c8f"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Vehicles/_VehicleForm.cshtml": {
+    "mtime": 1779178498.3893585,
+    "ast_hash": "2342719667d1756116a552bec3d210d1",
+    "semantic_hash": "2342719667d1756116a552bec3d210d1"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Vehicles/Create.cshtml": {
+    "mtime": 1779175020.4075625,
+    "ast_hash": "1e8da4ff3cd6cacfb47a7d6bb5b0dd5a",
+    "semantic_hash": "1e8da4ff3cd6cacfb47a7d6bb5b0dd5a"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Vehicles/Edit.cshtml": {
+    "mtime": 1779175034.910704,
+    "ast_hash": "7e6c0ded6455368f23e8515169b95049",
+    "semantic_hash": "7e6c0ded6455368f23e8515169b95049"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Vehicles/Index.cshtml": {
+    "mtime": 1779177681.64571,
+    "ast_hash": "2e201153026a34ca06be77195ebb1897",
+    "semantic_hash": "2e201153026a34ca06be77195ebb1897"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Admin/Index.cshtml": {
+    "mtime": 1778341692.2326906,
+    "ast_hash": "b6d46bccfcb5c686da503c1dfb0ba0ca",
+    "semantic_hash": "b6d46bccfcb5c686da503c1dfb0ba0ca"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Admin/Users.cshtml": {
+    "mtime": 1778341698.6387641,
+    "ast_hash": "74d28fb20e3f4215c45b0dba2143ae91",
+    "semantic_hash": "74d28fb20e3f4215c45b0dba2143ae91"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Liabilities/_LiabilityForm.cshtml": {
+    "mtime": 1778341627.9509504,
+    "ast_hash": "0b684d459def8ca9775fe8e4ccf248ff",
+    "semantic_hash": "0b684d459def8ca9775fe8e4ccf248ff"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Liabilities/Create.cshtml": {
+    "mtime": 1778341623.7709022,
+    "ast_hash": "1a4893149116eb1b2f57b06621cce700",
+    "semantic_hash": "1a4893149116eb1b2f57b06621cce700"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Liabilities/Edit.cshtml": {
+    "mtime": 1778341625.6949244,
+    "ast_hash": "9643a743ee185c59a8a00cbe07e29c06",
+    "semantic_hash": "9643a743ee185c59a8a00cbe07e29c06"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Liabilities/Index.cshtml": {
+    "mtime": 1778359501.9072888,
+    "ast_hash": "6bc87f244124f9a714622d54860b741c",
+    "semantic_hash": "6bc87f244124f9a714622d54860b741c"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Shared/_Layout.cshtml": {
+    "mtime": 1779175065.1279979,
+    "ast_hash": "641bdfa8e168d4f37a2e34dc17318316",
+    "semantic_hash": "641bdfa8e168d4f37a2e34dc17318316"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Shared/Error.cshtml": {
+    "mtime": 1778339364.1091053,
+    "ast_hash": "39fa0e5bf61d62e8ea203ef92ffe10b2",
+    "semantic_hash": "39fa0e5bf61d62e8ea203ef92ffe10b2"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Shared/_ValidationScriptsPartial.cshtml": {
+    "mtime": 1778339364.0951052,
+    "ast_hash": "048fa0ab23ee182e3d405f190b4513fd",
+    "semantic_hash": "048fa0ab23ee182e3d405f190b4513fd"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Savings/_SavingForm.cshtml": {
+    "mtime": 1778545185.6317766,
+    "ast_hash": "7f29d57005f8e5620fb1a539c5588abe",
+    "semantic_hash": "7f29d57005f8e5620fb1a539c5588abe"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Savings/Create.cshtml": {
+    "mtime": 1778544716.703771,
+    "ast_hash": "d55873277d8bbec7577f5d8dccac67d5",
+    "semantic_hash": "d55873277d8bbec7577f5d8dccac67d5"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Savings/Edit.cshtml": {
+    "mtime": 1778544723.545845,
+    "ast_hash": "a11692492bdeaf239f4fba85e84309b7",
+    "semantic_hash": "a11692492bdeaf239f4fba85e84309b7"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Savings/Index.cshtml": {
+    "mtime": 1778636570.8749285,
+    "ast_hash": "2e107e5eaafb3e6eda8ac3f8f8af53b7",
+    "semantic_hash": "2e107e5eaafb3e6eda8ac3f8f8af53b7"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/AssetPurchases/Create.cshtml": {
+    "mtime": 1778636516.4123645,
+    "ast_hash": "112689aa462dffe6460f1dd35f06827e",
+    "semantic_hash": "112689aa462dffe6460f1dd35f06827e"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/AssetPurchases/Edit.cshtml": {
+    "mtime": 1778636532.339529,
+    "ast_hash": "17e2bbb97ef4a99fbf231a39751523a8",
+    "semantic_hash": "17e2bbb97ef4a99fbf231a39751523a8"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/AssetPurchases/_AssetPurchaseForm.cshtml": {
+    "mtime": 1778636493.8121312,
+    "ast_hash": "d096dd874a8833c49a090c1d0cf09bf4",
+    "semantic_hash": "d096dd874a8833c49a090c1d0cf09bf4"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/AssetPurchases/Index.cshtml": {
+    "mtime": 1778636611.9303553,
+    "ast_hash": "d8d8f2fbf32f2b793ef39513030bae5d",
+    "semantic_hash": "d8d8f2fbf32f2b793ef39513030bae5d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Properties/launchSettings.json": {
+    "mtime": 1778339364.0581045,
+    "ast_hash": "54498f4fd5ee260cde0920c873c505cb",
+    "semantic_hash": "54498f4fd5ee260cde0920c873c505cb"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ErrorViewModel.cs": {
+    "mtime": 1778339364.0771048,
+    "ast_hash": "ba64a451bc3b75dc2745c88c1d0926ce",
+    "semantic_hash": "ba64a451bc3b75dc2745c88c1d0926ce"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/OtherExpense.cs": {
+    "mtime": 1779180321.3449194,
+    "ast_hash": "ba3fdf48ab73fc75d2f6e8418b36d232",
+    "semantic_hash": "ba3fdf48ab73fc75d2f6e8418b36d232"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/ScrapedProduct.cs": {
+    "mtime": 1779332851.6217327,
+    "ast_hash": "e689e7b64de082447530b19bd027ac1c",
+    "semantic_hash": "e689e7b64de082447530b19bd027ac1c"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/CreditCardPurchase.cs": {
+    "mtime": 1779175544.73759,
+    "ast_hash": "450a6bb0c0d0fcb1a7f268d556d3f594",
+    "semantic_hash": "450a6bb0c0d0fcb1a7f268d556d3f594"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/MockProduct.cs": {
+    "mtime": 1778346510.1766853,
+    "ast_hash": "b53c8c52b45430a617c4727bbcc8b2b2",
+    "semantic_hash": "b53c8c52b45430a617c4727bbcc8b2b2"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/DolarRate.cs": {
+    "mtime": 1778636324.351399,
+    "ast_hash": "3ea96b4f543b43dc2138dc4245fe50dd",
+    "semantic_hash": "3ea96b4f543b43dc2138dc4245fe50dd"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/MonthlyBalance.cs": {
+    "mtime": 1779175926.1370945,
+    "ast_hash": "5a0f54da030ed12c4add436903886743",
+    "semantic_hash": "5a0f54da030ed12c4add436903886743"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/FixedLiability.cs": {
+    "mtime": 1778346510.1769283,
+    "ast_hash": "8190a222e0df4d23d5e8a4429b87efce",
+    "semantic_hash": "8190a222e0df4d23d5e8a4429b87efce"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/Saving.cs": {
+    "mtime": 1778545151.410414,
+    "ast_hash": "80c5364cc9eecacb82747d1f9afe676c",
+    "semantic_hash": "80c5364cc9eecacb82747d1f9afe676c"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/FuelPrices.cs": {
+    "mtime": 1779174910.103481,
+    "ast_hash": "2ecb15a70aec3e1c66c9659944047eda",
+    "semantic_hash": "2ecb15a70aec3e1c66c9659944047eda"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/AssetPurchase.cs": {
+    "mtime": 1778686665.748333,
+    "ast_hash": "6bb4e8a2b23e0eaaf35d74ccab0e7d21",
+    "semantic_hash": "6bb4e8a2b23e0eaaf35d74ccab0e7d21"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/Vehicle.cs": {
+    "mtime": 1779177521.895975,
+    "ast_hash": "d5d27605da7e7d071c0a00a8e34d4888",
+    "semantic_hash": "d5d27605da7e7d071c0a00a8e34d4888"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/RecurringIncome.cs": {
+    "mtime": 1779178881.4000437,
+    "ast_hash": "30b0fa4ea3dccdad405445b91e1feb56",
+    "semantic_hash": "30b0fa4ea3dccdad405445b91e1feb56"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/ShoppingList.cs": {
+    "mtime": 1778346510.1770456,
+    "ast_hash": "c07a92048899a06f857a9a022ea16e68",
+    "semantic_hash": "c07a92048899a06f857a9a022ea16e68"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/HousingService.cs": {
+    "mtime": 1778346510.1771522,
+    "ast_hash": "6d9fac742a581008fa602e2fe0751680",
+    "semantic_hash": "6d9fac742a581008fa602e2fe0751680"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/Income.cs": {
+    "mtime": 1778346510.1772587,
+    "ast_hash": "53a1ac907244f78b4a02124d991060c9",
+    "semantic_hash": "53a1ac907244f78b4a02124d991060c9"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/VehicleMaintenanceLog.cs": {
+    "mtime": 1779177527.2410333,
+    "ast_hash": "4c30bfdacc1f369ff711e5dcdaf6d873",
+    "semantic_hash": "4c30bfdacc1f369ff711e5dcdaf6d873"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/User.cs": {
+    "mtime": 1778346510.177369,
+    "ast_hash": "0cffdd38d390e5c93dd7ecb0e59b4c07",
+    "semantic_hash": "0cffdd38d390e5c93dd7ecb0e59b4c07"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/AdminStats.cs": {
+    "mtime": 1778346510.1775084,
+    "ast_hash": "af0c984b010f2d271365c19c73a9d672",
+    "semantic_hash": "af0c984b010f2d271365c19c73a9d672"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/ShoppingListItem.cs": {
+    "mtime": 1778346510.177648,
+    "ast_hash": "8d97f0c628bd5d88d31fe054818cde76",
+    "semantic_hash": "8d97f0c628bd5d88d31fe054818cde76"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/RecurringIncomeViewModel.cs": {
+    "mtime": 1779178891.5401647,
+    "ast_hash": "c372de44480f6d02131e9baf48b8743d",
+    "semantic_hash": "c372de44480f6d02131e9baf48b8743d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/SavingViewModel.cs": {
+    "mtime": 1778545159.153496,
+    "ast_hash": "b06203a1b3d6264cc33664a7261ab1d1",
+    "semantic_hash": "b06203a1b3d6264cc33664a7261ab1d1"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/AssetPurchaseViewModel.cs": {
+    "mtime": 1778686670.3584971,
+    "ast_hash": "346f70e93f28163431f52e3c008db6c1",
+    "semantic_hash": "346f70e93f28163431f52e3c008db6c1"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/RegisterViewModel.cs": {
+    "mtime": 1778341378.5120125,
+    "ast_hash": "ff50f7540acf451dfa71585e529551dd",
+    "semantic_hash": "ff50f7540acf451dfa71585e529551dd"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/OtherExpenseViewModel.cs": {
+    "mtime": 1779180326.2159114,
+    "ast_hash": "b516b9ac2df60d421dda1a1373c2bdde",
+    "semantic_hash": "b516b9ac2df60d421dda1a1373c2bdde"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/CreditCardViewModel.cs": {
+    "mtime": 1779175553.9446774,
+    "ast_hash": "859e94c65f6ee6f97f175ee6a42abf4b",
+    "semantic_hash": "859e94c65f6ee6f97f175ee6a42abf4b"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/ShoppingViewModel.cs": {
+    "mtime": 1779335555.7291324,
+    "ast_hash": "adb191f2d2bab8a90bf2073cd888a1c8",
+    "semantic_hash": "adb191f2d2bab8a90bf2073cd888a1c8"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/AssetPurchaseIndexViewModel.cs": {
+    "mtime": 1778636342.0735786,
+    "ast_hash": "32423d2a386ed82bb06aff624b367ac5",
+    "semantic_hash": "32423d2a386ed82bb06aff624b367ac5"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/HousingServiceViewModel.cs": {
+    "mtime": 1778341383.4330716,
+    "ast_hash": "7344909b01bd72600db374e1115e2b04",
+    "semantic_hash": "7344909b01bd72600db374e1115e2b04"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/DashboardViewModel.cs": {
+    "mtime": 1779179327.697282,
+    "ast_hash": "dd755a7f0fddde70492f837f4791e2da",
+    "semantic_hash": "dd755a7f0fddde70492f837f4791e2da"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/VehicleViewModel.cs": {
+    "mtime": 1779177541.2671862,
+    "ast_hash": "3026ed173f1846cfb1715f66ac8ac647",
+    "semantic_hash": "3026ed173f1846cfb1715f66ac8ac647"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/ReportViewModel.cs": {
+    "mtime": 1778341398.5072527,
+    "ast_hash": "e8351cbf2ab2ba1e99a08ae8bb5285d3",
+    "semantic_hash": "e8351cbf2ab2ba1e99a08ae8bb5285d3"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/CreditCardIndexViewModel.cs": {
+    "mtime": 1779175561.842752,
+    "ast_hash": "d4ee218b5cac97ee040f7df9c24cb8b0",
+    "semantic_hash": "d4ee218b5cac97ee040f7df9c24cb8b0"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/FixedLiabilityViewModel.cs": {
+    "mtime": 1778341388.537133,
+    "ast_hash": "a989f1f47cc1ce86052aafb28477bfe4",
+    "semantic_hash": "a989f1f47cc1ce86052aafb28477bfe4"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/IncomeViewModel.cs": {
+    "mtime": 1778341390.875161,
+    "ast_hash": "ad5c0675707ce777717ecd0e26ca585d",
+    "semantic_hash": "ad5c0675707ce777717ecd0e26ca585d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/SavingsIndexViewModel.cs": {
+    "mtime": 1778636357.8477387,
+    "ast_hash": "f6ed145ccd5e2cc64f2a0e3a943c34c2",
+    "semantic_hash": "f6ed145ccd5e2cc64f2a0e3a943c34c2"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/VehicleIndexViewModel.cs": {
+    "mtime": 1779176236.9613028,
+    "ast_hash": "278ce40efd8095ef2151b0ed743c06f5",
+    "semantic_hash": "278ce40efd8095ef2151b0ed743c06f5"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/IncomeIndexViewModel.cs": {
+    "mtime": 1779178899.278257,
+    "ast_hash": "529dca465fb3713abdfa3915afe45b8a",
+    "semantic_hash": "529dca465fb3713abdfa3915afe45b8a"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/LoginViewModel.cs": {
+    "mtime": 1778341374.6409657,
+    "ast_hash": "1581792a7d120a95ffc75fe708b744d2",
+    "semantic_hash": "1581792a7d120a95ffc75fe708b744d2"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/OtherExpenseIndexViewModel.cs": {
+    "mtime": 1778636349.3376522,
+    "ast_hash": "5b492ed4b9a1bd03a5f7541ff5e5b6bc",
+    "semantic_hash": "5b492ed4b9a1bd03a5f7541ff5e5b6bc"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/ISavingRepository.cs": {
+    "mtime": 1778545164.902557,
+    "ast_hash": "0d08c84596b9607ab583920b59b27e31",
+    "semantic_hash": "0d08c84596b9607ab583920b59b27e31"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/RecurringIncomeRepository.cs": {
+    "mtime": 1779178932.3646505,
+    "ast_hash": "dbecdd6f8c07428d782e1e6232f57ee9",
+    "semantic_hash": "dbecdd6f8c07428d782e1e6232f57ee9"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/FixedLiabilityRepository.cs": {
+    "mtime": 1778354913.287072,
+    "ast_hash": "22103cd4d68133d6906aae0180028bbd",
+    "semantic_hash": "22103cd4d68133d6906aae0180028bbd"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/CreditCardRepository.cs": {
+    "mtime": 1779175591.1590295,
+    "ast_hash": "b9cfd87eddc718fa9a8f114dd29816c4",
+    "semantic_hash": "b9cfd87eddc718fa9a8f114dd29816c4"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/SavingRepository.cs": {
+    "mtime": 1778545172.656639,
+    "ast_hash": "9c58d9b54e5c4b969303b8e9216f0a44",
+    "semantic_hash": "9c58d9b54e5c4b969303b8e9216f0a44"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IMockProductRepository.cs": {
+    "mtime": 1778346979.2416763,
+    "ast_hash": "7318eac7df506347580d380e1213b690",
+    "semantic_hash": "7318eac7df506347580d380e1213b690"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/UserRepository.cs": {
+    "mtime": 1778346979.2420425,
+    "ast_hash": "1a27c900f9a7e619315de8c03f42cd2b",
+    "semantic_hash": "1a27c900f9a7e619315de8c03f42cd2b"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/ICreditCardRepository.cs": {
+    "mtime": 1779175578.7159116,
+    "ast_hash": "7877bc0d2cd36d73adb291ae5325bdb0",
+    "semantic_hash": "7877bc0d2cd36d73adb291ae5325bdb0"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/HousingServiceRepository.cs": {
+    "mtime": 1778359381.7110655,
+    "ast_hash": "a9d43637b76e5c5323fccd06c4f703ab",
+    "semantic_hash": "a9d43637b76e5c5323fccd06c4f703ab"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/ShoppingRepository.cs": {
+    "mtime": 1778346979.2427843,
+    "ast_hash": "8b90b899e325a4f80291a000ef4c1598",
+    "semantic_hash": "8b90b899e325a4f80291a000ef4c1598"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IOtherExpenseRepository.cs": {
+    "mtime": 1779180331.2799432,
+    "ast_hash": "6d0646e4ed332820d85f6c993a90b4a5",
+    "semantic_hash": "6d0646e4ed332820d85f6c993a90b4a5"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/ProductCatalogRepository.cs": {
+    "mtime": 1779335549.7918272,
+    "ast_hash": "55bbb0dc483bf85ac6676b628043817a",
+    "semantic_hash": "55bbb0dc483bf85ac6676b628043817a"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IncomeRepository.cs": {
+    "mtime": 1778346979.2432144,
+    "ast_hash": "edf214d21b5de3850b3a67806dfe2f1d",
+    "semantic_hash": "edf214d21b5de3850b3a67806dfe2f1d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IFixedLiabilityRepository.cs": {
+    "mtime": 1778346979.2502725,
+    "ast_hash": "7265c1a3fc43f8460519d611f2f27abd",
+    "semantic_hash": "7265c1a3fc43f8460519d611f2f27abd"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IShoppingRepository.cs": {
+    "mtime": 1778346979.250462,
+    "ast_hash": "87b8469dadb102b18b1c67713a41781d",
+    "semantic_hash": "87b8469dadb102b18b1c67713a41781d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IProductCatalogRepository.cs": {
+    "mtime": 1779335542.1140447,
+    "ast_hash": "3cf552eaa8fbe7042d6698891b64f52a",
+    "semantic_hash": "3cf552eaa8fbe7042d6698891b64f52a"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IVehicleRepository.cs": {
+    "mtime": 1779177553.1203153,
+    "ast_hash": "57d7239de7d7494103c27919fecff64d",
+    "semantic_hash": "57d7239de7d7494103c27919fecff64d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IIncomeRepository.cs": {
+    "mtime": 1778346979.2505825,
+    "ast_hash": "de577d4ead7e845ff8c0e0309c30df34",
+    "semantic_hash": "de577d4ead7e845ff8c0e0309c30df34"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/AssetPurchaseRepository.cs": {
+    "mtime": 1778686698.7776773,
+    "ast_hash": "7729fc2f9b352054198c394a43d887de",
+    "semantic_hash": "7729fc2f9b352054198c394a43d887de"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/VehicleRepository.cs": {
+    "mtime": 1779177566.9444659,
+    "ast_hash": "2c604a743d9f684f4a8e4aa451d8047d",
+    "semantic_hash": "2c604a743d9f684f4a8e4aa451d8047d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IHousingServiceRepository.cs": {
+    "mtime": 1778346979.2506952,
+    "ast_hash": "e54a315e76a77c3b3193d5033890dcea",
+    "semantic_hash": "e54a315e76a77c3b3193d5033890dcea"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IRecurringIncomeRepository.cs": {
+    "mtime": 1779178914.5824392,
+    "ast_hash": "b534375328a02dce8c71cd4e6fb03a68",
+    "semantic_hash": "b534375328a02dce8c71cd4e6fb03a68"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IUserRepository.cs": {
+    "mtime": 1778346979.2508476,
+    "ast_hash": "983e672142288acf0a5edf5d1eaf4751",
+    "semantic_hash": "983e672142288acf0a5edf5d1eaf4751"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/IAssetPurchaseRepository.cs": {
+    "mtime": 1778686678.1306794,
+    "ast_hash": "dc48ad164bba36d06c6b4bb2794970f6",
+    "semantic_hash": "dc48ad164bba36d06c6b4bb2794970f6"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/OtherExpenseRepository.cs": {
+    "mtime": 1779180338.6129897,
+    "ast_hash": "b77bd1b6b73ca9ea631c05fd1ca7a7c1",
+    "semantic_hash": "b77bd1b6b73ca9ea631c05fd1ca7a7c1"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/MockProductRepository.cs": {
+    "mtime": 1778346979.2514307,
+    "ast_hash": "5c0f988e9c63cb971153a04bdbf35ec3",
+    "semantic_hash": "5c0f988e9c63cb971153a04bdbf35ec3"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js": {
+    "mtime": 1778339364.1091053,
+    "ast_hash": "00e5caa5c85cb0efa90509048231708d",
+    "semantic_hash": "00e5caa5c85cb0efa90509048231708d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js": {
+    "mtime": 1778339364.096105,
+    "ast_hash": "2a905437ecdd58e97aad5ee4d30d3687",
+    "semantic_hash": "2a905437ecdd58e97aad5ee4d30d3687"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/wwwroot/js/site.js": {
+    "mtime": 1778339364.1141052,
+    "ast_hash": "45c5b71d8bdab5b967da084ca3d67202",
+    "semantic_hash": "45c5b71d8bdab5b967da084ca3d67202"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Data/DateOnlyTypeHandler.cs": {
+    "mtime": 1779178114.3712766,
+    "ast_hash": "83bf282eb446c349756e28f9781f06bd",
+    "semantic_hash": "83bf282eb446c349756e28f9781f06bd"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Data/IShoppingDbConnectionFactory.cs": {
+    "mtime": 1779332838.2415652,
+    "ast_hash": "b74b8c26bbfdc8c61d98284666c342f9",
+    "semantic_hash": "b74b8c26bbfdc8c61d98284666c342f9"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Data/ShoppingDbConnectionFactory.cs": {
+    "mtime": 1779332839.8305852,
+    "ast_hash": "b34995e1395e1d0558c28981432eb949",
+    "semantic_hash": "b34995e1395e1d0558c28981432eb949"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Data/IDbConnectionFactory.cs": {
+    "mtime": 1778339403.594608,
+    "ast_hash": "61b38d3971a0cc5ae056c9516d770082",
+    "semantic_hash": "61b38d3971a0cc5ae056c9516d770082"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Data/SqlConnectionFactory.cs": {
+    "mtime": 1778343073.1419244,
+    "ast_hash": "272d75880e677b1d336b47ed4745f607",
+    "semantic_hash": "272d75880e677b1d336b47ed4745f607"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/README.md": {
+    "mtime": 1778546942.8416064,
+    "ast_hash": "62691b8504f1093442af6c1252182201",
+    "semantic_hash": "62691b8504f1093442af6c1252182201"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/PLAN.md": {
+    "mtime": 1778341271.9187145,
+    "ast_hash": "7d59f62b74f1b6f6fa7e38b07b8ee604",
+    "semantic_hash": "7d59f62b74f1b6f6fa7e38b07b8ee604"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/docker-compose.yml": {
+    "mtime": 1779332925.7716234,
+    "ast_hash": "355d9aa4688fe3eaf212e539c9a67cb5",
+    "semantic_hash": "355d9aa4688fe3eaf212e539c9a67cb5"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/CLAUDE.md": {
+    "mtime": 1780250054.3146563,
+    "ast_hash": "a02dc65690e4e61ea4ea5a81b550e997",
+    "semantic_hash": "a02dc65690e4e61ea4ea5a81b550e997"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/RF.MD": {
+    "mtime": 1778340384.6937442,
+    "ast_hash": "de5c7ea7ac5bd2e5973a71c5dc1d833d",
+    "semantic_hash": "de5c7ea7ac5bd2e5973a71c5dc1d833d"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/.claude/CLAUDE.md": {
+    "mtime": 1780250054.3140182,
+    "ast_hash": "db73b0edd7ffbc61ceac177130730865",
+    "semantic_hash": "db73b0edd7ffbc61ceac177130730865"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/.claude/AGENTS.md": {
+    "mtime": 1778339213.4971182,
+    "ast_hash": "0eace9899eae0bf0e5a7f74a757ce8ce",
+    "semantic_hash": "0eace9899eae0bf0e5a7f74a757ce8ce"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/.claude/skills/graphify/SKILL.md": {
+    "mtime": 1780250054.3136394,
+    "ast_hash": "5ae00786ea53e4d944ab70abe11eedd1",
+    "semantic_hash": "5ae00786ea53e4d944ab70abe11eedd1"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/wwwroot/lib/jquery/LICENSE.txt": {
+    "mtime": 1778339364.093105,
+    "ast_hash": "3ec4e08bb12e3a080de34154d7e1d78e",
+    "semantic_hash": "3ec4e08bb12e3a080de34154d7e1d78e"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/wwwroot/lib/jquery-validation/LICENSE.md": {
+    "mtime": 1778339364.089105,
+    "ast_hash": "f683602956cb1dbd6269076b875f7aba",
+    "semantic_hash": "f683602956cb1dbd6269076b875f7aba"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/wwwroot/lib/jquery-validation-unobtrusive/LICENSE.txt": {
+    "mtime": 1778339364.1011052,
+    "ast_hash": "9fc642ff452b28d62ab19b7eea50dfb9",
+    "semantic_hash": "9fc642ff452b28d62ab19b7eea50dfb9"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/graphify-out/memory/query_20260531_181158_why_does_the_shopping_feature_use_a_separate_datab.md": {
+    "mtime": 1780251118.4813871,
+    "ast_hash": "e15becf51c98618ee8266277a573e94f",
+    "semantic_hash": "e15becf51c98618ee8266277a573e94f"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/graphify-out/memory/query_20260531_181158_how_deeply_is_the_vehicle_subsystem_wired_into_the.md": {
+    "mtime": 1780251118.7414603,
+    "ast_hash": "d345dd868e045479c9bdc7d9f51e3086",
+    "semantic_hash": "d345dd868e045479c9bdc7d9f51e3086"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/graphify-out/memory/query_20260531_181145_why_does_idbconnectionfactory_act_as_a_bridge_betw.md": {
+    "mtime": 1780251105.7625403,
+    "ast_hash": "474d1a69198d34a20277d6b17211085a",
+    "semantic_hash": "474d1a69198d34a20277d6b17211085a"
+  },
+  "/home/haraidasan/programming/gitrepositories/organizaTodo/graphify-out/memory/query_20260531_181145_how_does_sp_balance_get_monthly_aggregate_across_a.md": {
+    "mtime": 1780251105.9529917,
+    "ast_hash": "6f3ff9bd86d082ed2bfa404a86229795",
+    "semantic_hash": "6f3ff9bd86d082ed2bfa404a86229795"
+  }
+}
