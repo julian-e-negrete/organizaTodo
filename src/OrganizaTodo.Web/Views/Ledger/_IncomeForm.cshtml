@@ -1,0 +1,41 @@
+@model OrganizaTodo.Web.Models.ViewModels.LedgerIncomeViewModel
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Monto</label>
+        <div class="input-group">
+            <span class="input-group-text">$</span>
+            <input asp-for="Amount" type="number" step="0.01" class="form-control" placeholder="0.00" />
+        </div>
+        <span asp-validation-for="Amount" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Fecha</label>
+        <input asp-for="TransactionDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="TransactionDate" class="text-danger small"></span>
+    </div>
+
+    <div class="col-12">
+        <label class="form-label fw-semibold">Descripción</label>
+        <input asp-for="Description" class="form-control" placeholder="Ej: Sueldo" maxlength="300" />
+        <span asp-validation-for="Description" class="text-danger small"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Etiquetas existentes</label>
+        <select asp-for="SelectedTagIds" class="form-select" multiple size="4" data-val="false">
+            @foreach (var tag in Model.AvailableTags)
+            {
+                <option value="@tag.Id">@tag.Name</option>
+            }
+        </select>
+        <div class="form-text">Mantené Ctrl (o Cmd) para seleccionar varias.</div>
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Nuevas etiquetas</label>
+        <input asp-for="NewTagNames" class="form-control" placeholder="Ej: sueldo, freelance" />
+        <div class="form-text">Separadas por coma. Se crean si no existen.</div>
+    </div>
+</div>

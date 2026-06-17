@@ -80,10 +80,13 @@ builder.Services.AddScoped<ISavingRepository,          SavingRepository>();
 builder.Services.AddScoped<IAssetPurchaseRepository,   AssetPurchaseRepository>();
 builder.Services.AddScoped<IVehicleRepository,          VehicleRepository>();
 builder.Services.AddScoped<IRecurringIncomeRepository,  RecurringIncomeRepository>();
+builder.Services.AddScoped<ILedgerRepository,           LedgerRepository>();
 
 builder.Services.AddScoped<IAuthService,    AuthService>();
 builder.Services.AddScoped<IBalanceService, BalanceService>();
 builder.Services.AddScoped<IAdminService,   AdminService>();
+builder.Services.AddScoped<ILedgerInterestService, LedgerInterestService>();
+builder.Services.AddHostedService<LedgerInterestBackgroundService>();
 
 builder.Services.AddHttpClient<IDolarService,    DolarService>();
 builder.Services.AddHttpClient<IFuelPriceService, FuelPriceService>();

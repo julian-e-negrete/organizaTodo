@@ -1,0 +1,99 @@
+@model OrganizaTodo.Web.Models.ViewModels.LedgerTransactionDetailViewModel
+@{
+    var t = Model.Transaction;
+
+    string TypeLabel(string type) => type switch
+    {
+        "expense" => "Gasto",
+        "income" => "Ingreso",
+        "interest" => "Interés",
+        "initial" => "Saldo inicial",
+        _ => type
+    };
+
+    string TypeBadgeClass(string type) => type switch
+    {
+        "expense" => "bg-danger",
+        "income" => "bg-success",
+        "interest" => "bg-warning text-dark",
+        "initial" => "bg-secondary",
+        _ => "bg-secondary"
+    };
+}
+
+<dl class="row mb-0">
+    <dt class="col-sm-4">Fecha</dt>
+    <dd class="col-sm-8">@t.TransactionDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    <dt class="col-sm-4">Tipo</dt>
+    <dd class="col-sm-8"><span class="badge @TypeBadgeClass(t.Type)">@TypeLabel(t.Type)</span></dd>
+
+    <dt class="col-sm-4">Descripción</dt>
+    <dd class="col-sm-8">@t.Description</dd>
+
+    <dt class="col-sm-4">Monto</dt>
+    <dd class="col-sm-8 @(t.Amount < 0 ? "text-danger" : "text-success") fw-bold">$ @t.Amount.ToString("N2")</dd>
+
+    <dt class="col-sm-4">Saldo resultante</dt>
+    <dd class="col-sm-8 @(t.BalanceAfter < 0 ? "text-danger" : "")">$ @t.BalanceAfter.ToString("N2")</dd>
+
+    <dt class="col-sm-4">Etiquetas</dt>
+    <dd class="col-sm-8">
+        @if (!t.TagList.Any())
+        {
+            <span class="text-muted">—</span>
+        }
+        else
+        {
+            foreach (var tag in t.TagList)
+            {
+                <span class="badge bg-light text-dark border">@tag</span>
+            }
+        }
+    </dd>
+
+    @if (t.Type == "expense" && t.GeneratesInterest)
+    {
+        <dt class="col-sm-4">Genera interés</dt>
+        <dd class="col-sm-8">@(t.InterestRate?.ToString("0.##"))% mensual sobre saldo negativo total</dd>
+    }
+
+    @if (t.Type == "interest" && t.ParentTransactionId.HasValue)
+    {
+        <dt class="col-sm-4">Originado por</dt>
+        <dd class="col-sm-8">
+            #@t.ParentTransactionId — @t.ParentDescription
+            @if (t.ParentTransactionDate.HasValue)
+            {
+                <span class="text-muted">(@t.ParentTransactionDate.Value.ToString("dd/MM/yyyy"))</span>
+            }
+        </dd>
+    }
+</dl>
+
+@if (Model.ChildInterestTransactions.Any())
+{
+    <hr />
+    <h6 class="mb-2">Intereses generados por este gasto</h6>
+    <table class="table table-sm mb-0">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th class="text-end">Tasa</th>
+                <th class="text-end">Monto</th>
+                <th class="text-end">Saldo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model.ChildInterestTransactions)
+            {
+                <tr>
+                    <td>@c.TransactionDate.ToString("dd/MM/yyyy")</td>
+                    <td class="text-end">@(c.InterestRate?.ToString("0.##"))%</td>
+                    <td class="text-end text-danger">$ @c.Amount.ToString("N2")</td>
+                    <td class="text-end @(c.BalanceAfter < 0 ? "text-danger" : "")">$ @c.BalanceAfter.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

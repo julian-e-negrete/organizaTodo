@@ -30,9 +30,9 @@
     "semantic_hash": "f41660a1468da5954949a833f3e63947"
   },
   "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Program.cs": {
-    "mtime": 1781111397.6124558,
-    "ast_hash": "8d881766b2237b4b0667726cccf5802c",
-    "semantic_hash": ""
+    "mtime": 1779332914.4784915,
+    "ast_hash": "61b2f1a06fd7513adf9e420a8ff9d7be",
+    "semantic_hash": "61b2f1a06fd7513adf9e420a8ff9d7be"
   },
   "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/appsettings.json": {
     "mtime": 1779574336.058976,
@@ -190,9 +190,9 @@
     "semantic_hash": "a182836bf846b24e6a193810a6e09715"
   },
   "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/init.sql": {
-    "mtime": 1781110893.6128557,
-    "ast_hash": "be9469497f7fd53ebc8f38f19e0de61b",
-    "semantic_hash": ""
+    "mtime": 1779333213.1496108,
+    "ast_hash": "88ab151f3ed7963ddace79202b6ae395",
+    "semantic_hash": "88ab151f3ed7963ddace79202b6ae395"
   },
   "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_012_fix_shopping_list_ambiguity.sql": {
     "mtime": 1779333271.5291488,
@@ -450,9 +450,9 @@
     "semantic_hash": "6bc87f244124f9a714622d54860b741c"
   },
   "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Shared/_Layout.cshtml": {
-    "mtime": 1781110013.7090745,
-    "ast_hash": "35dcff9a749ba4eb2805d2d2a31e898e",
-    "semantic_hash": ""
+    "mtime": 1779175065.1279979,
+    "ast_hash": "641bdfa8e168d4f37a2e34dc17318316",
+    "semantic_hash": "641bdfa8e168d4f37a2e34dc17318316"
   },
   "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Shared/Error.cshtml": {
     "mtime": 1778339364.1091053,
@@ -953,135 +953,5 @@
     "mtime": 1780251105.9529917,
     "ast_hash": "6f3ff9bd86d082ed2bfa404a86229795",
     "semantic_hash": "6f3ff9bd86d082ed2bfa404a86229795"
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Controllers/LedgerController.cs": {
-    "mtime": 1781111623.4669642,
-    "ast_hash": "2b1e02c896e86689344c02c14e3339fc",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/LedgerInterestService.cs": {
-    "mtime": 1781111379.272252,
-    "ast_hash": "362af9dae6701cf89ef3eecd0e4cc440",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/ILedgerInterestService.cs": {
-    "mtime": 1781109981.3157153,
-    "ast_hash": "c0b32266186a21d4c07b1d7dc7c52126",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Services/LedgerInterestBackgroundService.cs": {
-    "mtime": 1781111386.3823311,
-    "ast_hash": "b2c9580076cbe741c0e0906c7b080142",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Database/migrate_013_savings_ledger.sql": {
-    "mtime": 1781110855.678434,
-    "ast_hash": "ad015c5276bb6e16465d85d4a57c9072",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Ledger/CreateIncome.cshtml": {
-    "mtime": 1781110415.4325345,
-    "ast_hash": "900c734bf7d697722e401d76350f2d2a",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Ledger/_ExpenseForm.cshtml": {
-    "mtime": 1781110390.9532616,
-    "ast_hash": "2b4604889dddc4509b5d4f8a47484fe4",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Ledger/Tags.cshtml": {
-    "mtime": 1781110433.0507307,
-    "ast_hash": "8f284c0921144856a55f1cd9e7d30277",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Ledger/_IncomeForm.cshtml": {
-    "mtime": 1781110408.7914605,
-    "ast_hash": "656efe07eba45dec45d095080aad00fd",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Ledger/Index.cshtml": {
-    "mtime": 1781111553.294185,
-    "ast_hash": "4a7d488377bd6c959fafc14f3c8428b7",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Ledger/CreateExpense.cshtml": {
-    "mtime": 1781110399.2893546,
-    "ast_hash": "f2c20f44b0078eca487177cdc7b6a930",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Ledger/History.cshtml": {
-    "mtime": 1781111694.8697572,
-    "ast_hash": "0b28d5196e9aab79e8cf3b68f2f70a41",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Views/Ledger/_TransactionDetail.cshtml": {
-    "mtime": 1781111269.5940337,
-    "ast_hash": "42cc99840e0396a27c4134c6f79965e4",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/LedgerBalancePoint.cs": {
-    "mtime": 1781109334.8975515,
-    "ast_hash": "07d950c8a972347701c379aaf9fbffc5",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/LedgerTransactionChild.cs": {
-    "mtime": 1781109330.6795049,
-    "ast_hash": "dfeb8d37dcba7502216e9c23a39d9d8f",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/LedgerTransaction.cs": {
-    "mtime": 1781109462.1159606,
-    "ast_hash": "e6c4a232e5c39fb9cf28b229ad23ec09",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/LedgerTag.cs": {
-    "mtime": 1781109320.0683875,
-    "ast_hash": "9b3f87aeca9728eaeca6b7b0e6552001",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/Domain/LedgerHistoryFilter.cs": {
-    "mtime": 1781109339.3056004,
-    "ast_hash": "02feefadfe8910766eecf1240a6b382d",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/LedgerHistoryViewModel.cs": {
-    "mtime": 1781111567.5623434,
-    "ast_hash": "0a50319f6c412ef61e7b2395aea56dd2",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/LedgerIndexViewModel.cs": {
-    "mtime": 1781109991.916833,
-    "ast_hash": "45f18607da62948e2df1782ac67f9ea1",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/LedgerIncomeViewModel.cs": {
-    "mtime": 1781110334.821636,
-    "ast_hash": "85d90df494faafcbc2089486b23d8a81",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/LedgerExpenseViewModel.cs": {
-    "mtime": 1781110327.813558,
-    "ast_hash": "8bae58391ecdaab604e492aa77fedb13",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/LedgerTagsViewModel.cs": {
-    "mtime": 1781110340.1376953,
-    "ast_hash": "1655d8e8454b795d865efee3ef7ccb3d",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Models/ViewModels/LedgerTransactionDetailViewModel.cs": {
-    "mtime": 1781111203.9693048,
-    "ast_hash": "b2d3f565c768d038f72b3a9749307bb7",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/ILedgerRepository.cs": {
-    "mtime": 1781109389.661158,
-    "ast_hash": "71a3600c58cd34c7d7ffdce38a73b8aa",
-    "semantic_hash": ""
-  },
-  "/home/haraidasan/programming/gitrepositories/organizaTodo/src/OrganizaTodo.Web/Repositories/LedgerRepository.cs": {
-    "mtime": 1781110193.4350677,
-    "ast_hash": "c8de55ef6dd980d38e105b645ffe45b6",
-    "semantic_hash": ""
   }
 }

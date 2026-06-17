@@ -1,0 +1,33 @@
+@model OrganizaTodo.Web.Models.ViewModels.LedgerExpenseViewModel
+@{ ViewData["Title"] = "Nuevo Gasto"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>💸 Nuevo Gasto</h4>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">‹ Volver</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="CreateExpense" method="post">
+            @Html.AntiForgeryToken()
+            <partial name="_ExpenseForm" />
+            <div class="mt-4">
+                <button type="submit" class="btn btn-danger">Registrar gasto</button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+    (function () {
+        const checkbox = document.getElementById('generatesInterestCheck');
+        const fields = document.getElementById('interestRateGroup');
+        function toggle() { fields.style.display = checkbox.checked ? '' : 'none'; }
+        checkbox.addEventListener('change', toggle);
+        toggle();
+    })();
+    </script>
+}

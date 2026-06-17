@@ -1,0 +1,45 @@
+@model OrganizaTodo.Web.Models.ViewModels.LedgerTagsViewModel
+@{ ViewData["Title"] = "Etiquetas"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>🏷️ Etiquetas</h4>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">‹ Volver</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form asp-action="Tags" method="post" class="row g-2 align-items-end">
+            @Html.AntiForgeryToken()
+            <div class="col-md-6">
+                <label class="form-label fw-semibold">Nueva etiqueta</label>
+                <input name="Name" class="form-control" maxlength="50" placeholder="Ej: vehiculo" />
+                <span class="text-danger small">@Html.ValidationMessage("Name")</span>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (!Model.Tags.Any())
+{
+    <p class="text-muted">No hay etiquetas creadas aún.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr><th>Nombre</th><th class="text-end">Usos</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var tag in Model.Tags)
+            {
+                <tr>
+                    <td>@tag.Name</td>
+                    <td class="text-end">@tag.UsageCount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

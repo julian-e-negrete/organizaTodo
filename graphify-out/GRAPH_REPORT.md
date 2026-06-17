@@ -1,13 +1,18 @@
-# Graph Report - .  (2026-05-31)
+# Graph Report - organizaTodo  (2026-06-10)
 
 ## Corpus Check
-- 4 files · ~45,896 words
+- 213 files · ~52,811 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 877 nodes · 1361 edges · 89 communities (46 shown, 43 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 66 edges (avg confidence: 0.86)
+- 1316 nodes · 2067 edges · 138 communities (65 shown, 73 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 66 edges (avg confidence: 0.86)
 - Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `4da5ad68`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Expense & Credit Card Views|Expense & Credit Card Views]]
@@ -92,18 +97,65 @@
 - [[_COMMUNITY_Jquery License|Jquery License]]
 - [[_COMMUNITY_Jquery Validation License|Jquery Validation License]]
 - [[_COMMUNITY_Jquery Validation Unobtrusive License|Jquery Validation Unobtrusive License]]
+- [[_COMMUNITY_Community 89|Community 89]]
+- [[_COMMUNITY_Community 90|Community 90]]
+- [[_COMMUNITY_Community 91|Community 91]]
+- [[_COMMUNITY_Community 92|Community 92]]
+- [[_COMMUNITY_Community 93|Community 93]]
+- [[_COMMUNITY_Community 94|Community 94]]
+- [[_COMMUNITY_Community 95|Community 95]]
+- [[_COMMUNITY_Community 96|Community 96]]
+- [[_COMMUNITY_Community 97|Community 97]]
+- [[_COMMUNITY_Community 98|Community 98]]
+- [[_COMMUNITY_Community 99|Community 99]]
+- [[_COMMUNITY_Community 100|Community 100]]
+- [[_COMMUNITY_Community 101|Community 101]]
+- [[_COMMUNITY_Community 102|Community 102]]
+- [[_COMMUNITY_Community 103|Community 103]]
+- [[_COMMUNITY_Community 104|Community 104]]
+- [[_COMMUNITY_Community 105|Community 105]]
+- [[_COMMUNITY_Community 106|Community 106]]
+- [[_COMMUNITY_Community 107|Community 107]]
+- [[_COMMUNITY_Community 108|Community 108]]
+- [[_COMMUNITY_Community 109|Community 109]]
+- [[_COMMUNITY_Community 110|Community 110]]
+- [[_COMMUNITY_Community 111|Community 111]]
+- [[_COMMUNITY_Community 112|Community 112]]
+- [[_COMMUNITY_Community 113|Community 113]]
+- [[_COMMUNITY_Community 114|Community 114]]
+- [[_COMMUNITY_Community 115|Community 115]]
+- [[_COMMUNITY_Community 116|Community 116]]
+- [[_COMMUNITY_Community 117|Community 117]]
+- [[_COMMUNITY_Community 118|Community 118]]
+- [[_COMMUNITY_Community 119|Community 119]]
+- [[_COMMUNITY_Community 120|Community 120]]
+- [[_COMMUNITY_Community 121|Community 121]]
+- [[_COMMUNITY_Community 122|Community 122]]
+- [[_COMMUNITY_Community 123|Community 123]]
+- [[_COMMUNITY_Community 124|Community 124]]
+- [[_COMMUNITY_Community 125|Community 125]]
+- [[_COMMUNITY_Community 126|Community 126]]
+- [[_COMMUNITY_Community 127|Community 127]]
+- [[_COMMUNITY_Community 128|Community 128]]
+- [[_COMMUNITY_Community 129|Community 129]]
+- [[_COMMUNITY_Community 130|Community 130]]
+- [[_COMMUNITY_Community 131|Community 131]]
+- [[_COMMUNITY_Community 132|Community 132]]
+- [[_COMMUNITY_Community 133|Community 133]]
+- [[_COMMUNITY_Community 134|Community 134]]
+- [[_COMMUNITY_Community 135|Community 135]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `IUserRepository` - 26 edges
 2. `Program (Startup/Bootstrap)` - 22 edges
-3. `IDbConnectionFactory` - 18 edges
-4. `ICreditCardRepository` - 18 edges
-5. `OrganizaTodo.Web.Models.ViewModels.LoginViewModel` - 17 edges
-6. `IOtherExpenseRepository` - 17 edges
-7. `IProductCatalogRepository` - 17 edges
-8. `IIncomeRepository` - 16 edges
-9. `IAssetPurchaseRepository` - 16 edges
-10. `_ValidationScriptsPartial Shared Partial` - 16 edges
+3. `ILedgerRepository` - 18 edges
+4. `LedgerRepository` - 18 edges
+5. `IDbConnectionFactory` - 18 edges
+6. `ICreditCardRepository` - 18 edges
+7. `OrganizaTodo.Web.Models.ViewModels.LoginViewModel` - 17 edges
+8. `IOtherExpenseRepository` - 17 edges
+9. `IProductCatalogRepository` - 17 edges
+10. `Task` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Ingresos Feature` --semantically_similar_to--> `Balance General Requirements (RF-14 to RF-17)`  [INFERRED] [semantically similar]
@@ -125,131 +177,135 @@
 - **IDbConnectionFactory Centrality Risk Cluster** — memory_concept_idbconnectionfactory_di_seam, memory_concept_idbconnectionfactory_high_betweenness, memory_concept_createconnection_async_risk, memory_concept_ishoppingdbconnectionfactory_di_marker [EXTRACTED 0.95]
 - **sp_balance_get_monthly Architectural Risks** — memory_concept_sp_balance_get_monthly_bypass_pattern, memory_concept_balance_sp_rewritten_twice, memory_concept_balance_no_optin_mechanism, memory_concept_sp_vehicles_get_monthly_total_feeds_balance [EXTRACTED 0.95]
 
-## Communities (89 total, 43 thin omitted)
+## Communities (138 total, 73 thin omitted)
 
 ### Community 0 - "Expense & Credit Card Views"
-Cohesion: 0.07
-Nodes (37): _CreditCardForm Partial View, CreditCard Create View, CreditCard Edit View, CreditCard Index View, Vehicles Table, VehicleMonthlyPayments Table, sp_vehicle_maintenance_log_create, sp_vehicles_get_by_user_id (due-month oil cost variant) (+29 more)
+Cohesion: 0.08
+Nodes (33): AssetPurchaseViewModel, AssetPurchasesController, AssetPurchasesController, _CreditCardForm Partial View, CreditCard Create View, CreditCard Edit View, CreditCard Index View, Users Table (+25 more)
 
 ### Community 1 - "Docker & DB Config"
-Cohesion: 0.07
-Nodes (40): DefaultConnection Environment Variable, Env File Configuration (.env), ShoppingConnection Environment Variable, Docker Compose Web Service, Architecture: Controllers -> Services -> Repositories -> Dapper -> SQL Server, Deferred Items: Password reset email, Real Coto/Carrefour API, PDF export, Bimonthly service calculation, OrganizaTodo Development Plan, Phase 1 - Foundation (+32 more)
+Cohesion: 0.17
+Nodes (12): Admin Feature, Ahorros Feature, Dashboard Feature, Ingresos Feature, OrganizaTodo Project, Otros Egresos Feature, Reportes Feature, Tarjeta de Crédito Feature (+4 more)
 
 ### Community 2 - "Income Controller"
-Cohesion: 0.13
-Nodes (21): IncomeController, Income, RecurringIncome, _IncomeForm Partial View, _RecurringIncomeForm Partial View, Income Create View, Income CreateRecurring View, Income Edit View (+13 more)
+Cohesion: 0.09
+Nodes (28): IncomeController, IncomeController, Income, RecurringIncome, _IncomeForm Partial View, _RecurringIncomeForm Partial View, Income Create View, Income CreateRecurring View (+20 more)
 
 ### Community 3 - "Auth & Asset Domain"
-Cohesion: 0.09
-Nodes (17): ClaimsPrincipal, Users Table, AssetPurchase, Saving, SavingRepository, IEnumerable, Saving, Task (+9 more)
+Cohesion: 0.15
+Nodes (9): ISavingRepository, SavingRepository, IEnumerable, Saving, Task, IEnumerable, Saving, Task (+1 more)
 
 ### Community 4 - "Credit Card Controller"
-Cohesion: 0.12
-Nodes (15): CreditCardController, CreditCardViewModel, HttpPost, IActionResult, Task, ValidateAntiForgeryToken, CreditCardPurchase, DateTime (+7 more)
+Cohesion: 0.11
+Nodes (18): CreditCardController, CreditCardController, CreditCardViewModel, CreditCardRepository, ICreditCardRepository, HttpPost, IActionResult, Task (+10 more)
 
 ### Community 5 - "Dashboard & Shopping Controllers"
-Cohesion: 0.09
-Nodes (22): AddShoppingItemViewModel, Controller, DashboardController, HomeController, ReportsController, ShoppingController, sp_balance_get_monthly, sp_balance_get_monthly (with recurring income) (+14 more)
+Cohesion: 0.07
+Nodes (31): AddShoppingItemViewModel, Controller, DashboardController, DashboardController, HomeController, HomeController, ReportsController, ReportsController (+23 more)
 
 ### Community 6 - "Savings & DynamicParameters"
-Cohesion: 0.12
-Nodes (16): DynamicParameters with DbType.Boolean, SavingsController, SavingViewModel, HttpPost, IActionResult, Task, ValidateAntiForgeryToken, AssetPurchase (+8 more)
+Cohesion: 0.16
+Nodes (12): DynamicParameters with DbType.Boolean, AssetPurchaseRepository, IAssetPurchaseRepository, AssetPurchase, DateOnly, IEnumerable, Task, AssetPurchase (+4 more)
 
 ### Community 7 - "Data Access Infrastructure"
-Cohesion: 0.11
-Nodes (20): Cookie Authentication Pattern, Dual Database Connection Strategy, MockProduct, IDbConnection, IDbConnection, string, IDbConnection, string (+12 more)
+Cohesion: 0.08
+Nodes (26): Cookie Authentication Pattern, Dual Database Connection Strategy, IDbConnectionFactory, IShoppingDbConnectionFactory, ShoppingDbConnectionFactory, SqlConnectionFactory, MockProduct, IMockProductRepository (+18 more)
 
 ### Community 8 - "Vehicle Repository"
-Cohesion: 0.13
-Nodes (12): VehicleRepository, DateOnly, IEnumerable, Task, Vehicle, VehicleMaintenanceLog, DateOnly, IEnumerable (+4 more)
+Cohesion: 0.09
+Nodes (18): Dapper CommandType.Text Pattern, DateOnlyTypeHandler, IDbDataParameter, IVehicleRepository, VehicleRepository, DateOnly, DateOnly, IEnumerable (+10 more)
 
 ### Community 9 - "DB Migrations & Schema"
-Cohesion: 0.09
-Nodes (27): FixedLiabilities (IsPaid/PaidDate added), sp_fixed_liabilities_get_by_id (with IsPaid), sp_fixed_liabilities_get_by_user_id (with IsPaid), sp_fixed_liabilities_mark_paid, sp_vehicles_create, sp_vehicles_delete (soft delete), sp_vehicles_get_by_id, sp_vehicles_get_by_user_id (+19 more)
+Cohesion: 0.05
+Nodes (39): FixedLiabilities (IsPaid/PaidDate added), sp_fixed_liabilities_get_by_id (with IsPaid), sp_fixed_liabilities_get_by_user_id (with IsPaid), sp_fixed_liabilities_mark_paid, sp_vehicles_create, sp_vehicles_delete (soft delete), sp_vehicles_get_by_id, sp_vehicles_get_by_user_id (+31 more)
 
 ### Community 10 - "User Repository"
-Cohesion: 0.14
-Nodes (7): IEnumerable, Task, User, IEnumerable, Task, User, IUserRepository
+Cohesion: 0.10
+Nodes (16): ADMIN Role Authorization Guard, AdminController, AdminController, IUserRepository, UserRepository, HttpPost, IActionResult, Task (+8 more)
 
 ### Community 11 - "Dapper Infrastructure"
-Cohesion: 0.12
-Nodes (12): Dapper CommandType.Text Pattern, DateOnlyTypeHandler, IDbDataParameter, DateOnly, IEnumerable, OtherExpense, Task, IEnumerable (+4 more)
+Cohesion: 0.09
+Nodes (22): ExpensesController, ExpensesController, OtherExpense, _ExpenseForm Partial View, Expenses Edit View, Expenses Index View, OtherExpenseViewModel, IOtherExpenseRepository (+14 more)
 
 ### Community 12 - "Shopping List Domain"
-Cohesion: 0.13
-Nodes (15): ShoppingList, ShoppingListItem, ShoppingRepository, Shopping Index View, IEnumerable, ShoppingList, ShoppingListItem, Task (+7 more)
+Cohesion: 0.10
+Nodes (17): ShoppingList, ShoppingListItem, IShoppingRepository, ShoppingRepository, Shopping Index View, IEnumerable, ShoppingList, ShoppingListItem (+9 more)
 
 ### Community 13 - "External APIs"
-Cohesion: 0.11
-Nodes (16): External API Integration (Dolar/Fuel scrapers), DolarRate, FuelPrices, List, FuelPriceService, DolarRate, IReadOnlyList, Task (+8 more)
+Cohesion: 0.08
+Nodes (22): External API Integration (Dolar/Fuel scrapers), DolarRate, FuelPrices, List, DolarService, FuelPriceService, FuelPriceService, IDolarService (+14 more)
 
 ### Community 14 - "Account Controller"
-Cohesion: 0.18
-Nodes (15): Authorize, AccountController, User, LoginViewModel, HttpGet, HttpPost, IActionResult, Task (+7 more)
+Cohesion: 0.08
+Nodes (26): Authorize, AccountController, AccountController, sp_admin_get_stats, AdminStats, User, LoginViewModel, AdminService (+18 more)
 
 ### Community 15 - "Housing Controller"
-Cohesion: 0.17
-Nodes (11): Repository Pattern, HousingController, HousingServiceViewModel, HttpPost, IActionResult, Task, ValidateAntiForgeryToken, HousingService (+3 more)
+Cohesion: 0.16
+Nodes (10): Repository Pattern, HousingServiceRepository, IHousingServiceRepository, HousingService, IEnumerable, Task, HousingService, IEnumerable (+2 more)
 
 ### Community 16 - "Liabilities Controller"
-Cohesion: 0.19
-Nodes (10): LiabilitiesController, FixedLiabilityViewModel, HttpPost, IActionResult, Task, ValidateAntiForgeryToken, FixedLiability, IEnumerable (+2 more)
+Cohesion: 0.40
+Nodes (7): LiabilitiesController, LiabilitiesController, FixedLiabilityViewModel, HttpPost, IActionResult, Task, ValidateAntiForgeryToken
 
 ### Community 17 - "Product Catalog Repository"
-Cohesion: 0.23
-Nodes (8): ScrapedProduct, IEnumerable, ScrapedProduct, Task, IEnumerable, ScrapedProduct, Task, IProductCatalogRepository
+Cohesion: 0.20
+Nodes (10): ScrapedProduct, IProductCatalogRepository, ProductCatalogRepository, IEnumerable, ScrapedProduct, Task, IEnumerable, ScrapedProduct (+2 more)
 
 ### Community 18 - "Fixed Liabilities & Balance"
 Cohesion: 0.15
-Nodes (10): FixedLiability, MonthlyBalance, FixedLiability, IEnumerable, Task, Task, MonthlyBalanceSummary, Liabilities/Index View (+2 more)
+Nodes (11): FixedLiability, FixedLiabilityRepository, IFixedLiabilityRepository, FixedLiability, IEnumerable, Task, FixedLiability, IEnumerable (+3 more)
 
 ### Community 19 - "Income Repository"
 Cohesion: 0.18
-Nodes (7): IEnumerable, Income, Task, IEnumerable, Income, Task, IIncomeRepository
+Nodes (9): IIncomeRepository, IncomeRepository, IEnumerable, Income, Task, IEnumerable, Income, Task (+1 more)
 
 ### Community 20 - "Admin Controller"
-Cohesion: 0.15
-Nodes (13): ADMIN Role Authorization Guard, AdminController, sp_admin_get_stats, AdminStats, AdminService, HttpPost, IActionResult, Task (+5 more)
+Cohesion: 0.06
+Nodes (35): For --cluster-only, For git commit hook, For /graphify add, For /graphify explain, For /graphify path, For /graphify query, For native CLAUDE.md integration, For --update (incremental re-extraction) (+27 more)
 
 ### Community 21 - "Architectural Insights (Q&A)"
 Cohesion: 0.16
 Nodes (18): No Opt-in Mechanism for New Domains in Balance SP, sp_balance_get_monthly Rewritten Twice by Migrations, CreateConnection() Async Change Risk Across 12 Repos, FuelPriceService Live AJAX Endpoint without Caching, IDbConnectionFactory as DI Infrastructure Seam, IDbConnectionFactory High Betweenness Centrality (0.137), IShoppingDbConnectionFactory as DI Marker Interface, MockProductRepository as Catalog Fallback (+10 more)
 
+### Community 22 - "View Bindings"
+Cohesion: 0.06
+Nodes (17): OrganizaTodo.Web.Models.ViewModels.AssetPurchaseIndexViewModel, OrganizaTodo.Web.Models.ViewModels.DashboardViewModel, OrganizaTodo.Web.Models.ViewModels.IncomeIndexViewModel, OrganizaTodo.Web.Models.ViewModels.LoginViewModel, OrganizaTodo.Web.Models.ViewModels.OtherExpenseIndexViewModel, OrganizaTodo.Web.Models.ViewModels.ReportViewModel, OrganizaTodo.Web.Models.ViewModels.SavingsIndexViewModel, OrganizaTodo.Web.Models.ViewModels.ShoppingViewModel (+9 more)
+
 ### Community 23 - "Expenses Controller"
-Cohesion: 0.22
-Nodes (12): ExpensesController, OtherExpense, _ExpenseForm Partial View, Expenses Edit View, Expenses Index View, OtherExpenseViewModel, HttpPost, IActionResult (+4 more)
+Cohesion: 0.10
+Nodes (19): LedgerTransaction, AnchorExpenseRow, InterestPointersRow, LedgerHistoryRow, LedgerRepository, DateTime, FirstAnchorExpenseDate, Id (+11 more)
 
 ### Community 24 - "App Configuration"
-Cohesion: 0.18
-Nodes (16): ASPNETCORE_ENVIRONMENT, applicationUrl, commandName, dotnetRunMessages, environmentVariables, launchBrowser, sslPort, iisSettings (+8 more)
+Cohesion: 0.11
+Nodes (25): ASPNETCORE_ENVIRONMENT, applicationUrl, commandName, dotnetRunMessages, environmentVariables, launchBrowser, applicationUrl, commandName (+17 more)
 
 ### Community 25 - "jQuery Validation"
-Cohesion: 0.13
-Nodes (4): escapeAttributeValue(), p(), u(), onError()
+Cohesion: 0.16
+Nodes (8): escapeAttributeValue(), f(), l(), m(), n(), p(), u(), onError()
 
 ### Community 26 - "Auth Service"
-Cohesion: 0.19
-Nodes (11): Error, RegisterViewModel, Success, Task, User, Error, RegisterViewModel, Success (+3 more)
+Cohesion: 0.16
+Nodes (13): AuthService, IAuthService, Error, RegisterViewModel, Success, Task, User, Error (+5 more)
 
 ### Community 27 - "Vehicles Controller"
-Cohesion: 0.33
-Nodes (8): VehiclesController, DateOnly, HttpGet, HttpPost, IActionResult, Task, ValidateAntiForgeryToken, VehicleViewModel
+Cohesion: 0.32
+Nodes (9): VehiclesController, VehiclesController, DateOnly, HttpGet, HttpPost, IActionResult, Task, ValidateAntiForgeryToken (+1 more)
 
 ### Community 28 - "Claude Agent Skills"
 Cohesion: 0.14
 Nodes (14): Architecture Skills Group, ASP.NET Core Web Skills Group, C# Code Skills Group, Meta-Skills: slopwatch + dotnet-agent-gotchas + dotnet-build-analysis, Security Skills Group, .NET Skill Library, Skill Routing by Task Type, Specialist Agents: concurrency, security, performance, blazor, testing (+6 more)
 
 ### Community 29 - "Asset Purchases Controller"
-Cohesion: 0.39
-Nodes (6): AssetPurchaseViewModel, AssetPurchasesController, HttpPost, IActionResult, Task, ValidateAntiForgeryToken
+Cohesion: 0.10
+Nodes (24): HousingController, HousingController, Vehicles Table, VehicleMonthlyPayments Table, sp_vehicle_maintenance_log_create, sp_vehicles_get_by_user_id (due-month oil cost variant), HousingService, Vehicle (+16 more)
 
 ### Community 30 - "Claude Settings & Hooks"
 Cohesion: 0.18
 Nodes (10): enabledPlugins, dotnet-skills@dotnet-skills, hooks, PostToolUse, PreToolUse, AllowedHosts, Logging, LogLevel (+2 more)
 
 ### Community 31 - "Recurring Income Repository"
-Cohesion: 0.33
-Nodes (4): IEnumerable, RecurringIncome, Task, IRecurringIncomeRepository
+Cohesion: 0.11
+Nodes (16): ILedgerRepository, DateTime, FirstAnchorExpenseDate, Id, IEnumerable, InterestRate, Items, LastInterestDate (+8 more)
 
 ### Community 32 - "Project Dependencies"
 Cohesion: 0.22
@@ -283,25 +339,89 @@ Nodes (5): Admin Index View, Admin Users View, AdminStats Domain Model, User Dom
 Cohesion: 0.50
 Nodes (4): HousingServiceViewModel (partial form), Housing/Create view, Housing/Edit view, Housing/Index view
 
+### Community 89 - "Community 89"
+Cohesion: 0.15
+Nodes (14): LedgerController, LedgerExpenseViewModel, LedgerHistoryGroup, LedgerHistoryViewModel, LedgerIncomeViewModel, LedgerTagCreateViewModel, HttpGet, HttpPost (+6 more)
+
+### Community 90 - "Community 90"
+Cohesion: 0.21
+Nodes (5): ILedgerInterestService, LedgerInterestService, Task, DateTime, Task
+
+### Community 91 - "Community 91"
+Cohesion: 0.18
+Nodes (10): Architecture, Development Plan – OrganizaTodo: Sistema de Finanzas Personales Multi-Usuario, Known Deferred Items, Phase 1 – Foundation (done), Phase 2 – Authentication & User Management (done), Phase 3 – Core Financial Modules (done), Phase 4 – Balance & Dashboard (done), Phase 5 – Shopping List & Mock Prices (done) (+2 more)
+
+### Community 92 - "Community 92"
+Cohesion: 0.18
+Nodes (11): Architecture: Controllers -> Services -> Repositories -> Dapper -> SQL Server, Deferred Items: Password reset email, Real Coto/Carrefour API, PDF export, Bimonthly service calculation, OrganizaTodo Development Plan, Phase 1 - Foundation, Phase 2 - Authentication & User Management, Phase 5 - Shopping List & Mock Prices, Phase 6 - Reports & Admin, Lista de Compras Feature (+3 more)
+
+### Community 93 - "Community 93"
+Cohesion: 0.22
+Nodes (10): Phase 4 - Balance & Dashboard, Pasivos Fijos Feature, Balance Formula: Saldo Restante = Ingresos - Pasivos - Otros Egresos, Future Extensions: shared finances, multi-currency, email notifications, custom categories, savings charts, Non-Functional Requirements (NF-01 to NF-05), Objective: Multi-User Personal Finance System, Total Pasivos Formula = Servicios + Tarjeta + Otros Pasivos Fijos, Liabilities Requirements (RF-11 to RF-13) (+2 more)
+
+### Community 94 - "Community 94"
+Cohesion: 0.25
+Nodes (7): Database, Docker, Features, OrganizaTodo, Requirements, Setup, Tech stack
+
+### Community 95 - "Community 95"
+Cohesion: 0.29
+Nodes (5): BackgroundService, CancellationToken, LedgerInterestBackgroundService, Task, TimeSpan
+
+### Community 96 - "Community 96"
+Cohesion: 0.29
+Nodes (5): Commands, Database Access Rules, graphify, .NET Skills Plugin, Project Structure
+
+### Community 97 - "Community 97"
+Cohesion: 0.29
+Nodes (5): IValidatableObject, IEnumerable, ValidationContext, ValidationResult, LedgerExpenseViewModel
+
+### Community 99 - "Community 99"
+Cohesion: 0.40
+Nodes (4): Agent Activation, Meta-Skills (Run After Changes), .NET Skill Library, Skill Routing by Task Type
+
+### Community 100 - "Community 100"
+Cohesion: 0.50
+Nodes (4): DefaultConnection Environment Variable, Env File Configuration (.env), ShoppingConnection Environment Variable, Docker Compose Web Service
+
+### Community 101 - "Community 101"
+Cohesion: 0.50
+Nodes (3): Answer, Q: How does sp_balance_get_monthly aggregate across all domain tables without going through repositories?, Source Nodes
+
+### Community 102 - "Community 102"
+Cohesion: 0.50
+Nodes (3): Answer, Q: Why does IDbConnectionFactory act as a bridge between 10 different communities?, Source Nodes
+
+### Community 103 - "Community 103"
+Cohesion: 0.50
+Nodes (3): Answer, Q: How deeply is the vehicle subsystem wired into the rest of the app?, Source Nodes
+
+### Community 104 - "Community 104"
+Cohesion: 0.50
+Nodes (3): Answer, Q: Why does the shopping feature use a separate database and what does that imply?, Source Nodes
+
+### Community 106 - "Community 106"
+Cohesion: 0.67
+Nodes (3): Phase 3 - Core Financial Modules, Servicios de Vivienda Feature, Housing Services Requirements (RF-01 to RF-04)
+
 ## Knowledge Gaps
-- **192 isolated node(s):** `allow`, `dotnet-skills@dotnet-skills`, `PostToolUse`, `PreToolUse`, `version` (+187 more)
+- **346 isolated node(s):** `allow`, `dotnet-skills@dotnet-skills`, `PostToolUse`, `PreToolUse`, `version` (+341 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **43 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **73 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Program (Startup/Bootstrap)` connect `Data Access Infrastructure` to `Auth & Asset Domain`, `Credit Card Controller`, `Dashboard & Shopping Controllers`, `Savings & DynamicParameters`, `Vehicle Repository`, `User Repository`, `Dapper Infrastructure`, `Shopping List Domain`, `External APIs`, `Housing Controller`, `Liabilities Controller`, `Product Catalog Repository`, `Income Repository`, `Admin Controller`, `Auth Service`, `Recurring Income Repository`?**
-  _High betweenness centrality (0.182) - this node is a cross-community bridge._
-- **Why does `IDbConnectionFactory` connect `Data Access Infrastructure` to `Expense & Credit Card Views`, `Income Controller`, `Auth & Asset Domain`, `Credit Card Controller`, `Savings & DynamicParameters`, `Vehicle Repository`, `User Repository`, `Dapper Infrastructure`, `Shopping List Domain`, `Fixed Liabilities & Balance`, `Income Repository`?**
-  _High betweenness centrality (0.148) - this node is a cross-community bridge._
-- **Why does `IUserRepository` connect `User Repository` to `Admin Controller`, `Data Access Infrastructure`, `Account Controller`, `Housing Controller`?**
-  _High betweenness centrality (0.064) - this node is a cross-community bridge._
-- **Are the 2 inferred relationships involving `IDbConnectionFactory` (e.g. with `Dual Database Connection Strategy` and `ShoppingDbConnectionFactory`) actually correct?**
-  _`IDbConnectionFactory` has 2 INFERRED edges - model-reasoned connections that need verification._
+- **Why does `Program (Startup/Bootstrap)` connect `Data Access Infrastructure` to `Income Controller`, `Auth & Asset Domain`, `Credit Card Controller`, `Dashboard & Shopping Controllers`, `Savings & DynamicParameters`, `Vehicle Repository`, `User Repository`, `Dapper Infrastructure`, `Shopping List Domain`, `External APIs`, `Account Controller`, `Housing Controller`, `Product Catalog Repository`, `Fixed Liabilities & Balance`, `Income Repository`, `Auth Service`?**
+  _High betweenness centrality (0.106) - this node is a cross-community bridge._
+- **Why does `IDbConnectionFactory` connect `Data Access Infrastructure` to `Income Controller`, `Auth & Asset Domain`, `Credit Card Controller`, `Savings & DynamicParameters`, `Vehicle Repository`, `User Repository`, `Dapper Infrastructure`, `Shopping List Domain`, `Housing Controller`, `Fixed Liabilities & Balance`, `Income Repository`?**
+  _High betweenness centrality (0.096) - this node is a cross-community bridge._
+- **Why does `IOtherExpenseRepository` connect `Dapper Infrastructure` to `Vehicle Repository`, `Data Access Infrastructure`?**
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **What connects `allow`, `dotnet-skills@dotnet-skills`, `PostToolUse` to the rest of the system?**
-  _195 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _349 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Expense & Credit Card Views` be split into smaller, more focused modules?**
-  _Cohesion score 0.06570048309178744 - nodes in this community are weakly interconnected._
-- **Should `Docker & DB Config` be split into smaller, more focused modules?**
-  _Cohesion score 0.06538461538461539 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08282828282828283 - nodes in this community are weakly interconnected._
+- **Should `Income Controller` be split into smaller, more focused modules?**
+  _Cohesion score 0.08853410740203194 - nodes in this community are weakly interconnected._
+- **Should `Credit Card Controller` be split into smaller, more focused modules?**
+  _Cohesion score 0.11025641025641025 - nodes in this community are weakly interconnected._

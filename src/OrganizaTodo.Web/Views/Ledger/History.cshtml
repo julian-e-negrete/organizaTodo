@@ -1,0 +1,284 @@
+@model OrganizaTodo.Web.Models.ViewModels.LedgerHistoryViewModel
+@{
+    ViewData["Title"] = "Historial de Movimientos";
+
+    string TypeLabel(string type) => type switch
+    {
+        "expense" => "Gasto",
+        "income" => "Ingreso",
+        "interest" => "Interés",
+        "initial" => "Saldo inicial",
+        _ => type
+    };
+
+    string TypeBadgeClass(string type) => type switch
+    {
+        "expense" => "bg-danger",
+        "income" => "bg-success",
+        "interest" => "bg-warning text-dark",
+        "initial" => "bg-secondary",
+        _ => "bg-secondary"
+    };
+
+    List<string> FilterQs()
+    {
+        var qs = new List<string>();
+        if (Model.DateFrom.HasValue) qs.Add($"DateFrom={Uri.EscapeDataString(Model.DateFrom.Value.ToString("s"))}");
+        if (Model.DateTo.HasValue) qs.Add($"DateTo={Uri.EscapeDataString(Model.DateTo.Value.ToString("s"))}");
+        if (!string.IsNullOrEmpty(Model.Type)) qs.Add($"Type={Model.Type}");
+        if (Model.TagIds is not null) foreach (var t in Model.TagIds) qs.Add($"TagIds={t}");
+        if (Model.AmountMin.HasValue) qs.Add($"AmountMin={Model.AmountMin}");
+        if (Model.AmountMax.HasValue) qs.Add($"AmountMax={Model.AmountMax}");
+        if (Model.OnlyWithInterest == true) qs.Add("OnlyWithInterest=true");
+        if (Model.OnlyNegativeBalance == true) qs.Add("OnlyNegativeBalance=true");
+        if (!string.IsNullOrEmpty(Model.Search)) qs.Add($"Search={Uri.EscapeDataString(Model.Search)}");
+        if (!string.IsNullOrEmpty(Model.GroupBy)) qs.Add($"GroupBy={Model.GroupBy}");
+        return qs;
+    }
+
+    string PageUrl(int page)
+    {
+        var qs = FilterQs();
+        qs.Add($"PageSize={Model.PageSize}");
+        qs.Add($"Page={page}");
+        return Url.Action("History") + "?" + string.Join("&", qs);
+    }
+
+    string ExportUrl()
+    {
+        var qs = FilterQs();
+        return Url.Action("ExportCsv") + "?" + string.Join("&", qs);
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>📜 Historial de Movimientos</h4>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">‹ Volver</a>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="get" asp-action="History" class="row g-2">
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold">Desde</label>
+                <input asp-for="DateFrom" type="datetime-local" class="form-control form-control-sm" />
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold">Hasta</label>
+                <input asp-for="DateTo" type="datetime-local" class="form-control form-control-sm" />
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold">Tipo</label>
+                <select asp-for="Type" class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    <option value="expense">Gasto</option>
+                    <option value="income">Ingreso</option>
+                    <option value="interest">Interés</option>
+                    <option value="initial">Saldo inicial</option>
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold">Etiquetas</label>
+                <select asp-for="TagIds" class="form-select form-select-sm" multiple size="1">
+                    @foreach (var tag in Model.AvailableTags)
+                    {
+                        <option value="@tag.Id">@tag.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold">Monto mín.</label>
+                <input asp-for="AmountMin" type="number" step="0.01" class="form-control form-control-sm" />
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold">Monto máx.</label>
+                <input asp-for="AmountMax" type="number" step="0.01" class="form-control form-control-sm" />
+            </div>
+            <div class="col-12 col-md-4">
+                <label class="form-label small fw-semibold">Buscar</label>
+                <input asp-for="Search" class="form-control form-control-sm" placeholder="Descripción, ID o etiqueta" />
+            </div>
+            <div class="col-6 col-md-2">
+                <label class="form-label small fw-semibold">Agrupar por</label>
+                <select asp-for="GroupBy" class="form-select form-select-sm">
+                    <option value="">Sin agrupar</option>
+                    <option value="day">Día</option>
+                    <option value="week">Semana</option>
+                    <option value="month">Mes</option>
+                    <option value="year">Año</option>
+                </select>
+            </div>
+            <div class="col-12 col-md-3 d-flex align-items-center gap-3 pt-md-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="onlyWithInterest" name="OnlyWithInterest" value="true" checked="@(Model.OnlyWithInterest == true)" />
+                    <label class="form-check-label small" for="onlyWithInterest">Solo con interés</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="onlyNegativeBalance" name="OnlyNegativeBalance" value="true" checked="@(Model.OnlyNegativeBalance == true)" />
+                    <label class="form-check-label small" for="onlyNegativeBalance">Solo saldo negativo</label>
+                </div>
+            </div>
+            <div class="col-12 col-md-3 d-flex align-items-center gap-2 pt-md-4">
+                <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                <a asp-action="History" class="btn btn-outline-secondary btn-sm">Limpiar</a>
+                <a href="@ExportUrl()" class="btn btn-outline-success btn-sm">Exportar CSV</a>
+            </div>
+            <input type="hidden" asp-for="PageSize" />
+        </form>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(Model.GroupBy))
+{
+    if (!Model.Groups.Any())
+    {
+        <p class="text-muted">No se encontraron movimientos con los filtros aplicados.</p>
+    }
+    else
+    {
+        @foreach (var group in Model.Groups)
+        {
+            <div class="card mb-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">@group.Label</span>
+                    <span>
+                        <span class="text-muted small me-2">@group.Count movimiento(s)</span>
+                        <span class="@(group.Subtotal < 0 ? "text-danger" : "text-success") fw-bold">$ @group.Subtotal.ToString("N2")</span>
+                    </span>
+                </div>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Descripción</th>
+                            <th>Etiquetas</th>
+                            <th class="text-end">Monto</th>
+                            <th class="text-end">Saldo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in group.Items)
+                        {
+                            <tr>
+                                <td>@item.TransactionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td><span class="badge @TypeBadgeClass(item.Type)">@TypeLabel(item.Type)</span></td>
+                                <td>@item.Description</td>
+                                <td>
+                                    @foreach (var tag in item.TagList)
+                                    {
+                                        <span class="badge bg-light text-dark border">@tag</span>
+                                    }
+                                </td>
+                                <td class="text-end @(item.Amount < 0 ? "text-danger" : "text-success") fw-bold">
+                                    $ @item.Amount.ToString("N2")
+                                </td>
+                                <td class="text-end @(item.BalanceAfter < 0 ? "text-danger" : "")">
+                                    $ @item.BalanceAfter.ToString("N2")
+                                </td>
+                                <td class="text-end">
+                                    <a href="#" class="btn btn-sm btn-outline-secondary detail-link" data-id="@item.Id">Ver detalle</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        <p class="text-muted small">@Model.TotalCount movimiento(s) en total.</p>
+    }
+}
+else if (!Model.Items.Any())
+{
+    <p class="text-muted">No se encontraron movimientos con los filtros aplicados.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Etiquetas</th>
+                <th class="text-end">Monto</th>
+                <th class="text-end">Saldo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>@item.TransactionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td><span class="badge @TypeBadgeClass(item.Type)">@TypeLabel(item.Type)</span></td>
+                    <td>@item.Description</td>
+                    <td>
+                        @foreach (var tag in item.TagList)
+                        {
+                            <span class="badge bg-light text-dark border">@tag</span>
+                        }
+                    </td>
+                    <td class="text-end @(item.Amount < 0 ? "text-danger" : "text-success") fw-bold">
+                        $ @item.Amount.ToString("N2")
+                    </td>
+                    <td class="text-end @(item.BalanceAfter < 0 ? "text-danger" : "")">
+                        $ @item.BalanceAfter.ToString("N2")
+                    </td>
+                    <td class="text-end">
+                        <a href="#" class="btn btn-sm btn-outline-secondary detail-link" data-id="@item.Id">Ver detalle</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination pagination-sm">
+                @for (var p = 1; p <= Model.TotalPages; p++)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" href="@PageUrl(p)">@p</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+    <p class="text-muted small">@Model.TotalCount movimiento(s) en total.</p>
+}
+
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalle del movimiento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body" id="detailModalBody">
+                <p class="text-muted mb-0">Cargando...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.detail-link').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                e.preventDefault();
+                var id = this.dataset.id;
+                var modalBody = document.getElementById('detailModalBody');
+                modalBody.innerHTML = '<p class="text-muted mb-0">Cargando...</p>';
+                var modal = new bootstrap.Modal(document.getElementById('detailModal'));
+                modal.show();
+                fetch('@Url.Action("TransactionDetail")?id=' + id)
+                    .then(function (r) { return r.ok ? r.text() : Promise.reject(); })
+                    .then(function (html) { modalBody.innerHTML = html; })
+                    .catch(function () { modalBody.innerHTML = '<p class="text-danger mb-0">Error al cargar el detalle.</p>'; });
+            });
+        });
+    </script>
+}

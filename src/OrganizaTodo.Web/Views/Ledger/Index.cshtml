@@ -1,0 +1,134 @@
+@using System.Text.Json
+@model OrganizaTodo.Web.Models.ViewModels.LedgerIndexViewModel
+@{
+    ViewData["Title"] = "Ahorros y Deudas";
+
+    var chartLabels = JsonSerializer.Serialize(Model.BalanceSeries.Select(p => p.TransactionDate.ToString("dd/MM/yyyy")));
+    var chartData = JsonSerializer.Serialize(Model.BalanceSeries.Select(p => p.BalanceAfter));
+
+    string TypeLabel(string type) => type switch
+    {
+        "expense" => "Gasto",
+        "income" => "Ingreso",
+        "interest" => "Interés",
+        "initial" => "Saldo inicial",
+        _ => type
+    };
+
+    string TypeBadgeClass(string type) => type switch
+    {
+        "expense" => "bg-danger",
+        "income" => "bg-success",
+        "interest" => "bg-warning text-dark",
+        "initial" => "bg-secondary",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>💳 Ahorros y Deudas</h4>
+    <div>
+        <a asp-action="CreateIncome" class="btn btn-success btn-sm">+ Ingreso</a>
+        <a asp-action="CreateExpense" class="btn btn-danger btn-sm">+ Gasto</a>
+        <a asp-action="History" class="btn btn-outline-secondary btn-sm">Ver historial</a>
+        <a asp-action="Tags" class="btn btn-outline-secondary btn-sm">Etiquetas</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card @(Model.IsNegative ? "border-danger" : "border-success") h-100">
+            <div class="card-body">
+                <div class="text-muted small">Saldo actual</div>
+                <div class="fs-3 fw-bold @(Model.IsNegative ? "text-danger" : "text-success")">
+                    $ @Model.CurrentBalance.ToString("N2")
+                </div>
+                @if (Model.IsNegative)
+                {
+                    <div class="text-muted" style="font-size:.7rem">Saldo negativo (deuda)</div>
+                }
+            </div>
+        </div>
+    </div>
+    @if (Model.BalanceSeries.Count() > 1)
+    {
+        <div class="col-md-8">
+            <div class="card h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-2">Evolución del saldo</div>
+                    <canvas id="balanceChart" height="80"></canvas>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<h6 class="mb-2">Movimientos recientes</h6>
+@if (!Model.RecentTransactions.Any())
+{
+    <p class="text-muted">No hay movimientos registrados aún.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Fecha</th>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th>Etiquetas</th>
+                <th class="text-end">Monto</th>
+                <th class="text-end">Saldo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.RecentTransactions)
+            {
+                <tr>
+                    <td>@item.TransactionDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td><span class="badge @TypeBadgeClass(item.Type)">@TypeLabel(item.Type)</span></td>
+                    <td>@item.Description</td>
+                    <td>
+                        @foreach (var tag in item.TagList)
+                        {
+                            <span class="badge bg-light text-dark border">@tag</span>
+                        }
+                    </td>
+                    <td class="text-end @(item.Amount < 0 ? "text-danger" : "text-success") fw-bold">
+                        $ @item.Amount.ToString("N2")
+                    </td>
+                    <td class="text-end @(item.BalanceAfter < 0 ? "text-danger" : "")">
+                        $ @item.BalanceAfter.ToString("N2")
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (Model.BalanceSeries.Count() > 1)
+{
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            new Chart(document.getElementById('balanceChart'), {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(chartLabels),
+                    datasets: [{
+                        label: 'Saldo',
+                        data: @Html.Raw(chartData),
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13,110,253,.1)',
+                        fill: true,
+                        tension: 0.2
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: { y: { ticks: { callback: function (v) { return '$ ' + v.toLocaleString('es-AR'); } } } }
+                }
+            });
+        </script>
+    }
+}
