@@ -1,7 +1,4 @@
 {
-  "enabledPlugins": {
-    "dotnet-skills@dotnet-skills": true
-  },
   "hooks": {
     "PostToolUse": [
       {
@@ -26,5 +23,9 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "dotnet-skills@dotnet-skills": true,
+    "pinecone@claude-plugins-official": true
   }
 }

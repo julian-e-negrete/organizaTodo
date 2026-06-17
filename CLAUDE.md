@@ -48,3 +48,17 @@ Rules:
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+
+## Pinecone (vector search over both databases)
+
+This project uses Pinecone as a vector database for semantic search/exploration over both Postgres databases on the server. Two indexes, both embedded with `multilingual-e5-large` (catalog/financial text is Spanish) via the `chunk_text` field:
+
+- **`organizatodo-products`** (namespace `products`) — the scraped shopping catalog: `carrefour_products` / `coto_products` tables in the **Shopping DB** (`POSTGRES_DB_Shopping` / `ConnectionStrings:ShoppingConnection`, a separate database from the main app DB on the same Postgres server). One record per product, `chunk_text` = `"{name} - {brand} - {category}"`, with flat fields: `name`, `brand`, `category`, `price`, `list_price`, `promo`, `available`, `source` (Carrefour/Coto), `product_id`, `sku_id`, `scraped_at`. Sync: `scripts/sync_products_to_pinecone.py`, keyed `{source}:{product_id}`.
+- **`organizatodo-financial`** (namespace `records`) — financial line-items from the **main app DB** (`POSTGRES_DB` / `ConnectionStrings:DefaultConnection`): `HousingServices`, `CreditCardPurchases`, `FixedLiabilities`, `Income`, `OtherExpenses`, `Savings`, `LedgerTransactions`, `ShoppingListItems`. One record per row, tagged with an `entity_type` field and `user_id`, `chunk_text` built from each table's descriptive field (e.g. `Name`/`Description`/`Notes`) plus a short type label. Sync: `scripts/sync_financial_to_pinecone.py`, keyed `{entity_type}:{Id}`.
+
+Hard exclusions — never query, embed, or sync these into Pinecone under any circumstance: `Users` (`PasswordHash`, `Email`), `PasswordResetTokens` (`Token`), `ShoppingLists` / `LedgerTags` / `LedgerTransactionTags` (containers/junctions, no content), `MockProducts` (legacy mock data, superseded by `organizatodo-products`).
+
+Rules:
+- For product/catalog exploration ("find products like X", "what's in category Y") or financial-record exploration ("find expenses like X", "past payments similar to Y"), use the Pinecone MCP `search-records` tool against the relevant index instead of writing ad-hoc SQL.
+- When adding a new table or field to either sync script, check it isn't in the hard-exclusions list above first.
+- After the Shopping DB catalog is rescraped, re-run `scripts/sync_products_to_pinecone.py`. After financial records change meaningfully, re-run `scripts/sync_financial_to_pinecone.py`. Both read `POSTGRES_*` / `PINECONE_API_KEY` from env and overwrite existing records on re-run (no duplicates).
