@@ -10,4 +10,5 @@ public sealed class Saving
     public string Notes { get; set; } = string.Empty;
     public bool IsInitialBalance { get; set; }
     public DateTime CreatedAt { get; set; }
+    public int? LedgerTransactionId { get; set; }
 }

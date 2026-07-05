@@ -25,7 +25,7 @@ public sealed class OtherExpenseRepository(IDbConnectionFactory connectionFactor
     public async Task CreateAsync(int userId, string description, decimal amount, int month, int year, int? vehicleId = null)
     {
         using var conn = connectionFactory.CreateConnection();
-        await conn.QueryFirstOrDefaultAsync<object>(
+        await conn.ExecuteScalarAsync<int>(
             "SELECT sp_other_expenses_create(@userId, @description, @amount, @month, @year, @vehicleId)",
             new { userId, description, amount, month, year, vehicleId });
     }

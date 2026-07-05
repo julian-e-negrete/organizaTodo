@@ -32,7 +32,7 @@ public sealed class SavingRepository(IDbConnectionFactory connectionFactory) : I
         p.Add("notes",            notes,            System.Data.DbType.String);
         p.Add("isInitialBalance", isInitialBalance, System.Data.DbType.Boolean);
         using var conn = connectionFactory.CreateConnection();
-        await conn.QueryFirstOrDefaultAsync<object>(
+        await conn.ExecuteScalarAsync<int>(
             "SELECT sp_savings_create(@userId, @amount, @month, @year, @notes, @isInitialBalance)", p);
     }
 
