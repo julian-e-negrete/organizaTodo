@@ -68,6 +68,7 @@ public class DesktopHostTests
         await Assert.ThrowsAsync<InvalidOperationException>(() => host.StartAsync());
 
         Assert.Contains("Stop", postgres.Calls);
+        Assert.True(webApp.Stopped);
     }
 
     [Fact]

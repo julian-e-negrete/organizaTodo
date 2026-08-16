@@ -39,6 +39,11 @@ public sealed class DesktopHost(
         }
         catch
         {
+            // webAppRunner.StartAsync may have already started Kestrel internally before
+            // throwing (e.g. it faulted after ApplicationStarted). Stop it best-effort so
+            // Kestrel isn't left running once Postgres is torn down; never let a failure
+            // here mask the original exception or prevent Postgres cleanup from running.
+            try { await webAppRunner.StopAsync(ct); } catch { /* best-effort cleanup */ }
             await postgresManager.StopAsync(ct);
             throw;
         }

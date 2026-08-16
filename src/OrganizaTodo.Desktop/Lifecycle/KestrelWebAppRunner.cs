@@ -39,7 +39,24 @@ public sealed class KestrelWebAppRunner : IWebAppRunner
         // shadows the IHost.RunAsync(CancellationToken) extension method for overload
         // resolution purposes. Casting to IHost restores access to the cancellable overload.
         _runTask = ((IHost)_app).RunAsync(ct);
-        await started.Task.WaitAsync(TimeSpan.FromSeconds(30), ct);
+
+        // Race ApplicationStarted against the run task itself: if the host faults (or
+        // exits) before starting, _runTask completes first and awaiting it below surfaces
+        // the real exception immediately instead of masking it behind a 30s timeout. The
+        // outer WaitAsync remains the fallback for a genuinely hung startup, where neither
+        // task completes in time.
+        var completed = await Task.WhenAny(started.Task, _runTask).WaitAsync(TimeSpan.FromSeconds(30), ct);
+        if (completed == _runTask)
+        {
+            // Observe the fault so it never becomes an unobserved task exception, and
+            // rethrow it (via await) so the caller sees the real startup failure.
+            await _runTask;
+        }
+
+        if (!started.Task.IsCompleted)
+        {
+            throw new TimeoutException("Kestrel did not signal ApplicationStarted within the timeout.");
+        }
 
         return $"http://127.0.0.1:{port}";
     }
