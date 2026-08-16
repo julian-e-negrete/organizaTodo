@@ -7,6 +7,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CFC55AE2-001
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizaTodo.Web", "src\OrganizaTodo.Web\OrganizaTodo.Web.csproj", "{6AFE2B35-C638-47F2-9FFD-F464DCB49723}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizaTodo.Desktop", "src\OrganizaTodo.Desktop\OrganizaTodo.Desktop.csproj", "{264E1349-BB32-4662-9C64-1D1779AD9250}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0739C194-FF8F-4062-8197-C4F285D042E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizaTodo.Desktop.Tests", "tests\OrganizaTodo.Desktop.Tests\OrganizaTodo.Desktop.Tests.csproj", "{3E53D7EA-D534-418D-814C-3974512F4EF7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +26,18 @@ Global
 		{6AFE2B35-C638-47F2-9FFD-F464DCB49723}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6AFE2B35-C638-47F2-9FFD-F464DCB49723}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6AFE2B35-C638-47F2-9FFD-F464DCB49723}.Release|Any CPU.Build.0 = Release|Any CPU
+		{264E1349-BB32-4662-9C64-1D1779AD9250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{264E1349-BB32-4662-9C64-1D1779AD9250}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{264E1349-BB32-4662-9C64-1D1779AD9250}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{264E1349-BB32-4662-9C64-1D1779AD9250}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E53D7EA-D534-418D-814C-3974512F4EF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E53D7EA-D534-418D-814C-3974512F4EF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E53D7EA-D534-418D-814C-3974512F4EF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E53D7EA-D534-418D-814C-3974512F4EF7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6AFE2B35-C638-47F2-9FFD-F464DCB49723} = {CFC55AE2-0017-4E0F-B2FC-0D11B5CC2EC7}
+		{264E1349-BB32-4662-9C64-1D1779AD9250} = {CFC55AE2-0017-4E0F-B2FC-0D11B5CC2EC7}
+		{3E53D7EA-D534-418D-814C-3974512F4EF7} = {0739C194-FF8F-4062-8197-C4F285D042E1}
 	EndGlobalSection
 EndGlobal
