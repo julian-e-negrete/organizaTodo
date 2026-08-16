@@ -21,7 +21,17 @@ public static class Program
         var builder = WebApplication.CreateBuilder(args);
         configure?.Invoke(builder);
 
-        builder.Services.AddControllersWithViews();
+        // AddControllersWithViews() discovers controllers via ApplicationPartManager,
+        // which by default is seeded from IHostEnvironment.ApplicationName — derived from
+        // Assembly.GetEntryAssembly(). That's fine when this app is its own process entry
+        // point (`dotnet run --project src/OrganizaTodo.Web`), but BuildApp is also invoked
+        // in-process from OrganizaTodo.Desktop (and from test hosts), where the entry
+        // assembly is the *caller's*, not this one — leaving this assembly's controllers
+        // undiscovered and every route 404ing. Explicitly registering this assembly as an
+        // application part makes controller discovery independent of who the process entry
+        // point is.
+        builder.Services.AddControllersWithViews()
+            .AddApplicationPart(typeof(Program).Assembly);
 
         builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
         builder.Services.AddSingleton<IShoppingDbConnectionFactory, ShoppingDbConnectionFactory>();
