@@ -19,6 +19,8 @@ public sealed class PostgresManager(
     string logsDir) : IPostgresManager
 {
     private Process? _process;
+    private Task? _stdoutPipeTask;
+    private Task? _stderrPipeTask;
 
     public Task InitializeIfNeededAsync(CancellationToken ct = default)
     {
@@ -69,8 +71,8 @@ public sealed class PostgresManager(
 
         var logPath = Path.Combine(logsDir, "postgres.log");
         TruncateLogIfOversized(logPath);
-        _ = PipeStreamToFileAsync(_process.StandardOutput, logPath, ct);
-        _ = PipeStreamToFileAsync(_process.StandardError, logPath, ct);
+        _stdoutPipeTask = PipeStreamToFileAsync(_process.StandardOutput, logPath, ct);
+        _stderrPipeTask = PipeStreamToFileAsync(_process.StandardError, logPath, ct);
 
         return Task.CompletedTask;
     }
@@ -110,10 +112,21 @@ public sealed class PostgresManager(
 
     public async Task StopAsync(CancellationToken ct = default)
     {
-        if (_process is null || _process.HasExited) return;
+        if (_process is null) return;
 
-        RunToCompletion(Path.Combine(pgBinDirectory, "pg_ctl"), $"stop -D \"{pgDataDir}\" -m fast -w");
-        await _process.WaitForExitAsync(ct);
+        if (!_process.HasExited)
+        {
+            RunToCompletion(Path.Combine(pgBinDirectory, "pg_ctl"), $"stop -D \"{pgDataDir}\" -m fast -w");
+            await _process.WaitForExitAsync(ct);
+        }
+
+        // The process has exited, so its ends of the stdout/stderr pipes are closed and
+        // these will drain and complete quickly. Awaiting (rather than discarding) them
+        // surfaces any exception from PipeStreamToFileAsync instead of losing it silently.
+        if (_stdoutPipeTask is not null) await _stdoutPipeTask;
+        if (_stderrPipeTask is not null) await _stderrPipeTask;
+
+        _process.Dispose();
     }
 
     private static void RunToCompletion(string fileName, string arguments)
