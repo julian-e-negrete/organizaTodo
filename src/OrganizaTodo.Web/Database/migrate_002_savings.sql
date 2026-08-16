@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS "Savings" (
     "CreatedAt" TIMESTAMP     NOT NULL DEFAULT NOW()
 );
 
+DROP FUNCTION IF EXISTS sp_savings_get_by_user_id(integer);
 CREATE OR REPLACE FUNCTION sp_savings_get_by_user_id(user_id INT)
 RETURNS TABLE("Id" INT,"UserId" INT,"Amount" DECIMAL,"Month" INT,"Year" INT,"Notes" VARCHAR,"CreatedAt" TIMESTAMP)
 LANGUAGE plpgsql AS $$
@@ -22,6 +23,7 @@ BEGIN
 END;
 $$;
 
+DROP FUNCTION IF EXISTS sp_savings_get_by_id(integer,integer);
 CREATE OR REPLACE FUNCTION sp_savings_get_by_id(id INT, user_id INT)
 RETURNS TABLE("Id" INT,"UserId" INT,"Amount" DECIMAL,"Month" INT,"Year" INT,"Notes" VARCHAR,"CreatedAt" TIMESTAMP)
 LANGUAGE plpgsql AS $$
