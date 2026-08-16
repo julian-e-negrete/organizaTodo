@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OrganizaTodo.Desktop\OrganizaTodo.Desktop.csproj" />
+    <ProjectReference Include="..\..\src\OrganizaTodo.Web\OrganizaTodo.Web.csproj" />
   </ItemGroup>
 
 </Project>
