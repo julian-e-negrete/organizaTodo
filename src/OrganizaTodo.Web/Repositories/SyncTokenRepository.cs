@@ -1,3 +1,4 @@
+using System.Data;
 using Dapper;
 using OrganizaTodo.Web.Data;
 
@@ -8,8 +9,9 @@ public sealed class SyncTokenRepository(IDbConnectionFactory connectionFactory) 
     public async Task StoreTokenAsync(int userId, string tokenHash)
     {
         using var connection = connectionFactory.CreateConnection();
-        await connection.ExecuteAsync(
-            "INSERT INTO \"SyncTokens\" (\"UserId\", \"TokenHash\") VALUES (@userId, @tokenHash)",
-            new { userId, tokenHash });
+        await connection.QueryFirstOrDefaultAsync<object>(
+            "SELECT sp_sync_tokens_store(@userId, @tokenHash)",
+            new { userId, tokenHash },
+            commandType: CommandType.Text);
     }
 }
