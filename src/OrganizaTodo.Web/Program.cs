@@ -55,6 +55,7 @@ public static class Program
         builder.Services.AddScoped<IBalanceService, BalanceService>();
         builder.Services.AddScoped<IAdminService,   AdminService>();
         builder.Services.AddScoped<ILedgerInterestService, LedgerInterestService>();
+        builder.Services.AddScoped<ISyncTokenService, SyncTokenService>();
         builder.Services.AddHostedService<LedgerInterestBackgroundService>();
 
         builder.Services.AddHttpClient<IDolarService,    DolarService>();
