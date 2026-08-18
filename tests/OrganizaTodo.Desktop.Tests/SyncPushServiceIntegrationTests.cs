@@ -377,6 +377,92 @@ public class SyncPushServiceIntegrationTests : IAsyncLifetime
         Assert.Equal(ownParentTransactionId, storedParentId);
     }
 
+    [Fact]
+    public async Task ApplyChangesAsync_LedgerTransactionTags_TagIdPointsAtAnotherUsersTag_IsRejected()
+    {
+        // LedgerTransactionTags is a join-based-ownership table (its own ownership is
+        // validated via TransactionId -> LedgerTransactions in Check 2), but TagId is a
+        // SECOND foreign key on the same row that references LedgerTags — a table with its
+        // own direct UserId column. Without a secondary-FK check on TagId, an attacker can
+        // push a row whose TransactionId is their own (passing Check 2) while TagId points
+        // at another user's existing tag (a valid LedgerTags row, so the DB's own FK
+        // constraint doesn't block the insert) — leaking the victim's tag name back to the
+        // attacker via sp_ledger_history_get / sp_ledger_transaction_get_detail, which join
+        // LedgerTransactionTags -> LedgerTags on TagId with no UserId re-check.
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var ownTransactionId = await conn.ExecuteScalarAsync<int>(
+            """
+            INSERT INTO "LedgerTransactions" ("UserId", "Amount", "Type", "Description", "TransactionDate", "BalanceAfter")
+            VALUES (@userId, 100, 'expense', 'Caller tx', NOW(), 100)
+            RETURNING "Id"
+            """,
+            new { userId = _userId });
+
+        var victimTagId = await conn.ExecuteScalarAsync<int>(
+            "INSERT INTO \"LedgerTags\" (\"UserId\", \"Name\") VALUES (@otherUserId, 'VictimTag') RETURNING \"Id\"",
+            new { otherUserId = _otherUserId });
+
+        var service = new SyncPushService(_connectionString);
+        var syncId = Guid.NewGuid();
+
+        // The pushed row's TransactionId is the caller's own — it would pass the row's own
+        // (join-based) ownership check. Only TagId is attacker-controlled, pointing at the
+        // victim's tag (a sequential, trivially-enumerable Id).
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["ledgerTransactionTags"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["TransactionId"] = ownTransactionId, ["TagId"] = victimTagId,
+                })
+            }
+        }));
+
+        var exists = await conn.ExecuteScalarAsync<bool>(
+            "SELECT EXISTS (SELECT 1 FROM \"LedgerTransactionTags\" WHERE \"SyncId\" = @syncId)", new { syncId });
+        Assert.False(exists);
+    }
+
+    [Fact]
+    public async Task ApplyChangesAsync_LedgerTransactionTags_OwnTransactionAndOwnTag_Succeeds()
+    {
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var ownTransactionId = await conn.ExecuteScalarAsync<int>(
+            """
+            INSERT INTO "LedgerTransactions" ("UserId", "Amount", "Type", "Description", "TransactionDate", "BalanceAfter")
+            VALUES (@userId, 100, 'expense', 'Caller tx', NOW(), 100)
+            RETURNING "Id"
+            """,
+            new { userId = _userId });
+
+        var ownTagId = await conn.ExecuteScalarAsync<int>(
+            "INSERT INTO \"LedgerTags\" (\"UserId\", \"Name\") VALUES (@userId, 'OwnTag') RETURNING \"Id\"",
+            new { userId = _userId });
+
+        var service = new SyncPushService(_connectionString);
+        var syncId = Guid.NewGuid();
+
+        await service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["ledgerTransactionTags"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["TransactionId"] = ownTransactionId, ["TagId"] = ownTagId,
+                })
+            }
+        });
+
+        var storedTagId = await conn.ExecuteScalarAsync<int?>(
+            "SELECT \"TagId\" FROM \"LedgerTransactionTags\" WHERE \"SyncId\" = @syncId", new { syncId });
+        Assert.Equal(ownTagId, storedTagId);
+    }
+
     // ------------------------------------------------------------------
     // Finding 2: date/timestamp fields arrive from JSON as plain strings.
     // Npgsql sends a C# string as SQL `text`, and Postgres rejects binding

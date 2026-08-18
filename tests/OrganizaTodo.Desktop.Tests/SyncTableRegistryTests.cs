@@ -82,7 +82,9 @@ public class SyncTableRegistryTests
 
     // Finding 1: every secondary FK column embedded in a row's own business data (distinct
     // from the table's own ownership check) must be registered so SyncPushService actually
-    // validates it. This locks in the six relationships the finding called out by name.
+    // validates it. This locks in the seven relationships the finding called out by name
+    // (six from the original fix wave, plus LedgerTransactionTags.TagId -> LedgerTags found
+    // during re-review).
     [Theory]
     [InlineData("OtherExpenses", "VehicleId", "Vehicles")]
     [InlineData("Savings", "LedgerTransactionId", "LedgerTransactions")]
@@ -90,6 +92,7 @@ public class SyncTableRegistryTests
     [InlineData("AssetPurchases", "SavingId", "Savings")]
     [InlineData("VehicleMaintenanceLogs", "VehicleId", "Vehicles")]
     [InlineData("LedgerTransactions", "ParentTransactionId", "LedgerTransactions")]
+    [InlineData("LedgerTransactionTags", "TagId", "LedgerTags")]
     public void SecondaryForeignKeys_ContainsEveryKnownCrossTableReference(string tableName, string column, string parentTable)
     {
         var descriptor = SyncTableRegistry.Tables.Single(t => t.TableName == tableName);

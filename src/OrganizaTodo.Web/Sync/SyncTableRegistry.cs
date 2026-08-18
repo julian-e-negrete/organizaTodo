@@ -127,6 +127,14 @@ public static class SyncTableRegistry
         new("LedgerTransactionTags", "ledgerTransactionTags",
             "EXISTS (SELECT 1 FROM \"LedgerTransactions\" lt WHERE lt.\"Id\" = \"LedgerTransactionTags\".\"TransactionId\" AND lt.\"UserId\" = @userId)",
             new[] { "TransactionId", "TagId" },
-            OwnershipForeignKeyColumn: "TransactionId", OwnershipParentTable: "LedgerTransactions"),
+            OwnershipForeignKeyColumn: "TransactionId", OwnershipParentTable: "LedgerTransactions")
+        {
+            // TransactionId is this join-based table's own ownership FK (checked above via
+            // OwnershipForeignKeyColumn/OwnershipParentTable). TagId is a SEPARATE FK on the
+            // same row, referencing LedgerTags (a table with its own direct UserId column) —
+            // without this, a caller could push a row pointing TransactionId at their own
+            // transaction while pointing TagId at another user's tag.
+            SecondaryForeignKeys = [new SyncSecondaryForeignKey("TagId", "LedgerTags")],
+        },
     };
 }
