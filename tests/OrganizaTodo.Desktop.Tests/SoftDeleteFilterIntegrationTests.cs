@@ -151,4 +151,70 @@ public class SoftDeleteFilterIntegrationTests : IAsyncLifetime
             "SELECT * FROM sp_savings_get_by_user_id(@userId)", new { userId = _userId });
         Assert.DoesNotContain(visibleRows, row => (int)row.Id == id);
     }
+
+    [Fact]
+    public async Task ShoppingGetUserLists_ExcludesSoftDeletedItemsFromCountAndTotal()
+    {
+        // Post-review fix: before this migration, sp_shopping_delete_item hard-deleted
+        // the row, so it simply vanished from sp_shopping_get_user_lists' LEFT JOIN
+        // aggregate. Now that the delete is soft, a deleted item must still be
+        // excluded from ItemCount/TotalEstimated, or those numbers would silently
+        // keep counting items the user believes they removed.
+        await using var conn = await OpenConnectionAsync();
+
+        var listId = await conn.ExecuteScalarAsync<int>(
+            "SELECT \"Id\" FROM sp_shopping_get_or_create_list(@userId, 1, 2026)", new { userId = _userId });
+
+        await conn.ExecuteAsync(
+            "SELECT sp_shopping_add_item(@listId, @userId, 'Milk', 2, 100, 'Coto', 1)",
+            new { listId, userId = _userId });
+        await conn.ExecuteAsync(
+            "SELECT sp_shopping_add_item(@listId, @userId, 'Bread', 1, 50, 'Coto', 2)",
+            new { listId, userId = _userId });
+
+        var itemToDeleteId = await conn.ExecuteScalarAsync<int>(
+            "SELECT \"Id\" FROM \"ShoppingListItems\" WHERE \"ShoppingListId\" = @listId AND \"ProductName\" = 'Milk'",
+            new { listId });
+        await conn.ExecuteAsync("SELECT sp_shopping_delete_item(@itemToDeleteId, @userId)",
+            new { itemToDeleteId, userId = _userId });
+
+        var list = (await conn.QuerySingleAsync(
+            "SELECT * FROM sp_shopping_get_user_lists(@userId)", new { userId = _userId }));
+
+        Assert.Equal(1L, (long)list.ItemCount);
+        Assert.Equal(50m, (decimal)list.TotalEstimated);
+    }
+
+    [Fact]
+    public async Task LedgerTagsGetByUserId_ExcludesSoftDeletedTransactionsFromUsageCount()
+    {
+        // Post-review fix: sp_savings_delete/sp_other_expenses_delete/
+        // sp_asset_purchases_delete cascade-soft-delete linked "LedgerTransactions"
+        // rows but never touch "LedgerTransactionTags" itself, so a tag's UsageCount
+        // must exclude transactions whose "LedgerTransactions" row is now IsDeleted,
+        // or the count would silently keep growing stale.
+        await using var conn = await OpenConnectionAsync();
+
+        var tagId = await conn.ExecuteScalarAsync<int>(
+            "SELECT \"Id\" FROM sp_ledger_tags_get_or_create(@userId, 'groceries')", new { userId = _userId });
+
+        var transactionId = await conn.ExecuteScalarAsync<int>(
+            "INSERT INTO \"LedgerTransactions\" (\"UserId\", \"Amount\", \"Type\", \"Description\", \"TransactionDate\", \"BalanceAfter\") " +
+            "VALUES (@userId, -100, 'expense', 'Test expense', NOW(), 900) RETURNING \"Id\"",
+            new { userId = _userId });
+        await conn.ExecuteAsync("SELECT sp_ledger_tags_link(@transactionId, @tagId)", new { transactionId, tagId });
+
+        var usageBeforeDelete = await conn.ExecuteScalarAsync<long>(
+            "SELECT \"UsageCount\" FROM sp_ledger_tags_get_by_user_id(@userId) WHERE \"Id\" = @tagId",
+            new { userId = _userId, tagId });
+        Assert.Equal(1L, usageBeforeDelete);
+
+        await conn.ExecuteAsync(
+            "UPDATE \"LedgerTransactions\" SET \"IsDeleted\" = TRUE WHERE \"Id\" = @transactionId", new { transactionId });
+
+        var usageAfterDelete = await conn.ExecuteScalarAsync<long>(
+            "SELECT \"UsageCount\" FROM sp_ledger_tags_get_by_user_id(@userId) WHERE \"Id\" = @tagId",
+            new { userId = _userId, tagId });
+        Assert.Equal(0L, usageAfterDelete);
+    }
 }

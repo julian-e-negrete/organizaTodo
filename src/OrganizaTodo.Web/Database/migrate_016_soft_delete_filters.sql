@@ -346,6 +346,14 @@ $$;
 
 -- ---------- Shopping (ShoppingLists / ShoppingListItems) ----------
 
+-- Fix (post-review): ItemCount/TotalEstimated originally aggregated over ALL
+-- joined "ShoppingListItems" rows regardless of "IsDeleted". Before this
+-- migration that was harmless because sp_shopping_delete_item hard-deleted
+-- the row (gone from the join entirely); now that sp_shopping_delete_item
+-- soft-deletes, a deleted item stays in the table and would keep inflating
+-- both aggregates forever. Filter added to the JOIN condition (not the WHERE
+-- clause) so lists with zero remaining live items still return a row with
+-- ItemCount = 0 / TotalEstimated = 0, preserving existing LEFT JOIN semantics.
 DROP FUNCTION IF EXISTS sp_shopping_get_user_lists(integer);
 CREATE OR REPLACE FUNCTION sp_shopping_get_user_lists(user_id integer)
  RETURNS TABLE("Id" integer, "UserId" integer, "Name" character varying, "Month" integer, "Year" integer, "CreatedAt" timestamp without time zone, "TotalEstimated" numeric, "ItemCount" bigint)
@@ -357,7 +365,7 @@ BEGIN
            COALESCE(SUM(i."EstimatedPrice"*i."Quantity"),0)::DECIMAL(18,2),
            COUNT(i."Id")
     FROM "ShoppingLists" l
-    LEFT JOIN "ShoppingListItems" i ON i."ShoppingListId"=l."Id"
+    LEFT JOIN "ShoppingListItems" i ON i."ShoppingListId"=l."Id" AND i."IsDeleted" = FALSE
     WHERE l."UserId"=user_id AND l."IsDeleted" = FALSE
     GROUP BY l."Id",l."UserId",l."Name",l."Month",l."Year",l."CreatedAt"
     ORDER BY l."Year" DESC, l."Month" DESC;
@@ -692,6 +700,15 @@ $$;
 
 -- ---------- LedgerTags ----------
 
+-- Fix (post-review): UsageCount originally counted ltt."TransactionId", which
+-- stays non-null even after sp_savings_delete/sp_other_expenses_delete/
+-- sp_asset_purchases_delete soft-delete the linked "LedgerTransactions" row —
+-- those cascades never touch "LedgerTransactionTags" itself, so a tag's usage
+-- count would silently keep counting transactions that are now soft-deleted.
+-- Added a second LEFT JOIN to "LedgerTransactions" gated on "IsDeleted" =
+-- FALSE and count that join's Id instead, so a soft-deleted transaction no
+-- longer contributes to the count (same LEFT JOIN semantics: tags with zero
+-- live usages still return a row with UsageCount = 0).
 DROP FUNCTION IF EXISTS sp_ledger_tags_get_by_user_id(integer);
 CREATE OR REPLACE FUNCTION sp_ledger_tags_get_by_user_id(p_user_id integer)
  RETURNS TABLE("Id" integer, "UserId" integer, "Name" character varying, "CreatedAt" timestamp without time zone, "UsageCount" bigint)
@@ -699,9 +716,10 @@ CREATE OR REPLACE FUNCTION sp_ledger_tags_get_by_user_id(p_user_id integer)
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT t."Id",t."UserId",t."Name",t."CreatedAt", COUNT(ltt."TransactionId")
+    SELECT t."Id",t."UserId",t."Name",t."CreatedAt", COUNT(lt."Id")
     FROM "LedgerTags" t
     LEFT JOIN "LedgerTransactionTags" ltt ON ltt."TagId"=t."Id"
+    LEFT JOIN "LedgerTransactions" lt ON lt."Id"=ltt."TransactionId" AND lt."IsDeleted" = FALSE
     WHERE t."UserId"=p_user_id AND t."IsDeleted" = FALSE
     GROUP BY t."Id",t."UserId",t."Name",t."CreatedAt"
     ORDER BY t."Name";
