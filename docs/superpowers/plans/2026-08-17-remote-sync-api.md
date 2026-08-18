@@ -855,8 +855,10 @@ git commit -m "add POST /api/sync/connect to issue sync tokens for existing acco
   public sealed record SyncTableDescriptor(
       string TableName,
       string JsonKey,
-      string OwnershipWhereClause,  // SQL fragment, e.g. "\"UserId\" = @userId" or a JOIN-based EXISTS clause
-      IReadOnlyList<string> Columns // every column except "Id" (SyncId is the sync identity; local Id is per-database)
+      string OwnershipWhereClause,  // SQL fragment for pull, e.g. "\"UserId\" = @userId" or a JOIN-based EXISTS clause
+      IReadOnlyList<string> Columns, // every column except "Id" (SyncId is the sync identity; local Id is per-database)
+      string? OwnershipForeignKeyColumn = null, // set only for join-based-ownership tables (Columns has no "UserId")
+      string? OwnershipParentTable = null       // the table OwnershipForeignKeyColumn references, e.g. "ShoppingLists"
   );
 
   public static class SyncTableRegistry
@@ -912,6 +914,8 @@ public class SyncTableRegistryTests
 
         Assert.False(descriptor.Columns.Contains("UserId"));
         Assert.Contains("ShoppingLists", descriptor.OwnershipWhereClause);
+        Assert.Equal("ShoppingListId", descriptor.OwnershipForeignKeyColumn);
+        Assert.Equal("ShoppingLists", descriptor.OwnershipParentTable);
     }
 
     [Fact]
@@ -921,12 +925,38 @@ public class SyncTableRegistryTests
 
         Assert.False(descriptor.Columns.Contains("UserId"));
         Assert.Contains("Vehicles", descriptor.OwnershipWhereClause);
+        Assert.Equal("VehicleId", descriptor.OwnershipForeignKeyColumn);
+        Assert.Equal("Vehicles", descriptor.OwnershipParentTable);
+    }
+
+    [Fact]
+    public void LedgerTransactionTags_UsesJoinBasedOwnership_NotDirectUserId()
+    {
+        var descriptor = SyncTableRegistry.Tables.Single(t => t.TableName == "LedgerTransactionTags");
+
+        Assert.False(descriptor.Columns.Contains("UserId"));
+        Assert.Equal("TransactionId", descriptor.OwnershipForeignKeyColumn);
+        Assert.Equal("LedgerTransactions", descriptor.OwnershipParentTable);
     }
 
     [Fact]
     public void EveryDescriptor_ColumnListExcludesId()
     {
         Assert.All(SyncTableRegistry.Tables, t => Assert.DoesNotContain("Id", t.Columns));
+    }
+
+    [Fact]
+    public void EveryDirectUserIdTable_HasNoOwnershipForeignKeyColumn()
+    {
+        var joinBasedTables = new[] { "ShoppingListItems", "VehicleMonthlyPayments", "LedgerTransactionTags" };
+        var directTables = SyncTableRegistry.Tables.Where(t => !joinBasedTables.Contains(t.TableName));
+
+        Assert.All(directTables, t =>
+        {
+            Assert.True(t.Columns.Contains("UserId"), $"{t.TableName} was expected to have a direct UserId column");
+            Assert.Null(t.OwnershipForeignKeyColumn);
+            Assert.Null(t.OwnershipParentTable);
+        });
     }
 }
 ```
@@ -946,7 +976,9 @@ public sealed record SyncTableDescriptor(
     string TableName,
     string JsonKey,
     string OwnershipWhereClause,
-    IReadOnlyList<string> Columns);
+    IReadOnlyList<string> Columns,
+    string? OwnershipForeignKeyColumn = null,
+    string? OwnershipParentTable = null);
 ```
 
 `src/OrganizaTodo.Web/Sync/SyncTableRegistry.cs`:
@@ -980,7 +1012,8 @@ public static class SyncTableRegistry
 
         new("ShoppingListItems", "shoppingListItems",
             "EXISTS (SELECT 1 FROM \"ShoppingLists\" sl WHERE sl.\"Id\" = \"ShoppingListItems\".\"ShoppingListId\" AND sl.\"UserId\" = @userId)",
-            new[] { "ShoppingListId", "ProductName", "Quantity", "EstimatedPrice", "Supermarket", "Priority" }),
+            new[] { "ShoppingListId", "ProductName", "Quantity", "EstimatedPrice", "Supermarket", "Priority" },
+            OwnershipForeignKeyColumn: "ShoppingListId", OwnershipParentTable: "ShoppingLists"),
 
         new("AssetPurchases", "assetPurchases", "\"UserId\" = @userId",
             new[] { "UserId", "ExpenseId", "SavingId", "AssetType", "Quantity", "UnitPriceArs", "ExchangeType", "TotalArs", "Notes", "PurchaseDate", "CreatedAt" }),
@@ -990,7 +1023,8 @@ public static class SyncTableRegistry
 
         new("VehicleMonthlyPayments", "vehicleMonthlyPayments",
             "EXISTS (SELECT 1 FROM \"Vehicles\" v WHERE v.\"Id\" = \"VehicleMonthlyPayments\".\"VehicleId\" AND v.\"UserId\" = @userId)",
-            new[] { "VehicleId", "Month", "Year", "PaymentType", "PaidAt" }),
+            new[] { "VehicleId", "Month", "Year", "PaymentType", "PaidAt" },
+            OwnershipForeignKeyColumn: "VehicleId", OwnershipParentTable: "Vehicles"),
 
         new("VehicleMaintenanceLogs", "vehicleMaintenanceLogs", "\"UserId\" = @userId",
             new[] { "VehicleId", "UserId", "ServiceDate", "KmAtService", "Cost", "Notes", "CreatedAt" }),
@@ -1006,7 +1040,8 @@ public static class SyncTableRegistry
 
         new("LedgerTransactionTags", "ledgerTransactionTags",
             "EXISTS (SELECT 1 FROM \"LedgerTransactions\" lt WHERE lt.\"Id\" = \"LedgerTransactionTags\".\"TransactionId\" AND lt.\"UserId\" = @userId)",
-            new[] { "TransactionId", "TagId" }),
+            new[] { "TransactionId", "TagId" },
+            OwnershipForeignKeyColumn: "TransactionId", OwnershipParentTable: "LedgerTransactions"),
     };
 }
 ```
@@ -1014,7 +1049,7 @@ public static class SyncTableRegistry
 - [ ] **Step 4: Run registry test to verify it passes**
 
 Run: `dotnet test tests/OrganizaTodo.Desktop.Tests --filter SyncTableRegistryTests`
-Expected: PASS (4 tests)
+Expected: PASS (7 tests)
 
 - [ ] **Step 5: Write the failing pull-service integration test**
 
@@ -1387,6 +1422,38 @@ public class SyncPushServiceIntegrationTests : IAsyncLifetime
             "SELECT EXISTS (SELECT 1 FROM \"HousingServices\" WHERE \"SyncId\" = @syncId)", new { syncId });
         Assert.False(exists);
     }
+
+    [Fact]
+    public async Task ApplyChangesAsync_JoinBasedOwnershipTable_RowPointingAtAnotherUsersParent_IsRejected()
+    {
+        // ShoppingListItems has no UserId column of its own — ownership is only
+        // knowable by checking whether ShoppingListId belongs to the caller. This
+        // proves that check actually runs, not just the direct-UserId path above.
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var otherUsersListId = await conn.ExecuteScalarAsync<int>(
+            "INSERT INTO \"ShoppingLists\" (\"UserId\", \"Month\", \"Year\") VALUES (@otherUserId, 1, 2026) RETURNING \"Id\"",
+            new { otherUserId = _otherUserId });
+
+        var service = new SyncPushService(_connectionString);
+        var syncId = Guid.NewGuid();
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["shoppingListItems"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["ShoppingListId"] = otherUsersListId, ["ProductName"] = "ShouldBeRejected",
+                    ["Quantity"] = 1, ["Priority"] = 2
+                })
+            }
+        }));
+
+        var exists = await conn.ExecuteScalarAsync<bool>(
+            "SELECT EXISTS (SELECT 1 FROM \"ShoppingListItems\" WHERE \"SyncId\" = @syncId)", new { syncId });
+        Assert.False(exists);
+    }
 }
 ```
 
@@ -1426,16 +1493,41 @@ public sealed class SyncPushService(string connectionString) : ISyncPushService
         foreach (var (jsonKey, rows) in changesByTable)
         {
             var table = TablesByJsonKey[jsonKey];
+            var hasDirectUserId = table.Columns.Contains("UserId");
 
             foreach (var row in rows)
             {
-                if (table.Columns.Contains("UserId") && !Equals(row.Fields.GetValueOrDefault("UserId"), userId))
+                if (hasDirectUserId)
                 {
-                    throw new InvalidOperationException(
-                        $"Rejected sync row for table {table.TableName}: UserId in payload does not match the authenticated caller.");
+                    if (!Equals(row.Fields.GetValueOrDefault("UserId"), userId))
+                    {
+                        throw new InvalidOperationException(
+                            $"Rejected sync row for table {table.TableName}: UserId in payload does not match the authenticated caller.");
+                    }
+                }
+                else
+                {
+                    // Join-based-ownership table (no UserId column of its own) — verify the
+                    // referenced parent row actually belongs to the caller via a real query.
+                    // Without this check, a client could push a row pointing at another
+                    // user's parent record (e.g. someone else's ShoppingListId) and nothing
+                    // else in this method would catch it.
+                    var foreignKeyValue = row.Fields.GetValueOrDefault(table.OwnershipForeignKeyColumn!);
+                    var ownsParent = await connection.ExecuteScalarAsync<bool>(new CommandDefinition(
+                        $"SELECT EXISTS (SELECT 1 FROM \"{table.OwnershipParentTable}\" WHERE \"Id\" = @foreignKeyValue AND \"UserId\" = @userId)",
+                        new { foreignKeyValue, userId },
+                        transaction, cancellationToken: ct));
+
+                    if (!ownsParent)
+                    {
+                        throw new InvalidOperationException(
+                            $"Rejected sync row for table {table.TableName}: {table.OwnershipForeignKeyColumn} does not belong to the authenticated caller.");
+                    }
                 }
 
-                var columns = table.Columns.Where(c => c != "UserId").Prepend("UserId").ToList();
+                var columns = hasDirectUserId
+                    ? table.Columns.Where(c => c != "UserId").Prepend("UserId").ToList()
+                    : table.Columns.ToList();
                 var insertColumns = string.Join(", ", columns.Select(c => $"\"{c}\""));
                 var insertParams = string.Join(", ", columns.Select(c => $"@{c}"));
                 var updateAssignments = string.Join(", ", columns.Where(c => c != "UserId").Select(c => $"\"{c}\" = @{c}"));
@@ -1468,12 +1560,12 @@ public sealed class SyncPushService(string connectionString) : ISyncPushService
 }
 ```
 
-The `ON CONFLICT ("SyncId") DO UPDATE ... WHERE "<table>"."UpdatedAt" < EXCLUDED."UpdatedAt"` clause is what implements last-write-wins atomically: Postgres only applies the update if the existing row's `UpdatedAt` is older than the incoming one; otherwise the `INSERT ... ON CONFLICT` is a no-op for that row, leaving the existing (newer) data untouched. Note this bypasses the `trg_set_updated_at` trigger's own `NOW()` behavior for pushed rows — that's intentional: the incoming `UpdatedAt` must be preserved exactly as the pushing device recorded it, not overwritten with the server's receive time, or last-write-wins comparisons would be meaningless.
+The `ON CONFLICT ("SyncId") DO UPDATE ... WHERE "<table>"."UpdatedAt" < EXCLUDED."UpdatedAt"` clause is what implements last-write-wins atomically: Postgres only applies the update if the existing row's `UpdatedAt` is older than the incoming one; otherwise the `INSERT ... ON CONFLICT` is a no-op for that row, leaving the existing (newer) data untouched. This UPDATE still fires `trg_set_updated_at` (Task 1) — the trigger runs, but its conditional check (`NEW."UpdatedAt" IS NOT DISTINCT FROM OLD."UpdatedAt"`) is false here since `EXCLUDED."UpdatedAt"` differs from the existing value, so the trigger leaves the explicitly-set `UpdatedAt` alone rather than stamping `NOW()` over it. This is exactly the scenario the Task 1 trigger fix exists for.
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `dotnet test tests/OrganizaTodo.Desktop.Tests --filter SyncPushServiceIntegrationTests`
-Expected: PASS (4 tests)
+Expected: PASS (5 tests)
 
 - [ ] **Step 5: Commit**
 
