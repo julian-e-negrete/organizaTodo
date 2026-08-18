@@ -50,6 +50,7 @@ public static class Program
         builder.Services.AddScoped<IVehicleRepository,          VehicleRepository>();
         builder.Services.AddScoped<IRecurringIncomeRepository,  RecurringIncomeRepository>();
         builder.Services.AddScoped<ILedgerRepository,           LedgerRepository>();
+        builder.Services.AddScoped<ISyncTokenRepository,        SyncTokenRepository>();
 
         builder.Services.AddScoped<IAuthService,    AuthService>();
         builder.Services.AddScoped<IBalanceService, BalanceService>();
