@@ -293,4 +293,192 @@ public class SyncPushServiceIntegrationTests : IAsyncLifetime
             "SELECT \"ProductName\" FROM \"ShoppingListItems\" WHERE \"SyncId\" = @syncId", new { syncId });
         Assert.Equal("VictimItem", storedName);
     }
+
+    // ------------------------------------------------------------------
+    // Finding 1: secondary foreign keys embedded in a row's own business
+    // data (distinct from the table's own ownership check) must also be
+    // ownership-validated, or an attacker can push a row they legitimately
+    // own while pointing e.g. ParentTransactionId at a victim's row.
+    // ------------------------------------------------------------------
+
+    [Fact]
+    public async Task ApplyChangesAsync_SecondaryForeignKeyPointsAtAnotherUsersRow_IsRejected()
+    {
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        // Victim's own transaction — attacker will try to reference this by Id.
+        var victimTransactionId = await conn.ExecuteScalarAsync<int>(
+            """
+            INSERT INTO "LedgerTransactions" ("UserId", "Amount", "Type", "Description", "TransactionDate", "BalanceAfter")
+            VALUES (@otherUserId, 100, 'expense', 'Victim tx', NOW(), 100)
+            RETURNING "Id"
+            """,
+            new { otherUserId = _otherUserId });
+
+        var service = new SyncPushService(_connectionString);
+        var syncId = Guid.NewGuid();
+
+        // The pushed row's OWN UserId is the caller's — it would pass the row's own
+        // ownership check. Only ParentTransactionId is attacker-controlled, pointing at
+        // the victim's transaction (a sequential, trivially-enumerable Id).
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["ledgerTransactions"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["UserId"] = _userId, ["Amount"] = 50m, ["Type"] = "expense",
+                    ["Description"] = "AttackerTx", ["TransactionDate"] = "2026-01-15T00:00:00",
+                    ["BalanceAfter"] = 50m, ["GeneratesInterest"] = false,
+                    ["ParentTransactionId"] = victimTransactionId,
+                })
+            }
+        }));
+
+        var exists = await conn.ExecuteScalarAsync<bool>(
+            "SELECT EXISTS (SELECT 1 FROM \"LedgerTransactions\" WHERE \"SyncId\" = @syncId)", new { syncId });
+        Assert.False(exists);
+    }
+
+    [Fact]
+    public async Task ApplyChangesAsync_SecondaryForeignKeyPointsAtCallersOwnRow_Succeeds()
+    {
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+
+        var ownParentTransactionId = await conn.ExecuteScalarAsync<int>(
+            """
+            INSERT INTO "LedgerTransactions" ("UserId", "Amount", "Type", "Description", "TransactionDate", "BalanceAfter")
+            VALUES (@userId, 100, 'expense', 'Own parent tx', NOW(), 100)
+            RETURNING "Id"
+            """,
+            new { userId = _userId });
+
+        var service = new SyncPushService(_connectionString);
+        var syncId = Guid.NewGuid();
+
+        await service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["ledgerTransactions"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["UserId"] = _userId, ["Amount"] = 50m, ["Type"] = "expense",
+                    ["Description"] = "ChildTx", ["TransactionDate"] = "2026-01-15T00:00:00",
+                    ["BalanceAfter"] = 50m, ["GeneratesInterest"] = false,
+                    ["ParentTransactionId"] = ownParentTransactionId,
+                })
+            }
+        });
+
+        var storedParentId = await conn.ExecuteScalarAsync<int?>(
+            "SELECT \"ParentTransactionId\" FROM \"LedgerTransactions\" WHERE \"SyncId\" = @syncId", new { syncId });
+        Assert.Equal(ownParentTransactionId, storedParentId);
+    }
+
+    // ------------------------------------------------------------------
+    // Finding 2: date/timestamp fields arrive from JSON as plain strings.
+    // Npgsql sends a C# string as SQL `text`, and Postgres rejects binding
+    // `text` to a `timestamp`/`date` column (42804) unless it's parsed into
+    // a proper DateTime/DateOnly first. Income.IncomeDate is NOT NULL, so
+    // this table can't be pushed at all without the fix.
+    // ------------------------------------------------------------------
+
+    [Fact]
+    public async Task ApplyChangesAsync_NotNullTimestampColumn_RoundTripsCorrectly()
+    {
+        var service = new SyncPushService(_connectionString);
+        var syncId = Guid.NewGuid();
+
+        await service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["income"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["UserId"] = _userId, ["Description"] = "Salary", ["Amount"] = 1000m,
+                    ["IncomeDate"] = "2026-03-10T00:00:00", ["Category"] = "Salary",
+                    ["Month"] = 3, ["Year"] = 2026,
+                })
+            }
+        });
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var incomeDate = await conn.ExecuteScalarAsync<DateTime>(
+            "SELECT \"IncomeDate\" FROM \"Income\" WHERE \"SyncId\" = @syncId", new { syncId });
+        Assert.Equal(new DateTime(2026, 3, 10), incomeDate);
+    }
+
+    [Fact]
+    public async Task ApplyChangesAsync_DateOnlyColumn_RoundTripsCorrectly()
+    {
+        // AssetPurchases.PurchaseDate is a Postgres DATE column (not TIMESTAMP) — this
+        // proves DATE vs TIMESTAMP columns are parsed distinctly (DateOnly vs DateTime).
+        var service = new SyncPushService(_connectionString);
+        var syncId = Guid.NewGuid();
+
+        await service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["assetPurchases"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["UserId"] = _userId, ["AssetType"] = "USD", ["TotalArs"] = 5000m,
+                    ["PurchaseDate"] = "2026-05-20",
+                })
+            }
+        });
+
+        // Read back via a raw NpgsqlCommand rather than Dapper's scalar path: Npgsql's default
+        // CLR type for a `date` column is System.DateOnly, and Dapper's ExecuteScalarAsync<T>
+        // uses Convert.ChangeType under the hood, which throws for DateOnly (it doesn't
+        // implement IConvertible) unless the app-wide DateOnlyTypeHandler from Program.cs is
+        // registered — which this service-level test intentionally doesn't depend on.
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+        await using var cmd = new NpgsqlCommand(
+            "SELECT \"PurchaseDate\" FROM \"AssetPurchases\" WHERE \"SyncId\" = @syncId", conn);
+        cmd.Parameters.AddWithValue("syncId", syncId);
+        var purchaseDate = (DateOnly)(await cmd.ExecuteScalarAsync())!;
+        Assert.Equal(new DateOnly(2026, 5, 20), purchaseDate);
+    }
+
+    // ------------------------------------------------------------------
+    // Finding 4: a payload supplying only "UserId" (no other business
+    // columns) must not generate SQL with a trailing comma before WHERE.
+    // ------------------------------------------------------------------
+
+    [Fact]
+    public async Task ApplyChangesAsync_PayloadWithOnlyUserIdColumn_IsRejectedCleanly_NotAsSqlSyntaxError()
+    {
+        // A degenerate push: only UserId in Fields, no other business columns. Before the fix
+        // this generated "..."IsDeleted" = EXCLUDED."IsDeleted",\nWHERE ..." — a trailing-comma
+        // SQL syntax error Postgres rejects at parse time (PostgresException, SqlState 42601).
+        // Every currently-registered table has at least one required column with no DEFAULT, so
+        // this payload could never legitimately succeed regardless — the fix rejects it early,
+        // deterministically, and distinguishably from that raw Postgres syntax error.
+        var service = new SyncPushService(_connectionString);
+        var syncId = Guid.NewGuid();
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["housingServices"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["UserId"] = _userId,
+                })
+            }
+        }));
+
+        Assert.Contains("no business columns", ex.Message);
+
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var exists = await conn.ExecuteScalarAsync<bool>(
+            "SELECT EXISTS (SELECT 1 FROM \"HousingServices\" WHERE \"SyncId\" = @syncId)", new { syncId });
+        Assert.False(exists);
+    }
 }

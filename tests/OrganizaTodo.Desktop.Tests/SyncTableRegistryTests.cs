@@ -79,4 +79,50 @@ public class SyncTableRegistryTests
             Assert.Null(t.OwnershipParentTable);
         });
     }
+
+    // Finding 1: every secondary FK column embedded in a row's own business data (distinct
+    // from the table's own ownership check) must be registered so SyncPushService actually
+    // validates it. This locks in the six relationships the finding called out by name.
+    [Theory]
+    [InlineData("OtherExpenses", "VehicleId", "Vehicles")]
+    [InlineData("Savings", "LedgerTransactionId", "LedgerTransactions")]
+    [InlineData("AssetPurchases", "ExpenseId", "OtherExpenses")]
+    [InlineData("AssetPurchases", "SavingId", "Savings")]
+    [InlineData("VehicleMaintenanceLogs", "VehicleId", "Vehicles")]
+    [InlineData("LedgerTransactions", "ParentTransactionId", "LedgerTransactions")]
+    public void SecondaryForeignKeys_ContainsEveryKnownCrossTableReference(string tableName, string column, string parentTable)
+    {
+        var descriptor = SyncTableRegistry.Tables.Single(t => t.TableName == tableName);
+
+        Assert.Contains(descriptor.SecondaryForeignKeys, fk => fk.Column == column && fk.ParentTable == parentTable);
+    }
+
+    // Finding 2: every column whose Postgres type is a date/timestamp must be registered as
+    // such, or SyncPushService will try to bind a raw JSON string straight into a typed
+    // column and Postgres will reject it (42804). Spot-checks the NOT NULL date columns that
+    // block a push entirely today, plus the DATE-vs-TIMESTAMP distinction.
+    [Theory]
+    [InlineData("Income", "IncomeDate")]
+    [InlineData("OtherExpenses", "ExpenseDate")]
+    [InlineData("LedgerTransactions", "TransactionDate")]
+    public void TimestampColumns_ContainsEveryNotNullDateColumn(string tableName, string column)
+    {
+        var descriptor = SyncTableRegistry.Tables.Single(t => t.TableName == tableName);
+
+        Assert.Contains(column, descriptor.TimestampColumns);
+    }
+
+    [Theory]
+    [InlineData("AssetPurchases", "PurchaseDate")]
+    [InlineData("Vehicles", "LastOilChangeDate")]
+    [InlineData("VehicleMaintenanceLogs", "ServiceDate")]
+    public void DateOnlyColumns_ContainsEveryPostgresDateTypedColumn(string tableName, string column)
+    {
+        var descriptor = SyncTableRegistry.Tables.Single(t => t.TableName == tableName);
+
+        Assert.Contains(column, descriptor.DateOnlyColumns);
+        // A DATE column must never also be listed as a TIMESTAMP column — that would make the
+        // parsing branch in SyncPushService ambiguous (DateOnly.Parse vs DateTime.Parse).
+        Assert.DoesNotContain(column, descriptor.TimestampColumns);
+    }
 }
