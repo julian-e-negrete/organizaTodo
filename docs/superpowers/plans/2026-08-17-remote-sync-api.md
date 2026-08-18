@@ -377,7 +377,7 @@ public class SoftDeleteFilterIntegrationTests : IAsyncLifetime
 
         await using var conn = await OpenConnectionAsync();
         _userId = await conn.ExecuteScalarAsync<int>(
-            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"Role\") VALUES ('softdelete@t.com', 'x', 'User') RETURNING \"Id\"");
+            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"FullName\", \"Role\") VALUES ('softdelete@t.com', 'x', 'Soft Delete Test', 'User') RETURNING \"Id\"");
     }
 
     public async Task DisposeAsync()
@@ -1095,9 +1095,9 @@ public class SyncPullServiceIntegrationTests : IAsyncLifetime
 
         await using var conn = await OpenConnectionAsync();
         _userId = await conn.ExecuteScalarAsync<int>(
-            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"Role\") VALUES ('pull-a@t.com', 'x', 'User') RETURNING \"Id\"");
+            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"FullName\", \"Role\") VALUES ('pull-a@t.com', 'x', 'Pull A', 'User') RETURNING \"Id\"");
         _otherUserId = await conn.ExecuteScalarAsync<int>(
-            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"Role\") VALUES ('pull-b@t.com', 'x', 'User') RETURNING \"Id\"");
+            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"FullName\", \"Role\") VALUES ('pull-b@t.com', 'x', 'Pull B', 'User') RETURNING \"Id\"");
     }
 
     public async Task DisposeAsync()
@@ -1294,9 +1294,9 @@ public class SyncPushServiceIntegrationTests : IAsyncLifetime
         await using var conn = new NpgsqlConnection(_connectionString);
         await conn.OpenAsync();
         _userId = await conn.ExecuteScalarAsync<int>(
-            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"Role\") VALUES ('push-a@t.com', 'x', 'User') RETURNING \"Id\"");
+            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"FullName\", \"Role\") VALUES ('push-a@t.com', 'x', 'Push A', 'User') RETURNING \"Id\"");
         _otherUserId = await conn.ExecuteScalarAsync<int>(
-            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"Role\") VALUES ('push-b@t.com', 'x', 'User') RETURNING \"Id\"");
+            "INSERT INTO \"Users\" (\"Email\", \"PasswordHash\", \"FullName\", \"Role\") VALUES ('push-b@t.com', 'x', 'Push B', 'User') RETURNING \"Id\"");
     }
 
     public async Task DisposeAsync()
