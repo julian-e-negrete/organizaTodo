@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using OrganizaTodo.Web.Data;
 using OrganizaTodo.Web.Repositories;
 using OrganizaTodo.Web.Services;
+using OrganizaTodo.Web.Sync;
 
 namespace OrganizaTodo.Web;
 
@@ -57,6 +58,8 @@ public static class Program
         builder.Services.AddScoped<IAdminService,   AdminService>();
         builder.Services.AddScoped<ILedgerInterestService, LedgerInterestService>();
         builder.Services.AddScoped<ISyncTokenService, SyncTokenService>();
+        builder.Services.AddScoped<ISyncPullService>(sp => new SyncPullService(builder.Configuration.GetConnectionString("DefaultConnection")!));
+        builder.Services.AddScoped<ISyncPushService>(sp => new SyncPushService(builder.Configuration.GetConnectionString("DefaultConnection")!));
         builder.Services.AddHostedService<LedgerInterestBackgroundService>();
 
         builder.Services.AddHttpClient<IDolarService,    DolarService>();
