@@ -28,6 +28,52 @@ public sealed class SyncPushService(string connectionString) : ISyncPushService
 
             foreach (var row in rows)
             {
+                // Check 1: does the *existing* row (if any) for this SyncId belong to the
+                // caller? SyncId is a fully client-supplied UUID, globally unique across all
+                // users, not scoped per-user — so `ON CONFLICT ("SyncId")` will happily match
+                // and update ANY existing row, regardless of who the payload claims to be.
+                // Without this check, a caller could pass their own valid UserId/FK (so the
+                // payload-side check below passes) but reuse a SyncId belonging to a
+                // different user's existing row, silently corrupting or reassigning it. This
+                // must run before the INSERT/UPDATE, and must run even when the payload-side
+                // check below is otherwise satisfied.
+                if (hasDirectUserId)
+                {
+                    var existingOwnerUserId = await connection.ExecuteScalarAsync<int?>(new CommandDefinition(
+                        $"SELECT \"UserId\" FROM \"{table.TableName}\" WHERE \"SyncId\" = @syncId",
+                        new { syncId = row.SyncId }, transaction, cancellationToken: ct));
+
+                    if (existingOwnerUserId is not null && existingOwnerUserId != userId)
+                    {
+                        throw new InvalidOperationException(
+                            $"Rejected sync row for table {table.TableName}: existing row for SyncId {row.SyncId} belongs to a different user.");
+                    }
+                }
+                else
+                {
+                    var existingForeignKeyValue = await connection.ExecuteScalarAsync<int?>(new CommandDefinition(
+                        $"SELECT \"{table.OwnershipForeignKeyColumn}\" FROM \"{table.TableName}\" WHERE \"SyncId\" = @syncId",
+                        new { syncId = row.SyncId }, transaction, cancellationToken: ct));
+
+                    if (existingForeignKeyValue is not null)
+                    {
+                        var existingRowOwnedByCaller = await connection.ExecuteScalarAsync<bool>(new CommandDefinition(
+                            $"SELECT EXISTS (SELECT 1 FROM \"{table.OwnershipParentTable}\" WHERE \"Id\" = @foreignKeyValue AND \"UserId\" = @userId)",
+                            new { foreignKeyValue = existingForeignKeyValue, userId },
+                            transaction, cancellationToken: ct));
+
+                        if (!existingRowOwnedByCaller)
+                        {
+                            throw new InvalidOperationException(
+                                $"Rejected sync row for table {table.TableName}: existing row for SyncId {row.SyncId} does not belong to the authenticated caller.");
+                        }
+                    }
+                }
+
+                // Check 2: does the *incoming payload* claim valid ownership? This catches a
+                // caller pushing a brand-new SyncId (no existing row, so Check 1 is a no-op)
+                // whose payload directly claims someone else's UserId, or whose FK points at
+                // someone else's parent record.
                 if (hasDirectUserId)
                 {
                     if (!Equals(row.Fields.GetValueOrDefault("UserId"), userId))

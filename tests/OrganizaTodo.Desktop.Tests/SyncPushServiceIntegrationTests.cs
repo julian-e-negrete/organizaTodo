@@ -213,4 +213,84 @@ public class SyncPushServiceIntegrationTests : IAsyncLifetime
             "SELECT EXISTS (SELECT 1 FROM \"ShoppingListItems\" WHERE \"SyncId\" = @syncId)", new { syncId });
         Assert.False(exists);
     }
+
+    [Fact]
+    public async Task ApplyChangesAsync_SyncIdBelongsToAnotherUsersExistingRow_IsRejectedEvenWithOwnValidUserId()
+    {
+        // The payload's own UserId is valid for the caller — the payload-side check alone
+        // would pass. The attack is reusing a SyncId that already belongs to a DIFFERENT
+        // user's existing row: ON CONFLICT ("SyncId") is global, not scoped per user, so
+        // without an existing-row ownership check this would silently overwrite the
+        // victim's row's business columns while leaving it owned (UserId) by the victim.
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var syncId = Guid.NewGuid();
+        await conn.ExecuteAsync(
+            "INSERT INTO \"HousingServices\" (\"UserId\", \"Name\", \"Amount\", \"SyncId\") VALUES (@otherUserId, 'VictimRow', 100, @syncId)",
+            new { otherUserId = _otherUserId, syncId });
+
+        var service = new SyncPushService(_connectionString);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["housingServices"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["UserId"] = _userId, ["Name"] = "AttackerPushed", ["Amount"] = 1m,
+                    ["DueDay"] = 1, ["Periodicity"] = "MONTHLY", ["IsPaid"] = false, ["IsActive"] = true
+                })
+            }
+        }));
+
+        var name = await conn.ExecuteScalarAsync<string>(
+            "SELECT \"Name\" FROM \"HousingServices\" WHERE \"SyncId\" = @syncId", new { syncId });
+        Assert.Equal("VictimRow", name);
+        var ownerUserId = await conn.ExecuteScalarAsync<int>(
+            "SELECT \"UserId\" FROM \"HousingServices\" WHERE \"SyncId\" = @syncId", new { syncId });
+        Assert.Equal(_otherUserId, ownerUserId);
+    }
+
+    [Fact]
+    public async Task ApplyChangesAsync_JoinBasedTable_SyncIdBelongsToAnotherUsersExistingRow_IsRejectedEvenWithOwnValidParent()
+    {
+        // Same attack as above, but for a join-based-ownership table: the payload's FK
+        // (ShoppingListId) points at the caller's OWN list, so the payload-side check alone
+        // would pass. The reused SyncId belongs to a row under a DIFFERENT user's list. If
+        // unchecked, ON CONFLICT would reassign that row's ShoppingListId to the caller's
+        // own list — moving the victim's data into the attacker's account.
+        await using var conn = new NpgsqlConnection(_connectionString);
+        await conn.OpenAsync();
+        var otherUsersListId = await conn.ExecuteScalarAsync<int>(
+            "INSERT INTO \"ShoppingLists\" (\"UserId\", \"Month\", \"Year\") VALUES (@otherUserId, 1, 2026) RETURNING \"Id\"",
+            new { otherUserId = _otherUserId });
+        var callersOwnListId = await conn.ExecuteScalarAsync<int>(
+            "INSERT INTO \"ShoppingLists\" (\"UserId\", \"Month\", \"Year\") VALUES (@userId, 2, 2026) RETURNING \"Id\"",
+            new { userId = _userId });
+        var syncId = Guid.NewGuid();
+        await conn.ExecuteAsync(
+            "INSERT INTO \"ShoppingListItems\" (\"ShoppingListId\", \"ProductName\", \"SyncId\") VALUES (@otherUsersListId, 'VictimItem', @syncId)",
+            new { otherUsersListId, syncId });
+
+        var service = new SyncPushService(_connectionString);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.ApplyChangesAsync(_userId, new Dictionary<string, IReadOnlyList<SyncRowChange>>
+        {
+            ["shoppingListItems"] = new List<SyncRowChange>
+            {
+                new(syncId, DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                {
+                    ["ShoppingListId"] = callersOwnListId, ["ProductName"] = "AttackerPushed",
+                    ["Quantity"] = 1, ["Priority"] = 2
+                })
+            }
+        }));
+
+        var storedListId = await conn.ExecuteScalarAsync<int>(
+            "SELECT \"ShoppingListId\" FROM \"ShoppingListItems\" WHERE \"SyncId\" = @syncId", new { syncId });
+        Assert.Equal(otherUsersListId, storedListId);
+        var storedName = await conn.ExecuteScalarAsync<string>(
+            "SELECT \"ProductName\" FROM \"ShoppingListItems\" WHERE \"SyncId\" = @syncId", new { syncId });
+        Assert.Equal("VictimItem", storedName);
+    }
 }
