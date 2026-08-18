@@ -1582,6 +1582,7 @@ git commit -m "add SyncPushService with atomic last-write-wins upsert and UserId
 - Modify: `src/OrganizaTodo.Web/Controllers/SyncController.cs`
 - Create: `src/OrganizaTodo.Web/Models/SyncRequest.cs`
 - Create: `src/OrganizaTodo.Web/Models/SyncResponse.cs`
+- Create: `src/OrganizaTodo.Web/Database/migrate_018_sync_token_lookup.sql`
 - Modify: `src/OrganizaTodo.Web/Repositories/ISyncTokenRepository.cs`
 - Modify: `src/OrganizaTodo.Web/Repositories/SyncTokenRepository.cs`
 - Modify: `src/OrganizaTodo.Web/Program.cs` (register `ISyncPullService`, `ISyncPushService`)
@@ -1752,8 +1753,32 @@ public interface ISyncTokenRepository
 }
 ```
 
-Extend `src/OrganizaTodo.Web/Repositories/SyncTokenRepository.cs`:
+**Add a new migration** `src/OrganizaTodo.Web/Database/migrate_018_sync_token_lookup.sql` — per this project's DB access rule (`CLAUDE.md`: "All database operations must go through PostgreSQL functions... never write ad-hoc SQL in application code"), `ResolveUserIdAsync`/`TouchLastUsedAsync` must call PostgreSQL functions, not raw SQL (this was corrected during Task 4's review, which caught the same anti-pattern in `StoreTokenAsync` — Task 4's fix added `sp_sync_tokens_store` via `migrate_017_sync_token_insert.sql`; this task adds the two lookup/update functions it needs):
+
+```sql
+-- ============================================================
+-- MIGRATION 018 — SyncTokens lookup/update functions for /api/sync's
+-- bearer-token authentication (resolve a token hash to its owning user,
+-- and record last-used time on each successful authenticated call).
+-- ============================================================
+
+CREATE OR REPLACE FUNCTION sp_sync_tokens_resolve_user_id(token_hash VARCHAR(200))
+RETURNS INT LANGUAGE sql AS $$
+    SELECT "UserId" FROM "SyncTokens" WHERE "TokenHash" = token_hash
+$$;
+
+CREATE OR REPLACE FUNCTION sp_sync_tokens_touch_last_used(token_hash VARCHAR(200))
+RETURNS VOID LANGUAGE plpgsql AS $$
+BEGIN
+    UPDATE "SyncTokens" SET "LastUsedAt" = NOW() WHERE "TokenHash" = token_hash;
+END;
+$$;
+```
+
+Extend `src/OrganizaTodo.Web/Repositories/SyncTokenRepository.cs`, following this project's Dapper call conventions (`CommandType.Text` + `SELECT sp_name(@param)`; scalar via `ExecuteScalarAsync<T>`; void via `QueryFirstOrDefaultAsync<object>`) — do not use `CommandType.StoredProcedure`, it maps to `CALL`, which only works for Postgres procedures, not functions:
+
 ```csharp
+using System.Data;
 using Dapper;
 using OrganizaTodo.Web.Data;
 
@@ -1764,28 +1789,33 @@ public sealed class SyncTokenRepository(IDbConnectionFactory connectionFactory) 
     public async Task StoreTokenAsync(int userId, string tokenHash)
     {
         using var connection = connectionFactory.CreateConnection();
-        await connection.ExecuteAsync(
-            "INSERT INTO \"SyncTokens\" (\"UserId\", \"TokenHash\") VALUES (@userId, @tokenHash)",
-            new { userId, tokenHash });
+        await connection.QueryFirstOrDefaultAsync<object>(
+            "SELECT sp_sync_tokens_store(@userId, @tokenHash)",
+            new { userId, tokenHash },
+            commandType: CommandType.Text);
     }
 
     public async Task<int?> ResolveUserIdAsync(string tokenHash)
     {
         using var connection = connectionFactory.CreateConnection();
-        return await connection.QuerySingleOrDefaultAsync<int?>(
-            "SELECT \"UserId\" FROM \"SyncTokens\" WHERE \"TokenHash\" = @tokenHash",
-            new { tokenHash });
+        return await connection.ExecuteScalarAsync<int?>(
+            "SELECT sp_sync_tokens_resolve_user_id(@tokenHash)",
+            new { tokenHash },
+            commandType: CommandType.Text);
     }
 
     public async Task TouchLastUsedAsync(string tokenHash)
     {
         using var connection = connectionFactory.CreateConnection();
-        await connection.ExecuteAsync(
-            "UPDATE \"SyncTokens\" SET \"LastUsedAt\" = NOW() WHERE \"TokenHash\" = @tokenHash",
-            new { tokenHash });
+        await connection.QueryFirstOrDefaultAsync<object>(
+            "SELECT sp_sync_tokens_touch_last_used(@tokenHash)",
+            new { tokenHash },
+            commandType: CommandType.Text);
     }
 }
 ```
+
+`StoreTokenAsync`'s body above assumes Task 4's fix round created `sp_sync_tokens_store(user_id INT, token_hash VARCHAR) RETURNS VOID` — verify this against what Task 4 actually shipped (check `src/OrganizaTodo.Web/Database/migrate_017_sync_token_insert.sql`) and adjust the call if the real function name/signature differs.
 
 Replace `src/OrganizaTodo.Web/Controllers/SyncController.cs` with the full controller (connect endpoint unchanged from Task 4, plus the new `/api/sync` action doing its own lightweight bearer-token check inline rather than a full ASP.NET Core authentication scheme — simpler and sufficient for a single-purpose token, avoids pulling in the authentication-handler machinery for one endpoint):
 
