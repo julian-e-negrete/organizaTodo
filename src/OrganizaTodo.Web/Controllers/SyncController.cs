@@ -56,10 +56,38 @@ public sealed class SyncController(
                 .Select(dto => new SyncRowChange(dto.SyncId, dto.UpdatedAt, dto.IsDeleted, NormalizeFields(dto.Fields)))
                 .ToList());
 
-        await syncPushService.ApplyChangesAsync(userId.Value, changes);
-        var pulledChanges = await syncPullService.PullChangesAsync(userId.Value, request.Since);
+        try
+        {
+            await syncPushService.ApplyChangesAsync(userId.Value, changes);
 
-        return Ok(new SyncResponse(DateTimeOffset.UtcNow, pulledChanges));
+            // Captured BEFORE the pull query runs (not after), so no row committed between
+            // this point and the pull query's execution can fall into the gap where it's
+            // neither returned by *this* pull nor by any future one filtered on this
+            // watermark. Capturing it after the pull (the previous behavior) let such a row's
+            // UpdatedAt land before the watermark the client stores next, silently losing it
+            // from every subsequent sync.
+            var syncedAt = DateTimeOffset.UtcNow;
+            var pulledChanges = await syncPullService.PullChangesAsync(userId.Value, request.Since);
+
+            return Ok(new SyncResponse(syncedAt, pulledChanges));
+        }
+        catch (InvalidOperationException ex)
+        {
+            // SyncPushService throws InvalidOperationException exclusively for ownership
+            // rejections (payload/existing-row/secondary-FK checks) — a genuine conflict
+            // between what the caller is trying to write and the current state of ownership
+            // in the database, which is exactly what 409 Conflict means. Routed through
+            // Problem() (not left to bubble to app.UseExceptionHandler("/Home/Error")) so the
+            // response is clean JSON, not the app's HTML error page — this is a JSON API and
+            // every caller, success or failure, should get JSON back.
+            return Problem(detail: ex.Message, statusCode: StatusCodes.Status409Conflict, title: "Sync push rejected");
+        }
+        catch (Exception ex)
+        {
+            // Any other exception is genuinely unexpected (not a modeled ownership rejection)
+            // — still reported as clean JSON via ProblemDetails rather than an HTML error page.
+            return Problem(detail: ex.Message, statusCode: StatusCodes.Status500InternalServerError, title: "Unexpected sync error");
+        }
     }
 
     // [FromBody] model binding deserializes SyncRowChangeDto.Fields (a Dictionary<string, object?>)

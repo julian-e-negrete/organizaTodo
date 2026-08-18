@@ -125,4 +125,38 @@ public class SyncEndpointIntegrationTests : IAsyncLifetime
         Assert.NotNull(body);
         Assert.Contains(body!.Changes["housingServices"], row => (string)row["Name"] == "RoundTrip");
     }
+
+    // Finding 3: a rejected push used to fall through to app.UseExceptionHandler("/Home/Error")
+    // (an MVC HTML error page) since SyncPushService's ownership rejections are plain
+    // InvalidOperationExceptions. This proves the real HTTP pipeline — not just the controller's
+    // own return value — actually gives back JSON (Content-Type application/problem+json), not
+    // an HTML error page, for a genuine ownership rejection.
+    [Fact]
+    public async Task Sync_PushWithOwnershipViolation_Returns409ConflictAsJson_NotHtml()
+    {
+        using var client = new HttpClient();
+        var token = await ConnectAndGetTokenAsync(client);
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        var request = new SyncRequest(
+            DateTimeOffset.MinValue,
+            new Dictionary<string, List<SyncRowChangeDto>>
+            {
+                ["housingServices"] = new List<SyncRowChangeDto>
+                {
+                    new(Guid.NewGuid(), DateTimeOffset.UtcNow, false, new Dictionary<string, object?>
+                    {
+                        // A UserId that isn't the authenticated caller's — the push service's
+                        // Check 2 rejects this with InvalidOperationException.
+                        ["UserId"] = _userId + 999_999, ["Name"] = "ShouldBeRejected", ["Amount"] = 1m,
+                        ["DueDay"] = 1, ["Periodicity"] = "MONTHLY", ["IsPaid"] = false, ["IsActive"] = true
+                    })
+                }
+            });
+
+        var response = await client.PostAsJsonAsync($"{_baseUrl}/api/sync", request);
+
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+        Assert.Equal("application/problem+json", response.Content.Headers.ContentType?.MediaType);
+    }
 }
