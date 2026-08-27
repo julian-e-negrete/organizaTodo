@@ -49,5 +49,14 @@ static string ResolvePgBinDirectory()
 {
     var overridePath = Environment.GetEnvironmentVariable("ORGANIZATODO_PG_BIN_DIR");
     if (!string.IsNullOrWhiteSpace(overridePath)) return overridePath;
-    return Path.Combine(AppContext.BaseDirectory, "pgbin", "bin");
+
+    // The vendored Linux tree under pgbin/ preserves the original Debian package
+    // nesting (usr/lib/postgresql/16/bin) rather than a flattened pgbin/bin — Debian's
+    // postgres binaries have fixed bindir/datadir paths baked in and only tolerate
+    // relocation when that nesting is kept intact (see scripts/vendor-postgres-linux.sh
+    // for the functional-test evidence). The vendored Windows tree (EDB's zip) already
+    // ships a clean bin/lib/share layout, so it keeps the simple pgbin/bin path.
+    return OperatingSystem.IsWindows()
+        ? Path.Combine(AppContext.BaseDirectory, "pgbin", "bin")
+        : Path.Combine(AppContext.BaseDirectory, "pgbin", "usr", "lib", "postgresql", "16", "bin");
 }
