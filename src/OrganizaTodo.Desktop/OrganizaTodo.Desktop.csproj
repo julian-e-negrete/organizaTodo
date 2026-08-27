@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
-    <PackageReference Include="WebView2.Runtime.X64" Version="*" />
+    <PackageReference Include="WebView2.Runtime.X64" Version="151.0.4129.107" />
   </ItemGroup>
 
   <ItemGroup>
