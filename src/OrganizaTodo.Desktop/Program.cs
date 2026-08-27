@@ -31,7 +31,16 @@ catch (Exception ex)
     return;
 }
 
+// Points Photino's Windows host at the Fixed Version WebView2 runtime bundled
+// alongside the app (see OrganizaTodo.Desktop.csproj's win-x64-only
+// WebView2.Runtime.X64 PackageReference, which copies a "WebView2" folder next
+// to the published exe). Without this call, Photino falls back to the
+// system-wide Evergreen WebView2 Runtime, which defeats the point of bundling
+// it for an offline installer. Win32SetWebView2Path no-ops on non-Windows, so
+// this is safe to call unconditionally.
+var webView2Path = Path.Combine(AppContext.BaseDirectory, "WebView2");
 var window = new PhotinoWindow()
+    .Win32SetWebView2Path(webView2Path)
     .SetTitle("OrganizaTodo")
     .SetUseOsDefaultSize(false)
     .SetSize(1280, 800)

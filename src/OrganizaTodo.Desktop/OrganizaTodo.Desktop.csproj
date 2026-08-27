@@ -12,6 +12,10 @@
     <PackageReference Include="Photino.NET" Version="4.0.16" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(RuntimeIdentifier)' == 'win-x64'">
+    <PackageReference Include="WebView2.Runtime.X64" Version="*" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\OrganizaTodo.Web\OrganizaTodo.Web.csproj" />
   </ItemGroup>
