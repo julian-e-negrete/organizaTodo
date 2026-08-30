@@ -9,6 +9,21 @@ if ! command -v makeself >/dev/null; then
   exit 1
 fi
 
+# Always republish immediately before packaging. Without this, the script
+# would silently ship whatever stale build happened to already be sitting in
+# publish/linux-x64/ (e.g. one predating a source fix) with no error and no
+# indication anything was wrong (Task 6's end-to-end verification hit this
+# for real: a stale binary shipped a since-fixed Postgres path bug). This
+# only republishes linux-x64, so it stays independent of the Windows build
+# path and needs no Wine/Windows tooling. publish/linux-x64/pgbin/ (vendored
+# separately by vendor-postgres-linux.sh) is untouched by `dotnet publish -o`
+# writing into the same directory.
+echo "Publishing OrganizaTodo.Desktop for linux-x64..."
+dotnet publish "$REPO_ROOT/src/OrganizaTodo.Desktop/OrganizaTodo.Desktop.csproj" \
+  -c Release -r linux-x64 --self-contained true \
+  -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true \
+  -o "$REPO_ROOT/publish/linux-x64"
+
 STAGE="$(mktemp -d)"
 trap 'rm -rf "$STAGE"' EXIT
 

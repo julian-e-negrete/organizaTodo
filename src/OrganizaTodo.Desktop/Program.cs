@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using OrganizaTodo.Desktop.Lifecycle;
 using Photino.NET;
 
@@ -46,11 +47,38 @@ var window = new PhotinoWindow()
     .SetSize(1280, 800)
     .Load(url);
 
+var shutdownGuard = 0;
+async Task ShutdownOnceAsync()
+{
+    if (Interlocked.Exchange(ref shutdownGuard, 1) != 0) return;
+    await host.ShutdownAsync();
+}
+
 window.WindowClosing += (sender, args) =>
 {
-    host.ShutdownAsync().GetAwaiter().GetResult();
+    ShutdownOnceAsync().GetAwaiter().GetResult();
     return false;
 };
+
+// Closing the native window is the only path wired to a clean shutdown above.
+// A direct process termination (SIGTERM from `kill`, desktop-session logoff,
+// a task manager "End Task") bypasses WindowClosing entirely and previously
+// left Postgres running forever, orphaned, holding the data directory locked
+// until force-killed (reproduced for real in Task 6's end-to-end
+// verification). PosixSignalRegistration also covers Windows: SIGTERM there
+// maps to the console being closed / logoff / system shutdown.
+using var sigtermRegistration = PosixSignalRegistration.Create(PosixSignal.SIGTERM, context =>
+{
+    context.Cancel = true;
+    ShutdownOnceAsync().GetAwaiter().GetResult();
+    Environment.Exit(0);
+});
+using var sigintRegistration = PosixSignalRegistration.Create(PosixSignal.SIGINT, context =>
+{
+    context.Cancel = true;
+    ShutdownOnceAsync().GetAwaiter().GetResult();
+    Environment.Exit(0);
+});
 
 window.WaitForClose();
 
