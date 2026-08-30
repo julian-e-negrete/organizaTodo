@@ -47,12 +47,8 @@ var window = new PhotinoWindow()
     .SetSize(1280, 800)
     .Load(url);
 
-var shutdownGuard = 0;
-async Task ShutdownOnceAsync()
-{
-    if (Interlocked.Exchange(ref shutdownGuard, 1) != 0) return;
-    await host.ShutdownAsync();
-}
+Task? shutdownTask = null;
+Task ShutdownOnceAsync() => LazyInitializer.EnsureInitialized(ref shutdownTask, () => host.ShutdownAsync());
 
 window.WindowClosing += (sender, args) =>
 {
