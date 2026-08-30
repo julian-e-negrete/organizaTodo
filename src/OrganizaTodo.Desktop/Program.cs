@@ -47,8 +47,13 @@ var window = new PhotinoWindow()
     .SetSize(1280, 800)
     .Load(url);
 
-Task? shutdownTask = null;
-Task ShutdownOnceAsync() => LazyInitializer.EnsureInitialized(ref shutdownTask, () => host.ShutdownAsync());
+// LazyInitializer.EnsureInitialized's reference-type overload does not
+// serialize the factory call — two threads that both observe a null value
+// would both invoke host.ShutdownAsync(). Lazy<T> with
+// ExecutionAndPublication does: only the first caller runs the factory,
+// every caller (including the first) awaits the same published Task.
+var shutdownOnce = new Lazy<Task>(() => host.ShutdownAsync(), LazyThreadSafetyMode.ExecutionAndPublication);
+Task ShutdownOnceAsync() => shutdownOnce.Value;
 
 window.WindowClosing += (sender, args) =>
 {

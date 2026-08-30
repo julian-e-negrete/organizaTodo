@@ -22,8 +22,13 @@ curl -fL -o postgres-windows.zip "$POSTGRES_WINDOWS_ZIP_URL"
 unzip -q postgres-windows.zip
 
 # EDB's zip extracts to a pgsql/ directory containing bin/, lib/, share/ already
-# in the layout Postgres expects — copy that whole tree directly.
+# in the layout Postgres expects — copy that whole tree directly. Remove any
+# existing $DEST first: `cp -a pgsql "$DEST"` only lands at $DEST when it
+# doesn't already exist — on a re-run with $DEST present, cp would instead
+# nest a fresh copy at $DEST/pgsql, silently breaking the pgbin/bin layout
+# Program.cs's ResolvePgBinDirectory() expects.
 mkdir -p "$REPO_ROOT/publish/win-x64"
+rm -rf "$DEST"
 cp -a pgsql "$DEST"
 
 echo "Vendored Postgres binaries at $DEST/bin"

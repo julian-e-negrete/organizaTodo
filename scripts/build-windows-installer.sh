@@ -56,6 +56,35 @@ if [ ! -f "$ISCC_PATH" ]; then
   exit 1
 fi
 
+# Always republish immediately before packaging (same reasoning as
+# build-linux-installer.sh's equivalent step): a stale publish/win-x64/
+# would otherwise ship silently, with no error. This also re-verifies the
+# WebView2.Runtime.X64 package's large runtime binaries actually survived
+# `dotnet publish` (see scripts/publish-desktop.sh for the completeness
+# check and why it's needed — that package's content files get silently
+# dropped from the publish tree, though not the build tree, by the
+# .NET SDK's NuGet contentFiles handling).
+echo "Publishing OrganizaTodo.Desktop for win-x64..."
+dotnet publish "$REPO_ROOT/src/OrganizaTodo.Desktop/OrganizaTodo.Desktop.csproj" \
+  -c Release -r win-x64 --self-contained true \
+  -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true \
+  -o "$REPO_ROOT/publish/win-x64"
+
+BIN_WEBVIEW2="$REPO_ROOT/src/OrganizaTodo.Desktop/bin/Release/net8.0/win-x64/WebView2"
+if [ ! -f "$BIN_WEBVIEW2/msedgewebview2.exe" ]; then
+  echo "ERROR: $BIN_WEBVIEW2/msedgewebview2.exe not found after build — WebView2.Runtime.X64 package not resolved correctly." >&2
+  exit 1
+fi
+rm -rf "$REPO_ROOT/publish/win-x64/WebView2"
+cp -a "$BIN_WEBVIEW2" "$REPO_ROOT/publish/win-x64/WebView2"
+for f in msedgewebview2.exe msedge.dll; do
+  if [ ! -f "$REPO_ROOT/publish/win-x64/WebView2/$f" ]; then
+    echo "ERROR: publish/win-x64/WebView2/$f missing after copy — WebView2 runtime is incomplete." >&2
+    exit 1
+  fi
+done
+echo "WebView2 runtime completeness verified in publish/win-x64/WebView2/"
+
 mkdir -p dist
 "$WINE_BIN" "$ISCC_PATH" installer/windows/OrganizaTodo.iss
 echo "Built dist/OrganizaTodo-Setup.exe"
