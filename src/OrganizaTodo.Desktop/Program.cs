@@ -11,24 +11,45 @@ if (!guard.TryAcquire())
 var paths = AppPaths.From(AppDataRoot.ResolveForCurrentOS());
 paths.EnsureDirectoriesExist();
 
-var credentials = new DbCredentialStore(paths.ConfigDir).LoadOrCreate();
-var pgPort = PortAllocator.FindAvailablePort(preferredPort: 55432);
-var pgBinDirectory = ResolvePgBinDirectory();
-
-var postgresManager = new PostgresManager(pgBinDirectory, paths.PgDataDir, pgPort, credentials, paths.LogsDir);
-var schemaBootstrapper = new SchemaBootstrapper(Path.Combine(AppContext.BaseDirectory, "Database"));
 var webAppRunner = new KestrelWebAppRunner();
-var host = new DesktopHost(postgresManager, schemaBootstrapper, webAppRunner, pgPort, credentials, "organizatodo", "organizatodo_shopping");
-
+Func<Task> shutdown;
 string url;
-try
+
+var remote = RemoteDbConfig.TryLoad(paths.ConfigDir);
+if (remote is not null)
 {
-    url = await host.StartAsync();
+    // Remote mode: no bundled Postgres, no schema bootstrap — the server owns its schema.
+    try
+    {
+        url = await webAppRunner.StartAsync(remote.DefaultConnection, remote.ShoppingConnection);
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Failed to start OrganizaTodo (remote database): {ex}");
+        return;
+    }
+    shutdown = () => webAppRunner.StopAsync();
 }
-catch (Exception ex)
+else
 {
-    Console.Error.WriteLine($"Failed to start OrganizaTodo: {ex}");
-    return;
+    var credentials = new DbCredentialStore(paths.ConfigDir).LoadOrCreate();
+    var pgPort = PortAllocator.FindAvailablePort(preferredPort: 55432);
+    var pgBinDirectory = ResolvePgBinDirectory();
+
+    var postgresManager = new PostgresManager(pgBinDirectory, paths.PgDataDir, pgPort, credentials, paths.LogsDir);
+    var schemaBootstrapper = new SchemaBootstrapper(Path.Combine(AppContext.BaseDirectory, "Database"));
+    var host = new DesktopHost(postgresManager, schemaBootstrapper, webAppRunner, pgPort, credentials, "organizatodo", "organizatodo_shopping");
+
+    try
+    {
+        url = await host.StartAsync();
+    }
+    catch (Exception ex)
+    {
+        Console.Error.WriteLine($"Failed to start OrganizaTodo: {ex}");
+        return;
+    }
+    shutdown = () => host.ShutdownAsync();
 }
 
 var window = new PhotinoWindow()
@@ -39,7 +60,7 @@ var window = new PhotinoWindow()
 
 window.WindowClosing += (sender, args) =>
 {
-    host.ShutdownAsync().GetAwaiter().GetResult();
+    shutdown().GetAwaiter().GetResult();
     return false;
 };
 
