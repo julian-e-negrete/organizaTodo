@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrganizaTodo.Web.Extensions;
+using OrganizaTodo.Web.Models.Domain;
 using OrganizaTodo.Web.Models.ViewModels;
 using OrganizaTodo.Web.Repositories;
 
 namespace OrganizaTodo.Web.Controllers;
 
 [Authorize]
-public sealed class LiabilitiesController(IFixedLiabilityRepository repo) : Controller
+public sealed class LiabilitiesController(IFixedLiabilityRepository repo, IBillAmountHistoryRepository history) : Controller
 {
     public async Task<IActionResult> Index()
         => View(await repo.GetByUserIdAsync(User.GetUserId()));
@@ -27,6 +28,7 @@ public sealed class LiabilitiesController(IFixedLiabilityRepository repo) : Cont
     {
         var item = await repo.GetByIdAsync(id, User.GetUserId());
         if (item is null) return NotFound();
+        ViewData["AmountHistory"] = await history.GetForBillAsync(User.GetUserId(), BillAmountChange.Fixed, id);
         return View(new FixedLiabilityViewModel
         {
             Id = item.Id, Name = item.Name, MonthlyAmount = item.MonthlyAmount, DueDay = item.DueDay
@@ -36,7 +38,11 @@ public sealed class LiabilitiesController(IFixedLiabilityRepository repo) : Cont
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(FixedLiabilityViewModel vm)
     {
-        if (!ModelState.IsValid) return View(vm);
+        if (!ModelState.IsValid)
+        {
+            ViewData["AmountHistory"] = await history.GetForBillAsync(User.GetUserId(), BillAmountChange.Fixed, vm.Id);
+            return View(vm);
+        }
         await repo.UpdateAsync(vm.Id, User.GetUserId(), vm.Name, vm.MonthlyAmount, vm.DueDay);
         TempData["Success"] = "Pasivo actualizado.";
         return RedirectToAction(nameof(Index));
