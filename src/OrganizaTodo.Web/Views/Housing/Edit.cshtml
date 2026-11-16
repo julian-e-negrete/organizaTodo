@@ -13,4 +13,9 @@
         </div>
     </form>
 </div>
+@{
+    var amountHistory = ViewData["AmountHistory"] as IReadOnlyList<OrganizaTodo.Web.Models.Domain.BillAmountChange>
+        ?? Array.Empty<OrganizaTodo.Web.Models.Domain.BillAmountChange>();
+}
+<partial name="_AmountHistory" model="amountHistory" />
 @section Scripts { <partial name="_ValidationScriptsPartial" /> }
