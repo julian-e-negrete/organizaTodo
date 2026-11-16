@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>OrganizaTodo.Desktop</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Photino.NET" Version="4.0.16" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OrganizaTodo.Web\OrganizaTodo.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\OrganizaTodo.Web\Database\*.sql">
+      <Link>Database\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!--
+      KestrelWebAppRunner hosts OrganizaTodo.Web in-process, but Kestrel's static-file
+      middleware resolves WebRootPath relative to *this* process's content root
+      (AppContext.BaseDirectory of OrganizaTodo.Desktop), not OrganizaTodo.Web's own
+      output directory. Without a local copy of wwwroot, every /css, /js and /lib asset
+      the Login/Dashboard views reference 404s and the window renders unstyled.
+    -->
+    <Content Include="..\OrganizaTodo.Web\wwwroot\**\*">
+      <Link>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

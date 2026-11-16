@@ -1,127 +1,170 @@
 using Dapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Configuration;
 using OrganizaTodo.Web.Data;
 using OrganizaTodo.Web.Repositories;
 using OrganizaTodo.Web.Services;
+using OrganizaTodo.Web.Sync;
 
-SqlMapper.AddTypeHandler(DateOnlyTypeHandler.Instance);
+namespace OrganizaTodo.Web;
 
-// Load .env into environment variables (local dev; Docker sets them directly)
-// Walk up from CWD to find .env — works regardless of where dotnet run is invoked from
-static string? FindEnvFile()
+public static class Program
 {
-    var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
-    while (dir != null)
+    public static void Main(string[] args) => BuildApp(args).Run();
+
+    public static WebApplication BuildApp(string[] args, Action<WebApplicationBuilder>? configure = null)
     {
-        var path = Path.Combine(dir.FullName, ".env");
-        if (File.Exists(path)) return path;
-        dir = dir.Parent;
+        SqlMapper.AddTypeHandler(DateOnlyTypeHandler.Instance);
+
+        LoadDotEnvIfPresent();
+        ApplyPostgresEnvironmentDefaults();
+
+        var builder = WebApplication.CreateBuilder(args);
+        configure?.Invoke(builder);
+
+        // AddControllersWithViews() discovers controllers via ApplicationPartManager,
+        // which by default is seeded from IHostEnvironment.ApplicationName — derived from
+        // Assembly.GetEntryAssembly(). That's fine when this app is its own process entry
+        // point (`dotnet run --project src/OrganizaTodo.Web`), but BuildApp is also invoked
+        // in-process from OrganizaTodo.Desktop (and from test hosts), where the entry
+        // assembly is the *caller's*, not this one — leaving this assembly's controllers
+        // undiscovered and every route 404ing. Explicitly registering this assembly as an
+        // application part makes controller discovery independent of who the process entry
+        // point is.
+        builder.Services.AddControllersWithViews()
+            .AddApplicationPart(typeof(Program).Assembly);
+
+        builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
+        builder.Services.AddSingleton<IShoppingDbConnectionFactory, ShoppingDbConnectionFactory>();
+
+        builder.Services.AddScoped<IUserRepository,            UserRepository>();
+        builder.Services.AddScoped<IHousingServiceRepository,  HousingServiceRepository>();
+        builder.Services.AddScoped<ICreditCardRepository,      CreditCardRepository>();
+        builder.Services.AddScoped<IFixedLiabilityRepository,  FixedLiabilityRepository>();
+        builder.Services.AddScoped<IBillAmountHistoryRepository, BillAmountHistoryRepository>();
+        builder.Services.AddScoped<IIncomeRepository,          IncomeRepository>();
+        builder.Services.AddScoped<IOtherExpenseRepository,    OtherExpenseRepository>();
+        builder.Services.AddScoped<IShoppingRepository,        ShoppingRepository>();
+        builder.Services.AddScoped<IMockProductRepository,     MockProductRepository>();
+        builder.Services.AddScoped<IProductCatalogRepository,  ProductCatalogRepository>();
+        builder.Services.AddScoped<ISavingRepository,          SavingRepository>();
+        builder.Services.AddScoped<IAssetPurchaseRepository,   AssetPurchaseRepository>();
+        builder.Services.AddScoped<IVehicleRepository,          VehicleRepository>();
+        builder.Services.AddScoped<IRecurringIncomeRepository,  RecurringIncomeRepository>();
+        builder.Services.AddScoped<ILedgerRepository,           LedgerRepository>();
+        builder.Services.AddScoped<ISyncTokenRepository,        SyncTokenRepository>();
+
+        builder.Services.AddScoped<IAuthService,    AuthService>();
+        builder.Services.AddScoped<IBalanceService, BalanceService>();
+        builder.Services.AddScoped<IAdminService,   AdminService>();
+        builder.Services.AddScoped<ILedgerInterestService, LedgerInterestService>();
+        builder.Services.AddScoped<ISyncTokenService, SyncTokenService>();
+        builder.Services.AddScoped<ISyncPullService>(sp => new SyncPullService(builder.Configuration.GetConnectionString("DefaultConnection")!));
+        builder.Services.AddScoped<ISyncPushService>(sp => new SyncPushService(builder.Configuration.GetConnectionString("DefaultConnection")!));
+        builder.Services.AddHostedService<LedgerInterestBackgroundService>();
+
+        builder.Services.AddHttpClient<IDolarService,    DolarService>();
+        builder.Services.AddHttpClient<IFuelPriceService, FuelPriceService>();
+
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath        = "/Account/Login";
+                options.LogoutPath       = "/Account/Logout";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.ExpireTimeSpan   = TimeSpan.FromHours(8);
+                options.SlidingExpiration = false;
+            });
+
+        var app = builder.Build();
+
+        var isDesktopHost = app.Configuration.GetValue<bool>("Desktop:IsHosted");
+
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Home/Error");
+            if (!isDesktopHost)
+            {
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+        }
+
+        if (!isDesktopHost)
+        {
+            app.UseHttpsRedirection();
+        }
+
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}");
+
+        return app;
     }
-    return null;
-}
 
-var envFile = FindEnvFile();
-if (envFile != null)
-{
-    foreach (var line in File.ReadAllLines(envFile))
+    // Load .env into environment variables (local dev; Docker sets them directly)
+    // Walk up from CWD to find .env — works regardless of where dotnet run is invoked from
+    private static string? FindEnvFile()
     {
-        if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#')) continue;
-        var idx = line.IndexOf('=');
-        if (idx > 0)
-            Environment.SetEnvironmentVariable(line[..idx].Trim(), line[(idx + 1)..].Trim());
+        var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
+        while (dir != null)
+        {
+            var path = Path.Combine(dir.FullName, ".env");
+            if (File.Exists(path)) return path;
+            dir = dir.Parent;
+        }
+        return null;
+    }
+
+    private static void LoadDotEnvIfPresent()
+    {
+        var envFile = FindEnvFile();
+        if (envFile is null) return;
+
+        foreach (var line in File.ReadAllLines(envFile))
+        {
+            if (string.IsNullOrWhiteSpace(line) || line.StartsWith('#')) continue;
+            var idx = line.IndexOf('=');
+            if (idx > 0)
+                Environment.SetEnvironmentVariable(line[..idx].Trim(), line[(idx + 1)..].Trim());
+        }
+    }
+
+    private static void ApplyPostgresEnvironmentDefaults()
+    {
+        // Build ConnectionStrings__DefaultConnection from POSTGRES_* vars if not already set
+        if (Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") is null)
+        {
+            var host = Environment.GetEnvironmentVariable("POSTGRES_HOST");
+            var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
+            var db   = Environment.GetEnvironmentVariable("POSTGRES_DB");
+            var user = Environment.GetEnvironmentVariable("POSTGRES_USER");
+            var pass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+            if (host is not null)
+                Environment.SetEnvironmentVariable(
+                    "ConnectionStrings__DefaultConnection",
+                    $"Host={host};Port={port};Database={db};Username={user};Password={pass};Ssl Mode=Disable");
+        }
+
+        // Build ShoppingConnection from POSTGRES_DB_Shopping (same host/user/pass, different DB)
+        if (Environment.GetEnvironmentVariable("ConnectionStrings__ShoppingConnection") is null)
+        {
+            var host = Environment.GetEnvironmentVariable("POSTGRES_HOST");
+            var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
+            var db   = Environment.GetEnvironmentVariable("POSTGRES_DB_Shopping");
+            var user = Environment.GetEnvironmentVariable("POSTGRES_USER");
+            var pass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+            if (host is not null && db is not null)
+                Environment.SetEnvironmentVariable(
+                    "ConnectionStrings__ShoppingConnection",
+                    $"Host={host};Port={port};Database={db};Username={user};Password={pass};Ssl Mode=Disable");
+        }
     }
 }
-
-// Build ConnectionStrings__DefaultConnection from POSTGRES_* vars if not already set
-if (Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection") is null)
-{
-    var host = Environment.GetEnvironmentVariable("POSTGRES_HOST");
-    var port = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
-    var db   = Environment.GetEnvironmentVariable("POSTGRES_DB");
-    var user = Environment.GetEnvironmentVariable("POSTGRES_USER");
-    var pass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
-    if (host is not null)
-        Environment.SetEnvironmentVariable(
-            "ConnectionStrings__DefaultConnection",
-            $"Host={host};Port={port};Database={db};Username={user};Password={pass};Ssl Mode=Disable");
-}
-
-// Build ShoppingConnection from POSTGRES_DB_Shopping (same host/user/pass, different DB)
-if (Environment.GetEnvironmentVariable("ConnectionStrings__ShoppingConnection") is null)
-{
-    var host    = Environment.GetEnvironmentVariable("POSTGRES_HOST");
-    var port    = Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5432";
-    var db      = Environment.GetEnvironmentVariable("POSTGRES_DB_Shopping");
-    var user    = Environment.GetEnvironmentVariable("POSTGRES_USER");
-    var pass    = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
-    if (host is not null && db is not null)
-        Environment.SetEnvironmentVariable(
-            "ConnectionStrings__ShoppingConnection",
-            $"Host={host};Port={port};Database={db};Username={user};Password={pass};Ssl Mode=Disable");
-}
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
-builder.Services.AddSingleton<IShoppingDbConnectionFactory, ShoppingDbConnectionFactory>();
-
-builder.Services.AddScoped<IUserRepository,            UserRepository>();
-builder.Services.AddScoped<IHousingServiceRepository,  HousingServiceRepository>();
-builder.Services.AddScoped<ICreditCardRepository,      CreditCardRepository>();
-builder.Services.AddScoped<IFixedLiabilityRepository,  FixedLiabilityRepository>();
-builder.Services.AddScoped<IBillAmountHistoryRepository, BillAmountHistoryRepository>();
-builder.Services.AddScoped<IIncomeRepository,          IncomeRepository>();
-builder.Services.AddScoped<IOtherExpenseRepository,    OtherExpenseRepository>();
-builder.Services.AddScoped<IShoppingRepository,        ShoppingRepository>();
-builder.Services.AddScoped<IMockProductRepository,     MockProductRepository>();
-builder.Services.AddScoped<IProductCatalogRepository,  ProductCatalogRepository>();
-builder.Services.AddScoped<ISavingRepository,          SavingRepository>();
-builder.Services.AddScoped<IAssetPurchaseRepository,   AssetPurchaseRepository>();
-builder.Services.AddScoped<IVehicleRepository,          VehicleRepository>();
-builder.Services.AddScoped<IRecurringIncomeRepository,  RecurringIncomeRepository>();
-builder.Services.AddScoped<ILedgerRepository,           LedgerRepository>();
-
-builder.Services.AddScoped<IAuthService,    AuthService>();
-builder.Services.AddScoped<IBalanceService, BalanceService>();
-builder.Services.AddScoped<IAdminService,   AdminService>();
-builder.Services.AddScoped<ILedgerInterestService, LedgerInterestService>();
-builder.Services.AddHostedService<LedgerInterestBackgroundService>();
-
-builder.Services.AddHttpClient<IDolarService,    DolarService>();
-builder.Services.AddHttpClient<IFuelPriceService, FuelPriceService>();
-
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath        = "/Account/Login";
-        options.LogoutPath       = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied";
-        options.ExpireTimeSpan   = TimeSpan.FromHours(8);
-        options.SlidingExpiration = false;
-    });
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();
