@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - Both installers must work with **zero network access** at install time and at first run — every dependency (runtime, Postgres, WebView2 on Windows) is vendored into the artifact itself.
-- Vendored Postgres binaries must end up at `<install-dir>/pgbin/bin` (containing `initdb`, `postgres`, `pg_ctl`, `pg_ctl`'s sibling `lib`/`share` directories alongside `bin`, not just the `bin` executables alone — Postgres needs its `share/postgresql` data files at runtime) — this is the exact fallback path `src/OrganizaTodo.Desktop/Program.cs:52` already resolves to when `ORGANIZATODO_PG_BIN_DIR` isn't set. Do not change that fallback path; build the packaging around it.
+- **Updated during Task 2 (superseding the original text of this bullet)**: vendored Postgres binaries must end up wherever `Program.cs`'s `ResolvePgBinDirectory()` actually resolves to for that OS. For **Windows**, that's still `<install-dir>/pgbin/bin` (EDB's zip already ships a clean `bin`/`lib`/`share` layout, copied in unmodified). For **Linux**, Task 2 found — via a real functional test, not guesswork — that flattening the Debian package layout into a `pgbin/bin` sibling structure breaks Postgres's compiled-in path resolution (`initdb: error: file "/usr/share/postgresql/16/postgres.bki" does not exist`); the fix was to preserve the original Debian nesting under `<install-dir>/pgbin/usr/lib/postgresql/16/bin` and update the fallback to match (`src/OrganizaTodo.Desktop/Program.cs`, OS-conditional now). Tasks 4-6: use this corrected Linux path, not the flattened one this bullet originally described.
 - **This Linux sandbox cannot run a Windows executable.** Every Windows-side artifact in this plan (the published `win-x64` binary, the compiled `.exe` installer) can be *built* and *sanity-checked* here (file structure, Inno Setup script compiles cleanly under Wine) but **cannot be launched and functionally verified** here. That final check is the user's to do on a real Windows machine — say so explicitly in each Windows-facing task's acceptance criteria, don't claim more than what was actually verified.
 - The Linux artifact (published `linux-x64` binary, the `.run` self-extracting installer) **can and must** be fully built AND functionally verified end-to-end in this environment — it has no such limitation.
 - Follow the project's superpowers TDD/verification discipline: every task's acceptance criteria must be something you actually ran and observed, not asserted.
@@ -160,10 +160,22 @@ for deb in *.deb; do
 done
 
 # The Debian layout scatters files across /usr/lib/postgresql/16/{bin,lib},
-# /usr/share/postgresql/16, /usr/lib/x86_64-linux-gnu (libpq.so.5). Flatten
-# into pgbin/{bin,lib,share} so PostgresManager's pgBinDirectory (pgbin/bin)
-# finds everything it needs via the standard relative bin/../lib,
-# bin/../share layout Postgres expects.
+# /usr/share/postgresql/16, /usr/lib/x86_64-linux-gnu (libpq.so.5). This
+# flattens them into pgbin/{bin,lib,share} to match the pgbin/bin convention
+# Program.cs's ResolvePgBinDirectory() falls back to.
+#
+# RISK, flagged during planning, not yet verified: this flattened layout is
+# DIFFERENT from the layout this project has actually proven working so far
+# (the dev-provisioned bundle at ~/.local/share/organizatodo-pgbin-dev
+# preserves the ORIGINAL Debian nesting — usr/lib/postgresql/16/bin,
+# usr/share/postgresql/16 — not this flattened bin/lib/share sibling form).
+# Postgres binaries locate their share/lib directories via relative-path
+# resolution logic compiled into the binary itself; whether that resolution
+# logic tolerates an arbitrary new relative layout like this one, versus
+# only recognizing a few specific known layouts (the original Debian nesting
+# being one of them, proven), is unverified. Step 2 below is a real
+# functional test specifically because of this — don't skip it or assume
+# flattening works just because the script runs without error.
 mkdir -p "$DEST/bin" "$DEST/lib" "$DEST/share"
 cp -a "$DEST/usr/lib/postgresql/16/bin/." "$DEST/bin/"
 cp -a "$DEST/usr/lib/postgresql/16/lib/." "$DEST/lib/" 2>/dev/null || true
@@ -190,6 +202,8 @@ dotnet test tests/OrganizaTodo.Desktop.Tests --filter PostgresManagerIntegration
 ```
 
 Expected: PASS, using the freshly-vendored binaries — this is the real acceptance test for this step, not just "the script ran without error."
+
+**If this fails specifically because `postgres`/`initdb` can't find their share/lib data** (look for an error like `could not find "postgresql.conf"`/`invalid data directory`/a share-path-not-found message, as distinct from an unrelated failure): the flattening is the cause. Fix by abandoning the flatten and instead preserving the exact nested Debian structure that's already proven working — extract into `$DEST/usr/lib/postgresql/16/bin` etc. unmodified (don't invent a different relative layout either), and point `pgBinDirectory` at `$DEST/usr/lib/postgresql/16/bin`. That changes where the vendored tree's `bin` directory actually sits relative to `pgbin/`, which means `Program.cs`'s `ResolvePgBinDirectory()` fallback (currently `pgbin/bin`) would need updating too — that's a legitimate, evidence-backed change at that point (you'll have a failing/passing test proving why), not a scope violation of the Global Constraint against changing it casually. Update the fallback path, the Windows vendoring script's target shape stays unaffected (EDB's zip already ships a clean bin/lib/share layout with no Debian-style scattering to begin with).
 
 - [ ] **Step 3: Vendor Windows Postgres binaries (structural verification only — see Global Constraints)**
 
