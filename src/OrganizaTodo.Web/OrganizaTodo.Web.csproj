@@ -9,7 +9,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="*" />
     <PackageReference Include="Dapper" Version="*" />
-    <PackageReference Include="Npgsql" Version="*" />
+    <PackageReference Include="Npgsql" Version="10.0.3" />
   </ItemGroup>
 
 </Project>
