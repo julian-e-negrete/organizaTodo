@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrganizaTodo.Web.Extensions;
+using OrganizaTodo.Web.Models.Domain;
 using OrganizaTodo.Web.Models.ViewModels;
 using OrganizaTodo.Web.Repositories;
 
 namespace OrganizaTodo.Web.Controllers;
 
 [Authorize]
-public sealed class HousingController(IHousingServiceRepository repo) : Controller
+public sealed class HousingController(IHousingServiceRepository repo, IBillAmountHistoryRepository history) : Controller
 {
     public async Task<IActionResult> Index()
         => View(await repo.GetByUserIdAsync(User.GetUserId()));
@@ -27,6 +28,7 @@ public sealed class HousingController(IHousingServiceRepository repo) : Controll
     {
         var item = await repo.GetByIdAsync(id, User.GetUserId());
         if (item is null) return NotFound();
+        ViewData["AmountHistory"] = await history.GetForBillAsync(User.GetUserId(), BillAmountChange.Housing, id);
         return View(new HousingServiceViewModel
         {
             Id = item.Id, Name = item.Name, Amount = item.Amount,
@@ -37,7 +39,11 @@ public sealed class HousingController(IHousingServiceRepository repo) : Controll
     [HttpPost, ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(HousingServiceViewModel vm)
     {
-        if (!ModelState.IsValid) return View(vm);
+        if (!ModelState.IsValid)
+        {
+            ViewData["AmountHistory"] = await history.GetForBillAsync(User.GetUserId(), BillAmountChange.Housing, vm.Id);
+            return View(vm);
+        }
         await repo.UpdateAsync(vm.Id, User.GetUserId(), vm.Name, vm.Amount, vm.DueDay, vm.Periodicity);
         TempData["Success"] = "Servicio actualizado.";
         return RedirectToAction(nameof(Index));
