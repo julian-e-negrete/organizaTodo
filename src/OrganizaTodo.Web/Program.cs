@@ -41,6 +41,7 @@ public static class Program
         builder.Services.AddScoped<IHousingServiceRepository,  HousingServiceRepository>();
         builder.Services.AddScoped<ICreditCardRepository,      CreditCardRepository>();
         builder.Services.AddScoped<IFixedLiabilityRepository,  FixedLiabilityRepository>();
+        builder.Services.AddScoped<IBillAmountHistoryRepository, BillAmountHistoryRepository>();
         builder.Services.AddScoped<IIncomeRepository,          IncomeRepository>();
         builder.Services.AddScoped<IOtherExpenseRepository,    OtherExpenseRepository>();
         builder.Services.AddScoped<IShoppingRepository,        ShoppingRepository>();

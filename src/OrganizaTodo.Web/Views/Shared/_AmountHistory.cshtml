@@ -1,0 +1,42 @@
+@model IReadOnlyList<OrganizaTodo.Web.Models.Domain.BillAmountChange>
+@{
+    TimeZoneInfo zone;
+    try { zone = TimeZoneInfo.FindSystemTimeZoneById("America/Argentina/Buenos_Aires"); }
+    catch (TimeZoneNotFoundException) { zone = TimeZoneInfo.Local; }
+    string Origin(string source) => source switch
+    {
+        "jarvis" => "Jarvis",
+        "app" => "App",
+        _ => source
+    };
+}
+<div class="col-md-8 mt-5">
+    <h5 class="mb-2">Historial de montos</h5>
+    @if (Model.Count == 0)
+    {
+        <p class="text-muted small mb-0">Todavía no hay cambios registrados. Cada cambio de monto se guarda acá a partir de ahora.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm align-middle">
+                <thead>
+                    <tr><th>Fecha</th><th class="text-end">Anterior</th><th class="text-end">Nuevo</th><th>Origen</th><th>Nota</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model)
+                    {
+                        var when = TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(c.ChangedAt.ToUniversalTime(), DateTimeKind.Utc), zone);
+                        <tr>
+                            <td class="text-nowrap">@when.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-end text-nowrap">@(c.OldAmount is null ? "Alta" : "$ " + c.OldAmount.Value.ToString("N2"))</td>
+                            <td class="text-end text-nowrap">$ @c.NewAmount.ToString("N2")</td>
+                            <td>@Origin(c.Source)</td>
+                            <td class="text-muted small">@c.Note</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
