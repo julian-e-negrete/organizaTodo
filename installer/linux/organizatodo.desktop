@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=OrganizaTodo
+Comment=Personal finance tracker (offline desktop app)
+Exec=%h/.local/share/organizatodo-app/OrganizaTodo.Desktop
+Icon=%h/.local/share/organizatodo-app/icon.png
+Terminal=false
+Categories=Office;Finance;
